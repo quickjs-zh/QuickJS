@@ -115,7 +115,7 @@ endif
 ifdef CONFIG_WIN32
 LDEXPORT=
 else
-LDEXPORT=-rdynamic
+LDEXPORT=-export-dynamic
 endif
 
 PROGS=qjs$(EXE) qjsbn$(EXE) qjsc qjsbnc run-test262 run-test262-bn
