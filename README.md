@@ -4,114 +4,122 @@ QuickJS Javascript引擎
 目录
 -----------------
 
-*   [1 Introduction](#Introduction)
-    *   [1.1 Main Features](#Main-Features)
-*   [2 Usage](#Usage)
-    *   [2.1 Installation](#Installation)
-    *   [2.2 Quick start](#Quick-start)
-    *   [2.3 Command line options](#Command-line-options)
-        *   [2.3.1 `qjs` interpreter](#qjs-interpreter)
-        *   [2.3.2 `qjsc` compiler](#qjsc-compiler)
-    *   [2.4 `qjscalc` application](#qjscalc-application)
-    *   [2.5 Built-in tests](#Built_002din-tests)
-    *   [2.6 Test262 (ECMAScript Test Suite)](#Test262-_0028ECMAScript-Test-Suite_0029)
-*   [3 Specifications](#Specifications)
-    *   [3.1 Language support](#Language-support)
-        *   [3.1.1 ES2019 support](#ES2019-support)
+*   [1 简介](#Introduction)
+    *   [1.1 主要功能](#Main-Features)
+*   [2 用法](#Usage)
+    *   [2.1 安装](#Installation)
+    *   [2.2 快速入门](#Quick-start)
+    *   [2.3 命令行选项](#Command-line-options)
+        *   [2.3.1 `qjs` 解释器](#qjs-interpreter)
+        *   [2.3.2 `qjsc` 编译器](#qjsc-compiler)
+    *   [2.4 `qjscalc` 应用程序](#qjscalc-application)
+    *   [2.5 内置测试](#Built_002din-tests)
+    *   [2.6 Test262 (ECMAScript测试套件)](#Test262-_0028ECMAScript-Test-Suite_0029)
+*   [3 技术规范](#Specifications)
+    *   [3.1 语言支持](#Language-support)
+        *   [3.1.1 ES2019支持](#ES2019-support)
         *   [3.1.2 JSON](#JSON)
         *   [3.1.3 ECMA402](#ECMA402)
-        *   [3.1.4 Extensions](#Extensions)
-        *   [3.1.5 Mathematical extensions](#Mathematical-extensions)
-    *   [3.2 Modules](#Modules)
-    *   [3.3 Standard library](#Standard-library)
-        *   [3.3.1 Global objects](#Global-objects)
-        *   [3.3.2 `std` module](#std-module)
-        *   [3.3.3 `os` module](#os-module)
+        *   [3.1.4 扩展](#Extensions)
+        *   [3.1.5 数学扩展](#Mathematical-extensions)
+    *   [3.2 模块](#Modules)
+    *   [3.3 标准库](#Standard-library)
+        *   [3.3.1 全局对象](#Global-objects)
+        *   [3.3.2 `std` 模块](#std-module)
+        *   [3.3.3 `os` 模块](#os-module)
     *   [3.4 QuickJS C API](#QuickJS-C-API)
-        *   [3.4.1 Runtime and contexts](#Runtime-and-contexts)
+        *   [3.4.1 运行时和上下文](#Runtime-and-contexts)
         *   [3.4.2 JSValue](#JSValue)
-        *   [3.4.3 C functions](#C-functions)
-        *   [3.4.4 Exceptions](#Exceptions)
-        *   [3.4.5 Script evaluation](#Script-evaluation)
-        *   [3.4.6 JS Classes](#JS-Classes)
-        *   [3.4.7 C Modules](#C-Modules)
-        *   [3.4.8 Memory handling](#Memory-handling)
-        *   [3.4.9 Execution timeout and interrupts](#Execution-timeout-and-interrupts)
-*   [4 Internals](#Internals)
+        *   [3.4.3 C函数](#C-functions)
+        *   [3.4.4 错误异常](#Exceptions)
+        *   [3.4.5 Script代码执行](#Script-evaluation)
+        *   [3.4.6 JS类](#JS-Classes)
+        *   [3.4.7 C模块](#C-Modules)
+        *   [3.4.8 内存处理](#Memory-handling)
+        *   [3.4.9 执行超时和中断](#Execution-timeout-and-interrupts)
+*   [4 内部实现](#Internals)
     *   [4.1 Bytecode](#Bytecode)
     *   [4.2 Executable generation](#Executable-generation)
-        *   [4.2.1 `qjsc` compiler](#qjsc-compiler-1)
-        *   [4.2.2 Binary JSON](#Binary-JSON)
-    *   [4.3 Runtime](#Runtime)
+        *   [4.2.1 `qjsc` 编译器](#qjsc-compiler-1)
+        *   [4.2.2 二进制 JSON](#Binary-JSON)
+    *   [4.3 运行时](#Runtime)
         *   [4.3.1 Strings](#Strings)
         *   [4.3.2 Objects](#Objects)
         *   [4.3.3 Atoms](#Atoms)
         *   [4.3.4 Numbers](#Numbers)
-        *   [4.3.5 Garbage collection](#Garbage-collection)
+        *   [4.3.5 垃圾回收](#Garbage-collection)
         *   [4.3.6 JSValue](#JSValue-1)
         *   [4.3.7 Function call](#Function-call)
     *   [4.4 RegExp](#RegExp)
     *   [4.5 Unicode](#Unicode)
     *   [4.6 BigInt and BigFloat](#BigInt-and-BigFloat)
-*   [5 License](#License)
+*   [5 许可协议](#License)
 
-1 Introduction
+1 简介
 --------------
 
-QuickJS is a small and embeddable Javascript engine. It supports the ES2019 specification including modules, asynchronous generators and proxies.
+QuickJS是一个小型并且可嵌入的Javascript引擎，它支持ES2019规范，包括模块，异步生成器和代理器。
 
-It optionally supports mathematical extensions such as big integers (BigInt), big floating point numbers (BigFloat) and operator overloading.
+它可选支持数学扩展，例如大整数 (BigInt)，大浮点数 (BigFloat) 以及运算符重载。
 
-### 1.1 Main Features
+### 1.1 主要功能
 
-*   Small and easily embeddable: just a few C files, no external dependency, 180 KiB of x86 code for a simple “hello world” program.
-*   Fast interpreter with very low startup time: runs the 56000 tests of the ECMAScript Test Suite[1](#FOOT1) in about 100 seconds on a single core of a desktop PC. The complete life cycle of a runtime instance completes in less than 300 microseconds.
-*   Almost complete ES2019 support including modules, asynchronous generators and full Annex B support (legacy web compatibility).
-*   Passes 100% of the ECMAScript Test Suite tests.
-*   Can compile Javascript sources to executables with no external dependency.
-*   Garbage collection using reference counting (to reduce memory usage and have deterministic behavior) with cycle removal.
-*   Mathematical extensions: BigInt, BigFloat, operator overloading, bigint mode, math mode.
-*   Command line interpreter with contextual colorization and completion implemented in Javascript.
-*   Small built-in standard library with C library wrappers.
+*   轻量而且易于嵌入：只需几个C文件，没有外部依赖，一个x86下的简单的“hello world”程序只要180 KiB。
+*   具有极低启动时间的快速解释器： 在一台单核的台式PC上，大约在100秒内运行ECMAScript 测试套件[1](#FOOT1) 56000次。运行时实例的完整生命周期在不到300微秒的时间内完成。
+*   几乎完整实现ES2019支持，包括： 模块，异步生成器和和完整Annex B支持 (传统的Web兼容性)。
+*   通过100％的ECMAScript Test Suite测试。
+*   可以将Javascript源编译为没有外部依赖的可执行文件。
+*   使用引用计数（以减少内存使用并具有确定性行为）的垃圾收集与循环删除。
+*   数学扩展：BigInt, BigFloat, 运算符重载, bigint模式, math模式.
+*   在Javascript中实现的具有上下文着色和完成的命令行解释器。
+*   采用C包装库构建的内置标准库。
 
-2 Usage
+2 用法
 -------
 
-### 2.1 Installation
+### 2.1 安装
 
-A Makefile is provided to compile the engine on Linux or MacOS/X. A preliminary Windows support is available thru cross compilation on a Linux host with the MingGW tools.
+提供Makefile可以在Linux或者MacOS/X上编译。通过使用MingGW工具在Linux主机上进行交叉编译，可以获得初步的Windows支持。
 
-Edit the top of the `Makefile` if you wish to select specific options then run `make`.
+如果要选择特定选项，请编辑`Makefile`顶部，然后运行`make`。
 
-You can type `make install` as root if you wish to install the binaries and support files to `/usr/local` (this is not necessary to use QuickJS).
+使用root身份执行 `make install` 可以将编译的二进制文件和支持文件安装到 `/usr/local` (这不是使用QuickJS所必需的).
 
-### 2.2 Quick start
+### 2.2 快速入门
 
-`qjs` is the command line interpreter (Read-Eval-Print Loop). You can pass Javascript files and/or expressions as arguments to execute them:
+`qjs` 是命令行解析器 (Read-Eval-Print Loop). 您可以将Javascript文件和/或表达式作为参数传递以执行它们：
 
+```
 ./qjs examples/hello.js
+```
 
-`qjsc` is the command line compiler:
+`qjsc` 是命令行编译器:
 
+```
 ./qjsc -o hello examples/hello.js
 ./hello
+```
 
-generates a `hello` executable with no external dependency.
+生成一个没有外部依赖的 `hello` 可执行文件。
 
-`qjsbn` and `qjscbn` are the corresponding interpreter and compiler with the mathematical extensions:
+`qjsbn` 和 `qjscbn` 是具有数学扩展的相应解释器和编译器：
 
+```
 ./qjsbn examples/pi.js 1000
+```
 
-displays 1000 digits of PI.
+显示PI的1000位数字
 
+```
 ./qjsbnc -o pi examples/pi.js
 ./pi 1000
+```
 
-compiles and executes the PI program.
+编译并执行PI程序。
 
-### 2.3 Command line options
+### 2.3 命令行选项
 
-#### 2.3.1 `qjs` interpreter
+#### 2.3.1 `qjs` 解释器
 
 usage: qjs \[options\] \[files\]
 
@@ -155,7 +163,7 @@ Dump the memory usage stats.
 
 just instantiate the interpreter and quit.
 
-#### 2.3.2 `qjsc` compiler
+#### 2.3.2 `qjsc` 编译器
 
 usage: qjsc \[options\] \[files\]
 
@@ -197,15 +205,15 @@ Use link time optimization. The compilation is slower but the executable is smal
 
 Disable selected language features to produce a smaller executable file.
 
-### 2.4 `qjscalc` application
+### 2.4 `qjscalc` 应用程序
 
 The `qjscalc` application is a superset of the `qjsbn` command line interpreter implementing a Javascript calculator with arbitrarily large integer and floating point numbers, fractions, complex numbers, polynomials and matrices. The source code is in qjscalc.js. More documentation and a web version are available at [http://numcalc.com](http://numcalc.com).
 
-### 2.5 Built-in tests
+### 2.5 内置测试
 
 Run `make test` to run the few built-in tests included in the QuickJS archive.
 
-### 2.6 Test262 (ECMAScript Test Suite)
+### 2.6 Test262 (ECMAScript 测试套件))
 
 A test262 runner is included in the QuickJS archive.
 
@@ -213,26 +221,30 @@ For reference, the full test262 tests are provided in the archive qjs-tests-yyyy
 
 Alternatively, the test262 tests can be installed with:
 
+```
 git clone https://github.com/tc39/test262.git test262
 cd test262
 git checkout 94b1e80ab3440413df916cd56d29c5a2fa2ac451
 patch -p1 < ../tests/test262.patch
 cd ..
+```
 
 The patch adds the implementation specific `harness` functions and optimizes the inefficient RegExp character classes and Unicode property escapes tests (the tests themselves are not modified, only a slow string initialization function is optimized).
 
 The tests can be run with
 
+```
 make test2
+```
 
 For more information, run `./run-test262` to see the options of the test262 runner. The configuration files `test262.conf` and `test262bn.conf` contain the options to run the various tests.
 
-3 Specifications
+3 技术规范
 ----------------
 
-### 3.1 Language support
+### 3.1 语言支持
 
-#### 3.1.1 ES2019 support
+#### 3.1.1 ES2019支持
 
 The ES2019 specification [2](#FOOT2) is almost fully supported including the Annex B (legacy web compatibility) and the Unicode related features. The following features are not supported yet:
 
@@ -247,12 +259,12 @@ The JSON parser is currently more tolerant than the specification.
 
 ECMA402 (Internationalization API) is not supported.
 
-#### 3.1.4 Extensions
+#### 3.1.4 扩展
 
 *   The directive `"use strip"` indicates that the debug information (including the source code of the functions) should not be retained to save memory. As `"use strict"`, the directive can be global to a script or local to a function.
 *   The first line of a script beginning with `#!` is ignored.
 
-#### 3.1.5 Mathematical extensions
+#### 3.1.5 数学扩展
 
 The mathematical extensions are available in the `qjsbn` version and are fully backward compatible with standard Javascript. See `jsbignum.pdf` for more information.
 
@@ -262,7 +274,7 @@ The mathematical extensions are available in the `qjsbn` version and are fully b
 *   The directive `"use bigint"` enables the bigint mode where integers are `BigInt` by default.
 *   The directive `"use math"` enables the math mode where the division and power operators on integers produce fractions. Floating point literals are `BigFloat` by default and integers are `BigInt` by default.
 
-### 3.2 Modules
+### 3.2 模块
 
 ES6 modules are fully supported. The default name resolution is the following:
 
@@ -270,11 +282,11 @@ ES6 modules are fully supported. The default name resolution is the following:
 *   Module names without a leading `.` or `..` are system modules, such as `std` or `os`.
 *   Module names ending with `.so` are native modules using the QuickJS C API.
 
-### 3.3 Standard library
+### 3.3 标准库
 
 The standard library is included by default in the command line interpreter. It contains the two modules `std` and `os` and a few global objects.
 
-#### 3.3.1 Global objects
+#### 3.3.1 全局对象
 
 `scriptArgs`
 
@@ -288,7 +300,7 @@ Print the arguments separated by spaces and a trailing newline.
 
 Same as print().
 
-#### 3.3.2 `std` module
+#### 3.3.2 `std` 模块
 
 The `std` module provides wrappers to the libc stdlib.h and stdio.h and a few other utilities.
 
@@ -440,7 +452,7 @@ Return the next byte from the file.
 
 Write one byte to the file.
 
-#### 3.3.3 `os` module
+#### 3.3.3 `os` 模块
 
 The `os` module provides Operating System specific functions:
 
@@ -555,7 +567,7 @@ Return a string representing the platform: `"linux"`, `"darwin"`, `"win32"` or `
 
 The C API was designed to be simple and efficient. The C API is defined in the header `quickjs.h`.
 
-#### 3.4.1 Runtime and contexts
+#### 3.4.1 运行时和上下文
 
 `JSRuntime` represents a Javascript runtime corresponding to an object heap. Several runtimes can exist at the same time but they cannot exchange objects. Inside a given runtime, no multi-threading is supported.
 
@@ -565,17 +577,17 @@ The C API was designed to be simple and efficient. The C API is defined in the h
 
 `JSValue` represents a Javascript value which can be a primitive type or an object. Reference counting is used, so it is important to explicitely duplicate (`JS_DupValue()`, increment the reference count) or free (`JS_FreeValue()`, decrement the reference count) JSValues.
 
-#### 3.4.3 C functions
+#### 3.4.3 C函数
 
 C functions can be created with `JS_NewCFunction()`. `JS_SetPropertyFunctionList()` is a shortcut to easily add functions, setters and getters properties to a given object.
 
 Unlike other embedded Javascript engines, there is no implicit stack, so C functions get their parameters as normal C parameters. As a general rule, C functions take constant `JSValue`s as parameters (so they don’t need to free them) and return a newly allocated (=live) `JSValue`.
 
-#### 3.4.4 Exceptions
+#### 3.4.4 错误异常
 
 Exceptions: most C functions can return a Javascript exception. It must be explicitely tested and handled by the C code. The specific `JSValue` `JS_EXCEPTION` indicates that an exception occured. The actual exception object is stored in the `JSContext` and can be retrieved with `JS_GetException()`.
 
-#### 3.4.5 Script evaluation
+#### 3.4.5 Script代码执行
 
 Use `JS_Eval()` to evaluate a script or module source.
 
@@ -583,7 +595,7 @@ If the script or module was compiled to bytecode with `qjsc`, `JS_EvalBinary()` 
 
 Note: the bytecode format is linked to a given QuickJS version. Moreover, no security check is done before its execution. Hence the bytecode should not be loaded from untrusted sources. That’s why there is no option to output the bytecode to a binary file in `qjsc`.
 
-#### 3.4.6 JS Classes
+#### 3.4.6 JS类
 
 C opaque data can be attached to a Javascript object. The type of the C opaque data is determined with the class ID (`JSClassID`) of the object. Hence the first step is to register a new class ID and JS class (`JS_NewClassID()`, `JS_NewClass()`). Then you can create objects of this class with `JS_NewObjectClass()` and get or set the C opaque point with `JS_GetOpaque()`/`JS_SetOpaque()`.
 
@@ -593,11 +605,11 @@ The Class ID are globally allocated (i.e. for all runtimes). The JSClass are all
 
 Examples are available in js\_libc.c.
 
-#### 3.4.7 C Modules
+#### 3.4.7 C模块
 
 Native ES6 modules are supported and can be dynamically or statically linked. Look at the test\_bjson and bjson.so examples. The standard library js\_libc.c is also a good example of a native module.
 
-#### 3.4.8 Memory handling
+#### 3.4.8 内存处理
 
 Use `JS_SetMemoryLimit()` to set a global memory allocation limit to a given JSRuntime.
 
@@ -605,13 +617,13 @@ Custom memory allocation functions can be provided with `JS_NewRuntime2()`.
 
 The maximum system stack size can be set with `JS_SetMaxStackSize()`.
 
-#### 3.4.9 Execution timeout and interrupts
+#### 3.4.9 执行超时和中断
 
 Use `JS_SetInterruptHandler()` to set a callback which is regularly called by the engine when it is executing code. This callback can be used to implement an execution timeout.
 
 It is used by the command line interpreter to implement a `Ctrl-C` handler.
 
-4 Internals
+4 内部实现
 -----------
 
 ### 4.1 Bytecode
@@ -630,7 +642,7 @@ Direct `eval` in strict mode is optimized.
 
 ### 4.2 Executable generation
 
-#### 4.2.1 `qjsc` compiler
+#### 4.2.1 `qjsc` 编译器
 
 The `qjsc` compiler generates C sources from Javascript files. By default the C sources are compiled with the system compiler (`gcc` or `clang`).
 
@@ -640,13 +652,13 @@ Javascript code can be mixed with C modules.
 
 In order to have smaller executables, specific Javascript features can be disabled, in particular `eval` or the regular expressions. The code removal relies on the Link Time Optimization of the system compiler.
 
-#### 4.2.2 Binary JSON
+#### 4.2.2 二进制 JSON
 
 `qjsc` works by compiling scripts or modules and then serializing them to a binary format. A subset of this format (without functions or modules) can be used as binary JSON. The example test\_bjson.js shows how to use it.
 
 Warning: the binary JSON format may change without notice, so it should not be used to store persistent data. The test\_bjson.js example is only used to test the binary object format functions.
 
-### 4.3 Runtime
+### 4.3 运行时
 
 #### 4.3.1 Strings
 
@@ -670,7 +682,7 @@ Object property names and some strings are stored as Atoms (unique strings) to s
 
 Numbers are represented either as 32-bit signed integers or 64-bit IEEE-754 floating point values. Most operations have fast paths for the 32-bit integer case.
 
-#### 4.3.5 Garbage collection
+#### 4.3.5 垃圾回收
 
 Reference counting is used to free objects automatically and deterministically. A separate cycle removal pass is done when the allocated memory becomes too large. The cycle removal algorithm only uses the reference counts and the object content, so no explicit garbage collection roots need to be manipulated in the C code.
 
@@ -708,12 +720,13 @@ The full Unicode library weights about 45 KiB (x86 code).
 
 BigInt and BigFloat are implemented with the `libbf` library[4](#FOOT4). It weights about 60 KiB (x86 code) and provides arbitrary precision IEEE 754 floating point operations and transcendental functions with exact rounding.
 
-5 License
+5 许可协议
 ---------
 
 QuickJS is released under the MIT license.
 
 Unless otherwise specified, the QuickJS sources are copyright Fabrice Bellard and Charlie Gordon.
+
 
 * * *
 
