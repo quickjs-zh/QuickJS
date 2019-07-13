@@ -121,105 +121,105 @@ QuickJS是一个小型并且可嵌入的Javascript引擎，它支持ES2019规范
 
 #### 2.3.1 `qjs` 解释器
 
-usage: qjs \[options\] \[files\]
+用法: qjs \[options\] \[files\]
 
-Options are:
+选项:
 
 `-h`
 
 `--help`
 
-List options.
+选项列表。
 
 ``-e `EXPR` ``
 
 ``--eval `EXPR` ``
 
-Evaluate EXPR.
+执行EXPR.
 
 `-i`
 
 `--interactive`
 
-Go to interactive mode (it is not the default when files are provided on the command line).
+转到交互模式 (在命令行上提供文件时，它不是默认模式).
 
 `-m`
 
 `--module`
 
-Load as ES6 module (default if .mjs file extension).
+加载为ES6模块（默认为.mjs文件扩展名）。
 
-Advanced options are:
+高级选项包括：
 
 `-d`
 
 `--dump`
 
-Dump the memory usage stats.
+转存内存使用情况统计信息。
 
 `-q`
 
 `--quit`
 
-just instantiate the interpreter and quit.
+只是实例化解释器并退出。
 
 #### 2.3.2 `qjsc` 编译器
 
-usage: qjsc \[options\] \[files\]
+用法: qjsc \[options\] \[files\]
 
-Options are:
+选项:
 
 `-c`
 
-Only output bytecode in a C file. The default is to output an executable file.
+仅输出C文件中的字节码，默认是输出可执行文件。
 
 `-e`
 
-Output `main()` and bytecode in a C file. The default is to output an executable file.
+ `main()` C文件中的输出和字节码，默认是输出可执行文件。
 
 `-o output`
 
-Set the output filename (default = out.c or a.out).
+设置输出文件名（默认= out.c或a.out）。
 
 `-N cname`
 
-Set the C name of the generated data.
+设置生成数据的C名称。
 
 `-m`
 
-Compile as Javascript module (default if .mjs extension).
+编译为Javascript模块（默认为.mjs扩展名）。
 
 `-M module_name[,cname]`
 
-Add initialization code for an external C module. See the `c_module` example.
+添加外部C模块的初始化代码。查看`c_module`示例。
 
 `-x`
 
-Byte swapped output (only used for cross compilation).
+字节交换输出（仅用于交叉编译）。
 
 `-flto`
 
-Use link time optimization. The compilation is slower but the executable is smaller and faster. This option is automatically set when the `-fno-x` options are used.
+使用链接时间优化。编译速度较慢，但可执行文件更小更快。使用选项时会自动设置此选项`-fno-x`。
 
 `-fno-[eval|string-normalize|regexp|json|proxy|map|typedarray|promise]`
 
-Disable selected language features to produce a smaller executable file.
+禁用所选语言功能以生成较小的可执行文件。
 
 ### 2.4 `qjscalc` 应用程序
 
-The `qjscalc` application is a superset of the `qjsbn` command line interpreter implementing a Javascript calculator with arbitrarily large integer and floating point numbers, fractions, complex numbers, polynomials and matrices. The source code is in qjscalc.js. More documentation and a web version are available at [http://numcalc.com](http://numcalc.com).
+该`qjscalc`应用程序是`qjsbn`命令行解释器的超集，它实现了一个具有任意大整数和浮点数，分数，复数，多项式和矩阵的Javascript计算器。源代码在qjscalc.js中。[http://numcalc.com](http://numcalc.com/)上提供了更多文档和Web版本。
 
 ### 2.5 内置测试
 
-Run `make test` to run the few built-in tests included in the QuickJS archive.
+运行`make test`以运行QuickJS存档中包含的一些内置测试。
 
 ### 2.6 Test262 (ECMAScript 测试套件))
 
-A test262 runner is included in the QuickJS archive.
+QuickJS存档中包含test262运行程序。
 
-For reference, the full test262 tests are provided in the archive qjs-tests-yyyy-mm-dd.tar.xz. You just need to untar it into the QuickJS source code directory.
+作为参考，完整的test262测试在档案qjs-tests-yyyy-mm-dd.tar.xz中提供。您只需将其解压缩到QuickJS源代码目录中即可。
 
-Alternatively, the test262 tests can be installed with:
+或者，test262测试可以安装：
 
 ```
 git clone https://github.com/tc39/test262.git test262
@@ -229,15 +229,15 @@ patch -p1 < ../tests/test262.patch
 cd ..
 ```
 
-The patch adds the implementation specific `harness` functions and optimizes the inefficient RegExp character classes and Unicode property escapes tests (the tests themselves are not modified, only a slow string initialization function is optimized).
+补丁添加了特定于实现的`harness`函数，并优化了低效的RegExp字符类和Unicode属性转义测试（测试本身不会被修改，只有慢速字符串初始化函数被优化）。
 
-The tests can be run with
+测试可以运行
 
 ```
 make test2
 ```
 
-For more information, run `./run-test262` to see the options of the test262 runner. The configuration files `test262.conf` and `test262bn.conf` contain the options to run the various tests.
+有关更多信息，请运行`./run-test262`以查看test262 runner的选项。配置文件`test262.conf`并`test262bn.conf`包含运行各种测试的选项。
 
 3 技术规范
 ----------------
@@ -726,7 +726,6 @@ BigInt and BigFloat are implemented with the `libbf` library[4](#FOOT4). It weig
 QuickJS is released under the MIT license.
 
 Unless otherwise specified, the QuickJS sources are copyright Fabrice Bellard and Charlie Gordon.
-
 
 * * *
 
