@@ -6,6 +6,7 @@ QuickJS Javascript引擎
 
 *   [1 简介](#Introduction)
     *   [1.1 主要功能](#Main-Features)
+    *   [1.2 基准测试](#bench)
 *   [2 用法](#Usage)
     *   [2.1 安装](#Installation)
     *   [2.2 快速入门](#Quick-start)
@@ -73,6 +74,10 @@ QuickJS是一个小型并且可嵌入的Javascript引擎，它支持ES2019规范
 *   数学扩展：BigInt, BigFloat, 运算符重载, bigint模式, math模式.
 *   在Javascript中实现的具有上下文着色和完成的命令行解释器。
 *   采用C包装库构建的内置标准库。
+
+### 1.2 基准测试
+
+点击查看[QuickJS基准测试](bench.md)具体内容
 
 2 用法
 -------
