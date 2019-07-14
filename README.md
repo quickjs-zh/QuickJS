@@ -55,6 +55,7 @@ QuickJS Javascript引擎
     *   [4.5 Unicode](#Unicode)
     *   [4.6 BigInt and BigFloat](#BigInt-and-BigFloat)
 *   [5 许可协议](#License)
+*   [6 相关项目](#Projects)
 
 1 简介
 --------------
@@ -753,3 +754,13 @@ We believe the current specification of tails calls is too complicated and prese
 [https://bellard.org/libbf](https://bellard.org/libbf)
 
 * * *
+
+6 相关项目
+---------
+
+- [QuickJS-iOS](https://github.com/siuying/QuickJS-iOS) iOS下的QuickJS库
+
+- [quickjs-rs](https://github.com/quickjs-zh/quickjs-rs) Rust的QuickJS库
+
+- [quickjspp](https://github.com/quickjs-zh/quickjs-rs) C++的QuickJS库
+
