@@ -113,9 +113,9 @@ CFLAGS+=-fsanitize=address
 LDFLAGS+=-fsanitize=address
 endif
 ifdef CONFIG_WIN32
-LDEXPORT=
-else
 LDEXPORT=-export-dynamic
+else
+LDEXPORT=-rdynamic
 endif
 
 PROGS=qjs$(EXE) qjsbn$(EXE) qjsc qjsbnc run-test262 run-test262-bn
