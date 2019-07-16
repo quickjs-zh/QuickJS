@@ -764,3 +764,5 @@ We believe the current specification of tails calls is too complicated and prese
 
 - [quickjspp](https://github.com/quickjs-zh/quickjs-rs) C++的QuickJS库
 
+- [go-quickjs](https://github.com/wspl/go-quickjs) Go的QuickJS库
+
