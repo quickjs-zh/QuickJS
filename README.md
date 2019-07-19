@@ -85,7 +85,7 @@ QuickJS是一个小型并且可嵌入的Javascript引擎，它支持ES2019规范
 
 ### 2.1 安装
 
-提供Makefile可以在Linux或者MacOS/X上编译。通过使用MingGW工具在Linux主机上进行交叉编译，可以获得初步的Windows支持。
+提供Makefile可以在Linux或者MacOS/X上编译。通过使用MinGW工具在Linux主机上进行交叉编译，可以获得初步的Windows支持。
 
 如果要选择特定选项，请编辑`Makefile`顶部，然后运行`make`。
 
