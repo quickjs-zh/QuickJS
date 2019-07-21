@@ -1101,9 +1101,9 @@ import * as os from "os";
             std.puts("\x1b[H\x1b[J");
         } else if (cmd === "q") {
             std.exit(0);
-        } else if (cmd === "a") {
+        } else if (has_jscalc && cmd === "a") {
             algebraicMode = true;
-        } else if (cmd === "n") {
+        } else if (has_jscalc && cmd === "n") {
             algebraicMode = false;
         } else {
             std.puts("Unknown directive: " + cmd + "\n");

@@ -2407,7 +2407,7 @@ static intptr_t lre_exec_backtrack(REExecContext *s, uint8_t **capture,
                 for(;;) {
                     res = lre_exec_backtrack(s, capture, stack, stack_len,
                                              pc1, cptr, TRUE);
-                    if (res < 0)
+                    if (res == -1)
                         return res;
                     if (!res)
                         break;

@@ -266,9 +266,7 @@ DEF(Symbol_operatorNeg, "Symbol.operatorNeg")
 DEF(Symbol_operatorNot, "Symbol.operatorNot")
 DEF(Symbol_operatorInc, "Symbol.operatorInc")
 DEF(Symbol_operatorDec, "Symbol.operatorDec")
-DEF(Symbol_operatorMathDiv, "Symbol.operatorMathDiv")
 DEF(Symbol_operatorMathMod, "Symbol.operatorMathMod")
-DEF(Symbol_operatorMathPow, "Symbol.operatorMathPow")
 #endif
 
 #endif /* DEF */

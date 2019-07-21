@@ -581,6 +581,15 @@ static inline JSValue JS_DupValue(JSContext *ctx, JSValueConst v)
     return (JSValue)v;
 }
 
+static inline JSValue JS_DupValueRT(JSRuntime *rt, JSValueConst v)
+{
+    if (JS_VALUE_HAS_REF_COUNT(v)) {
+        JSRefCountHeader *p = JS_VALUE_GET_PTR(v);
+        p->ref_count++;
+    }
+    return (JSValue)v;
+}
+
 int JS_ToBool(JSContext *ctx, JSValueConst val); /* return -1 for JS_EXCEPTION */
 int JS_ToInt32(JSContext *ctx, int32_t *pres, JSValueConst val);
 static int inline JS_ToUint32(JSContext *ctx, uint32_t *pres, JSValueConst val)

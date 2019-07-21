@@ -63,6 +63,7 @@ static FILE *outfile;
 static BOOL byte_swap;
 
 static const FeatureEntry feature_list[] = {
+    { "date", "Date" },
     { "eval", "Eval" },
     { "string-normalize", "StringNormalize" },
     { "regexp", "RegExp" },

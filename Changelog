@@ -1,0 +1,13 @@
+2019-07-21:
+
+- updated test262 tests
+- updated to Unicode version 12.1.0
+- fixed missing Date object in qjsc
+- fixed multi-context creation
+- misc ES2020 related fixes
+- simplified power and division operators in bignum extension
+- fixed several crash conditions
+
+2019-07-09:
+
+- first public release

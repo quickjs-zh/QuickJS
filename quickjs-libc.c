@@ -487,6 +487,7 @@ static JSValue js_evalScript(JSContext *ctx, JSValueConst this_val,
         JS_SetInterruptHandler(JS_GetRuntime(ctx), interrupt_handler, NULL);
     }
     ret = JS_Eval(ctx, str, len, "<evalScript>", JS_EVAL_TYPE_GLOBAL);
+    JS_FreeCString(ctx, str);
     if (--eval_script_recurse == 0) {
         /* remove the interrupt handler */
         JS_SetInterruptHandler(JS_GetRuntime(ctx), NULL, NULL);
@@ -1409,20 +1410,20 @@ static JSValue js_os_setTimeout(JSContext *ctx, JSValueConst this_val,
     JSOSTimer *th;
     JSValue obj;
 
-    if (JS_ToInt64(ctx, &delay, argv[0]))
-        return JS_EXCEPTION;
-    func = argv[1];
+    func = argv[0];
     if (!JS_IsFunction(ctx, func))
         return JS_ThrowTypeError(ctx, "not a function");
+    if (JS_ToInt64(ctx, &delay, argv[1]))
+        return JS_EXCEPTION;
     obj = JS_NewObjectClass(ctx, js_os_timer_class_id);
     if (JS_IsException(obj))
         return obj;
     th = js_mallocz(ctx, sizeof(*th));
-    th->has_object = TRUE;
     if (!th) {
         JS_FreeValue(ctx, obj);
         return JS_EXCEPTION;
     }
+    th->has_object = TRUE;
     th->timeout = get_time_ms() + delay;
     th->func = JS_DupValue(ctx, func);
     list_add_tail(&th->link, &os_timers);
@@ -1448,8 +1449,12 @@ static JSClassDef js_os_timer_class = {
 
 static void call_handler(JSContext *ctx, JSValueConst func)
 {
-    JSValue ret;
-    ret = JS_Call(ctx, func, JS_UNDEFINED, 0, NULL);
+    JSValue ret, func1;
+    /* 'func' might be destroyed when calling itself (if it frees the
+       handler), so must take extra care */
+    func1 = JS_DupValue(ctx, func);
+    ret = JS_Call(ctx, func1, JS_UNDEFINED, 0, NULL);
+    JS_FreeValue(ctx, func1);
     if (JS_IsException(ret))
         js_std_dump_error(ctx);
     JS_FreeValue(ctx, ret);

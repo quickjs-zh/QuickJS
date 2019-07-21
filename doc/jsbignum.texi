@@ -102,17 +102,11 @@ The operator is looked up with the following name:
 @item /
 @code{Symbol.operatorDiv}
 
-@item / (math mode)
-@code{Symbol.operatorMathDiv}
-
 @item %
 @code{Symbol.operatorMod}
 
 @item % (math mode)
 @code{Symbol.operatorMathMod}
-
-@item ^ (math mode)
-@code{Symbol.operatorMathPow}
 
 @item **
 @code{Symbol.operatorPow}
@@ -266,7 +260,8 @@ The @code{+} operator also accepts strings as input and behaves like
 standard Javascript in this case.
 
 The binary operator @code{%} returns the truncated remainder of the
-division.
+division. When the result is an Integer type, a dividend of zero yields a
+RangeError exception.
 
 The binary operator @code{%} in math mode returns the Euclidian
 remainder of the division i.e. it is always positive. 
@@ -274,21 +269,15 @@ remainder of the division i.e. it is always positive.
 The binary operator @code{/} returns a float.
 
 The binary operator @code{/} in math mode returns a float if one of
-the operands is float. Otherwise, @code{BigInt[Symbol.operatorMathDiv]} is
-invoked (and returns a fraction for example).
+the operands is float. Otherwise, @code{BigInt[Symbol.operatorDiv]} is
+invoked.
 
-When the result is an Integer type, a dividend of zero yields a
-RangeError exception.
-
-The returned type of @code{a ** b} or @code{a ^ b} (math mode) is
-Float if @math{a} or @math{b} are Float. If @math{a} and @math{b} are
-integers:
+The returned type of @code{a ** b} is Float if @math{a} or @math{b}
+are Float. If @math{a} and @math{b} are integers:
 @itemize
-@item @math{a = 0} and @math{b < 0} generates a RangeError exception
+@item @math{b < 0} returns a Float in bigint mode. In math mode, @code{BigInt[Symbol.operatorPow]} is invoked.
 
-@item @math{|a| \geq 2} and @math{b < 0} returns a Float in bigint mode. In math mode, @code{BigInt[Symbol.operatorMathPow]} is invoked (and returns a fraction for example)
-
-@item otherwise an integer is returned.
+@item @math{b >= 0} returns an integer.
 @end itemize
 
 The unary @code{-} and unary @code{+} return the same type as their
@@ -798,7 +787,7 @@ is returned, no rounding is performed.
 A new @emph{math mode} is enabled with the @code{"use math"}
 directive. @code{"use bigint"} is implied in math mode. With this
 mode, writing mathematical expressions is more intuitive, exact
-results (fractions) can be computed for all operators and floating
+results (e.g. fractions) can be computed for all operators and floating
 point literals have the @code{BigFloat} type by default.
 
 It propagates the same way as the @emph{strict mode}. In
@@ -806,13 +795,15 @@ this mode:
 
 @itemize
 
-@item The @code{^} operator is a similar to the power operator (@code{**}), except that @code{a ^ b} invokes @code{BigInt[Symbol.operatorMathPow]} if @math{a} and @math{b} are integers and @math{|a| \geq 2} and @math{b < 0}.
+@item The @code{^} operator is a similar to the power operator (@code{**}).
 
 @item The power operator (both @code{^} and @code{**}) grammar is modified so that @code{-2^2} is allowed and yields @code{-4}.
 
 @item The logical xor operator is still available with the @code{^^} operator.
 
-@item The division operator invokes @code{BigInt[Symbol.operatorMathDiv]} in case both operands are integers.
+@item The division operator invokes @code{BigInt[Symbol.operatorDiv]} in case both operands are integers.
+
+@item The power operator invokes @code{BigInt[Symbol.operatorPow]} in case both operands are integers and the exponent is strictly negative.
 
 @item The modulo operator returns the Euclidian remainder (always positive) instead of the truncated remainder.
 
@@ -824,18 +815,14 @@ this mode:
 
 @subsection @code{Symbol} constructor
 
-The following global symbols are added for the operator overloading:
+The following global symbol is added for the operator overloading:
 @table @code
-@item operatorMathDiv
 @item operatorMathMod
-@item operatorMathPow
 @end table
 
 @section Remaining issues
 
 @enumerate
-
-@item New functions (e.g. @code{Math.div} and @code{Math.mod}) could be added to be able to call the normal division and modulo operators when in math mode.
 
 @item A new floating point literal suffix could be added for @code{Number} literals.
 

@@ -38,7 +38,7 @@ overloading.
 @item Almost complete ES2019 support including modules, asynchronous
 generators and full Annex B support (legacy web compatibility).
 
-@item Passes 100% of the ECMAScript Test Suite tests.
+@item Passes nearly 100% of the ECMAScript Test Suite tests.
 
 @item Can compile Javascript sources to executables with no external dependency.
 
@@ -207,7 +207,7 @@ Alternatively, the test262 tests can be installed with:
 @example
 git clone https://github.com/tc39/test262.git test262
 cd test262
-git checkout 94b1e80ab3440413df916cd56d29c5a2fa2ac451
+git checkout 51d1abadce1de0b38594b7c9972ee60762f35dd0
 patch -p1 < ../tests/test262.patch
 cd ..
 @end example
@@ -531,11 +531,11 @@ the signal.
 @item SIGTERM
 POSIX signal numbers.
 
-@item setTimeout(delay, func)
+@item setTimeout(func, delay)
 Call the function @code{func} after @code{delay} ms. Return a handle
 to the timer.
 
-@item clearTimer(handle)
+@item clearTimeout(handle)
 Cancel a timer.
 
 @item platform
@@ -628,13 +628,13 @@ is used to define a prototype for a given class in a given
 JSContext. @code{JS_NewObjectClass()} sets this prototype in the
 created object.
 
-Examples are available in @file{js_libc.c}.
+Examples are available in @file{quickjs-libc.c}.
 
 @subsection C Modules
 
 Native ES6 modules are supported and can be dynamically or statically
 linked. Look at the @file{test_bjson} and @file{bjson.so}
-examples. The standard library @file{js_libc.c} is also a good example
+examples. The standard library @file{quickjs-libc.c} is also a good example
 of a native module.
 
 @subsection Memory handling

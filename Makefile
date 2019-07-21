@@ -113,7 +113,7 @@ CFLAGS+=-fsanitize=address
 LDFLAGS+=-fsanitize=address
 endif
 ifdef CONFIG_WIN32
-LDEXPORT=-export-dynamic
+LDEXPORT=
 else
 LDEXPORT=-rdynamic
 endif
@@ -226,7 +226,7 @@ qjscalc.c: qjsbnc qjscalc.js
 	./qjsbnc -c -o $@ qjscalc.js
 
 ifneq ($(wildcard unicode/UnicodeData.txt),)
-$(OBJDIR)/libunicode.o $(OBJDIR)/libunicode.m32.o $(OBJDIR)/libunicode.m32s.o $(OBJDIR)/libunicode.bn.o \
+$(OBJDIR)/libunicode.o $(OBJDIR)/libunicode.m32.o $(OBJDIR)/libunicode.m32s.o $(OBJDIR)/libunicode.bn.o $(OBJDIR)/libunicode.bn.m32.o \
     $(OBJDIR)/libunicode.nolto.o $(OBJDIR)/libunicode.bn.nolto.o: libunicode-table.h
 
 libunicode-table.h: unicode_gen
@@ -289,7 +289,7 @@ regexp_test: libregexp.c libunicode.c cutils.c
 jscompress: jscompress.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ jscompress.c
 
-unicode_gen: unicode_gen.c cutils.c libunicode.c
+unicode_gen: unicode_gen.c cutils.c libunicode.c unicode_gen_def.h
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ unicode_gen.c cutils.c
 
 clean:
@@ -318,7 +318,8 @@ endif
 # example of static JS compilation
 HELLO_SRCS=examples/hello.js
 HELLO_OPTS=-fno-string-normalize -fno-map -fno-promise -fno-typedarray \
-           -fno-typedarray -fno-regexp -fno-json -fno-eval -fno-proxy
+           -fno-typedarray -fno-regexp -fno-json -fno-eval -fno-proxy \
+           -fno-date
 
 hello.c: qjsc $(HELLO_SRCS)
 	./qjsc -e $(HELLO_OPTS) -o $@ $(HELLO_SRCS)
@@ -334,7 +335,8 @@ endif
 # example of static JS compilation with modules
 HELLO_MODULE_SRCS=examples/hello_module.js
 HELLO_MODULE_OPTS=-fno-string-normalize -fno-map -fno-promise -fno-typedarray \
-           -fno-typedarray -fno-regexp -fno-json -fno-eval -fno-proxy -m
+           -fno-typedarray -fno-regexp -fno-json -fno-eval -fno-proxy \
+           -fno-date -m
 examples/hello_module: qjsc libquickjs$(LTOEXT).a $(HELLO_MODULE_SRCS)
 	./qjsc $(HELLO_MODULE_OPTS) -o $@ $(HELLO_MODULE_SRCS)
 
@@ -362,8 +364,11 @@ clean_doc:
 doc/%.pdf: doc/%.texi
 	texi2pdf --clean -o $@ -q $<
 
-doc/%.html: doc/%.texi
+doc/%.html.pre: doc/%.texi
 	makeinfo --html --no-headers --no-split --number-sections -o $@ $<
+
+doc/%.html: doc/%.html.pre
+	sed -e 's|</style>|</style>\n<meta name="viewport" content="width=device-width, initial-scale=1.0">|' < $< > $@
 
 ###############################################################################
 # tests

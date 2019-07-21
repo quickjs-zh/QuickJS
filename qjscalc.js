@@ -45,7 +45,7 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
     
     /* add non enumerable properties */
     function add_props(obj, props) {
-        var i, val, prop, tab, desc, prop1;
+        var i, val, prop, tab, desc;
         tab = Reflect.ownKeys(props);
         for(i = 0; i < tab.length; i++) {
             prop = tab[i];
@@ -61,25 +61,6 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
                 desc.configurable = false;
             }
             Object.defineProperty(obj, prop, desc);
-            if (obj !== Integer) {
-                /* by default also add the non math operators */
-                switch(prop) {
-                case Symbol.operatorMathDiv:
-                    prop1 = Symbol.operatorDiv;
-                    break;
-                case Symbol.operatorMathMod:
-                    prop1 = Symbol.operatorMod;
-                    break;
-                case Symbol.operatorMathPow:
-                    prop1 = Symbol.operatorPow;
-                    break;
-                default:
-                    prop1 = null;
-                    break;
-                }
-                if (prop1)
-                    Object.defineProperty(obj, prop1, desc);
-            }
         }
     }
     
@@ -165,14 +146,14 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
             return typeof a === "bigint";
         },
         [Symbol.operatorOrder]: OT_INT,
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             if (algebraicMode) {
                 return Fraction.toFraction(a, b);
             } else {
                 return Float(a) / Float(b);
             }
         },
-        [Symbol.operatorMathPow](a, b) {
+        [Symbol.operatorPow](a, b) {
             if (algebraicMode) {
                 return generic_pow(a, b);
             } else {
@@ -418,7 +399,7 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
             b = Fraction(b);
             return Fraction.toFraction(a.num * b.num, a.den * b.den);
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             a = Fraction(a);
             b = Fraction(b);
             return Fraction.toFraction(a.num * b.den, a.den * b.num);
@@ -428,7 +409,12 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
             var b1 = Fraction(b);
             return a - Integer.ediv(a1.num * b1.den, a1.den * b1.num) * b;
         },
-        [Symbol.operatorMathPow]: generic_pow,
+        [Symbol.operatorMod](a, b) {
+            var a1 = Fraction(a);
+            var b1 = Fraction(b);
+            return a - Integer.tdiv(a1.num * b1.den, a1.den * b1.num) * b;
+        },
+        [Symbol.operatorPow]: generic_pow,
         [Symbol.operatorCmpEQ](a, b) {
             a = Fraction(a);
             b = Fraction(b);
@@ -509,10 +495,10 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
         [Symbol.operatorMul](a, b) {
             return Number(a) * Number(b);
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             return Number(a) / Number(b);
         },
-        [Symbol.operatorMathPow](a, b) {
+        [Symbol.operatorPow](a, b) {
             return Number(a) ** Number(b);
         },
     });
@@ -629,10 +615,10 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
         [Symbol.operatorMul](a, b) {
             return Float(a) * Float(b);
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             return Float(a) / Float(b);
         },
-        [Symbol.operatorMathPow](a, b) {
+        [Symbol.operatorPow](a, b) {
             return Float(a) ** Float(b);
         },
     });
@@ -712,12 +698,12 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
             return Complex.toComplex(a.re * b.re - a.im * b.im,
                                      a.re * b.im + a.im * b.re);
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             a = Complex(a);
             b = Complex(b);
             return a * b.inverse();
         },
-        [Symbol.operatorMathPow]: generic_pow,
+        [Symbol.operatorPow]: generic_pow,
         [Symbol.operatorCmpEQ](a, b) {
             a = Complex(a);
             b = Complex(b);
@@ -855,12 +841,12 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
                 return Mod(a.res * b.res, a.mod);
             }
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             if (!(b instanceof Mod))
                 b = Mod(b, a.mod);
             return Mod[Symbol.operatorMul](a, b.inverse());
         },
-        [Symbol.operatorMathPow]: generic_pow,
+        [Symbol.operatorPow]: generic_pow,
         [Symbol.operatorCmpEQ](a, b) {
             if (!(a instanceof Mod) ||
                 !(b instanceof Mod))
@@ -1151,15 +1137,18 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
             }
             return Polynomial(r);
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             if (b.constructor[Symbol.operatorOrder] <= OT_COMPLEX)
                 return a * (1 / b);
             else
                 return RationalFunction(Polynomial(a),
                                         Polynomial(b));
         },
-        [Symbol.operatorMathPow]: generic_pow,
+        [Symbol.operatorPow]: generic_pow,
         [Symbol.operatorMathMod](a, b) {
+            return Polynomial.divrem(a, b)[1];
+        },
+        [Symbol.operatorMod](a, b) {
             return Polynomial.divrem(a, b)[1];
         },
         [Symbol.operatorCmpEQ](a, b) {
@@ -1318,12 +1307,12 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
                 return PolyMod(a.res * b.res, a.mod);
             }
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             if (!(b instanceof PolyMod))
                 b = PolyMod(b, a.mod);
             return PolyMod[Symbol.operatorMul](a, b.inverse());
         },
-        [Symbol.operatorMathPow]: generic_pow,
+        [Symbol.operatorPow]: generic_pow,
         [Symbol.operatorCmpEQ](a, b) {
             if (!(a instanceof PolyMod) ||
                 !(b instanceof PolyMod))
@@ -1420,12 +1409,12 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
             b = RationalFunction.toRationalFunction(b);
             return RationalFunction(a.num * b.num, a.den * b.den);
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             a = RationalFunction.toRationalFunction(a);
             b = RationalFunction.toRationalFunction(b);
             return RationalFunction(a.num * b.den, a.den * b.num);
         },
-        [Symbol.operatorMathPow]: generic_pow,
+        [Symbol.operatorPow]: generic_pow,
         [Symbol.operatorCmpEQ](a, b) {
             a = RationalFunction.toRationalFunction(a);
             b = RationalFunction.toRationalFunction(b);
@@ -1702,12 +1691,12 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
             }
             return r.trim();
         },
-        [Symbol.operatorMathDiv](v1, v2) {
+        [Symbol.operatorDiv](v1, v2) {
             if (!(v2 instanceof Series))
                 v2 = Series(v2, v1.length);
             return Series[Symbol.operatorMul](v1, v2.inverse());
         },
-        [Symbol.operatorMathPow](a, b) {
+        [Symbol.operatorPow](a, b) {
             if (Integer.isInteger(b)) {
                 return generic_pow(a, b);
             } else {
@@ -2168,10 +2157,10 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
             }
             return r;
         },
-        [Symbol.operatorMathDiv](a, b) {
+        [Symbol.operatorDiv](a, b) {
             return Array[Symbol.operatorMul](a, b.inverse());
         },
-        [Symbol.operatorMathPow]: generic_pow,
+        [Symbol.operatorPow]: generic_pow,
         [Symbol.operatorCmpEQ](a, b) {
             var n, i;
             n = a.length;

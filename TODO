@@ -1,3 +1,4 @@
+- fix regexp skip in js_parse_skip_parens_token()
 - 64-bit atoms in 64-bit mode?
 - rename CONFIG_ALL_UNICODE, CONFIG_BIGNUM, CONFIG_ATOMICS, CONFIG_CHECK_JSVALUE ?
 - unify coding style and naming conventions
@@ -11,7 +12,6 @@
   and use the same wrappers in all phases
 - use more generic method for line numbers in resolve_variables and resolve_labels
 - bignum:
-  - fix div/pow div by zero exception in doc & code in bigint mode
   - fix Atomics support
 
 Memory:
@@ -48,7 +48,7 @@ Optimizations:
 - optimize destructuring assignments for global and local variables
 - implement some form of tail-call-optimization
 - debugger keyword support
-- optmize OP_apply
+- optimize OP_apply
 - optimize f(...b)
 
 Extensions:
@@ -77,7 +77,7 @@ REPL:
 - save history
 - close all predefined methods in repl.js and jscalc.js
 
-Test262o:  0/11266 errors, 459 excluded
-Test262:   0/55855 errors, 504 excluded, 1559 skipped
-Test262bn: 0/57176 errors, 724 excluded, 675 skipped
-test262 commit: 94b1e80ab3440413df916cd56d29c5a2fa2ac451
+Test262o:   0/11262 errors, 463 excluded
+Test262:   51/56682 errors, 787 excluded, 6289 skipped
+Test262bn: 56/58017 errors, 1007 excluded, 5398 skipped
+test262 commit: 51d1abadce1de0b38594b7c9972ee60762f35dd0

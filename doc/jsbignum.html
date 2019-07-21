@@ -39,6 +39,7 @@ span.sansserif {font-family:sans-serif; font-weight:normal}
 ul.no-bullet {list-style: none}
 -->
 </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
 </head>
@@ -202,20 +203,12 @@ value. A <code>TypeError</code> is raised if both constructors have the same
 <dd><p><code>Symbol.operatorDiv</code>
 </p>
 </dd>
-<dt><code>/ (math mode)</code></dt>
-<dd><p><code>Symbol.operatorMathDiv</code>
-</p>
-</dd>
 <dt><code>%</code></dt>
 <dd><p><code>Symbol.operatorMod</code>
 </p>
 </dd>
 <dt><code>% (math mode)</code></dt>
 <dd><p><code>Symbol.operatorMathMod</code>
-</p>
-</dd>
-<dt><code>^ (math mode)</code></dt>
-<dd><p><code>Symbol.operatorMathPow</code>
 </p>
 </dd>
 <dt><code>**</code></dt>
@@ -388,7 +381,8 @@ both operands are Integer. Otherwise, a float is returned.
 standard Javascript in this case.
 </p>
 <p>The binary operator <code>%</code> returns the truncated remainder of the
-division.
+division. When the result is an Integer type, a dividend of zero yields a
+RangeError exception.
 </p>
 <p>The binary operator <code>%</code> in math mode returns the Euclidian
 remainder of the division i.e. it is always positive. 
@@ -396,21 +390,15 @@ remainder of the division i.e. it is always positive.
 <p>The binary operator <code>/</code> returns a float.
 </p>
 <p>The binary operator <code>/</code> in math mode returns a float if one of
-the operands is float. Otherwise, <code>BigInt[Symbol.operatorMathDiv]</code> is
-invoked (and returns a fraction for example).
+the operands is float. Otherwise, <code>BigInt[Symbol.operatorDiv]</code> is
+invoked.
 </p>
-<p>When the result is an Integer type, a dividend of zero yields a
-RangeError exception.
-</p>
-<p>The returned type of <code>a ** b</code> or <code>a ^ b</code> (math mode) is
-Float if <em>a</em> or <em>b</em> are Float. If <em>a</em> and <em>b</em> are
-integers:
+<p>The returned type of <code>a ** b</code> is Float if <em>a</em> or <em>b</em>
+are Float. If <em>a</em> and <em>b</em> are integers:
 </p><ul>
-<li> <em>a = 0</em> and <em>b &lt; 0</em> generates a RangeError exception
+<li> <em>b &lt; 0</em> returns a Float in bigint mode. In math mode, <code>BigInt[Symbol.operatorPow]</code> is invoked.
 
-</li><li> <em>|a| \geq 2</em> and <em>b &lt; 0</em> returns a Float in bigint mode. In math mode, <code>BigInt[Symbol.operatorMathPow]</code> is invoked (and returns a fraction for example)
-
-</li><li> otherwise an integer is returned.
+</li><li> <em>b &gt;= 0</em> returns an integer.
 </li></ul>
 
 <p>The unary <code>-</code> and unary <code>+</code> return the same type as their
@@ -975,20 +963,22 @@ is returned, no rounding is performed.
 <p>A new <em>math mode</em> is enabled with the <code>&quot;use math&quot;</code>
 directive. <code>&quot;use bigint&quot;</code> is implied in math mode. With this
 mode, writing mathematical expressions is more intuitive, exact
-results (fractions) can be computed for all operators and floating
+results (e.g. fractions) can be computed for all operators and floating
 point literals have the <code>BigFloat</code> type by default.
 </p>
 <p>It propagates the same way as the <em>strict mode</em>. In
 this mode:
 </p>
 <ul>
-<li> The <code>^</code> operator is a similar to the power operator (<code>**</code>), except that <code>a ^ b</code> invokes <code>BigInt[Symbol.operatorMathPow]</code> if <em>a</em> and <em>b</em> are integers and <em>|a| \geq 2</em> and <em>b &lt; 0</em>.
+<li> The <code>^</code> operator is a similar to the power operator (<code>**</code>).
 
 </li><li> The power operator (both <code>^</code> and <code>**</code>) grammar is modified so that <code>-2^2</code> is allowed and yields <code>-4</code>.
 
 </li><li> The logical xor operator is still available with the <code>^^</code> operator.
 
-</li><li> The division operator invokes <code>BigInt[Symbol.operatorMathDiv]</code> in case both operands are integers.
+</li><li> The division operator invokes <code>BigInt[Symbol.operatorDiv]</code> in case both operands are integers.
+
+</li><li> The power operator invokes <code>BigInt[Symbol.operatorPow]</code> in case both operands are integers and the exponent is strictly negative.
 
 </li><li> The modulo operator returns the Euclidian remainder (always positive) instead of the truncated remainder.
 
@@ -1002,20 +992,16 @@ this mode:
 <a name="Symbol-constructor-1"></a>
 <h4 class="subsection">5.2.1 <code>Symbol</code> constructor</h4>
 
-<p>The following global symbols are added for the operator overloading:
+<p>The following global symbol is added for the operator overloading:
 </p><dl compact="compact">
-<dt><code>operatorMathDiv</code></dt>
 <dt><code>operatorMathMod</code></dt>
-<dt><code>operatorMathPow</code></dt>
 </dl>
 
 <a name="Remaining-issues"></a>
 <h3 class="section">5.3 Remaining issues</h3>
 
 <ol>
-<li> New functions (e.g. <code>Math.div</code> and <code>Math.mod</code>) could be added to be able to call the normal division and modulo operators when in math mode.
-
-</li><li> A new floating point literal suffix could be added for <code>Number</code> literals.
+<li> A new floating point literal suffix could be added for <code>Number</code> literals.
 
 </li></ol>
 

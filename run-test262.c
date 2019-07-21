@@ -41,6 +41,8 @@
 
 /* enable test262 thread support to test SharedArrayBuffer and Atomics */
 #define CONFIG_AGENT
+/* cross-realm tests (not supported yet) */
+//#define CONFIG_REALM
 
 #define CMD_NAME "run-test262"
 
@@ -432,7 +434,8 @@ typedef struct {
     char *str;
 } AgentReport;
 
-static void add_helpers(JSContext *ctx, int argc, char **argv);
+static JSValue add_helpers1(JSContext *ctx);
+static void add_helpers(JSContext *ctx);
 
 static pthread_mutex_t agent_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t agent_cond = PTHREAD_COND_INITIALIZER;
@@ -464,7 +467,7 @@ static void *agent_start(void *arg)
     JS_SetRuntimeInfo(rt, "agent");
     JS_SetCanBlock(rt, TRUE);
     
-    add_helpers(ctx, 0, NULL);
+    add_helpers(ctx);
     ret_val = JS_Eval(ctx, agent->script, strlen(agent->script),
                       "<evalScript>", JS_EVAL_TYPE_GLOBAL);
     free(agent->script);
@@ -717,7 +720,20 @@ static JSValue js_new_agent(JSContext *ctx)
 }
 #endif
 
-static void add_helpers(JSContext *ctx, int argc, char **argv)
+#ifdef CONFIG_REALM
+static JSValue js_createRealm(JSContext *ctx, JSValue this_val,
+                              int argc, JSValue *argv)
+{
+    JSContext *ctx1;
+    /* XXX: the context is not freed, need a refcount */
+    ctx1 = JS_NewContext(JS_GetRuntime(ctx));
+    if (!ctx1)
+        return JS_ThrowOutOfMemory(ctx);
+    return add_helpers1(ctx1);
+}
+#endif
+
+static JSValue add_helpers1(JSContext *ctx)
 {
     JSValue global_obj;
     JSValue obj262;
@@ -742,9 +758,24 @@ static void add_helpers(JSContext *ctx, int argc, char **argv)
     JS_SetPropertyStr(ctx, obj262, "agent", js_new_agent(ctx));
 #endif
 
-    JS_SetPropertyStr(ctx, global_obj, "$262", obj262);
+#ifdef CONFIG_REALM
+    JS_SetPropertyStr(ctx, obj262, "global",
+                      JS_DupValue(ctx, global_obj));
+
+    JS_SetPropertyStr(ctx, obj262, "createRealm",
+                      JS_NewCFunction(ctx, js_createRealm,
+                                      "createRealm", 0));
+#endif
+
+    JS_SetPropertyStr(ctx, global_obj, "$262", JS_DupValue(ctx, obj262));
     
     JS_FreeValue(ctx, global_obj);
+    return obj262;
+}
+
+static void add_helpers(JSContext *ctx)
+{
+    JS_FreeValue(ctx, add_helpers1(ctx));
 }
 
 static char *load_file(const char *filename, size_t *lenp)
@@ -1476,7 +1507,7 @@ int run_test_buf(const char *filename, char *harness, namelist_t *ip,
     /* loader for ES6 modules */
     JS_SetModuleLoaderFunc(rt, NULL, js_module_loader_test, NULL);
         
-    add_helpers(ctx, 0, NULL);
+    add_helpers(ctx);
 
     /* add backtrace if the isError property is present in a thrown
        object */
@@ -1535,7 +1566,7 @@ int run_test(const char *filename, int index)
     namelist_t include_list = { 0 }, *ip = &include_list;
     
     is_nostrict = is_onlystrict = is_negative = is_async = is_module = skip = FALSE;
-    can_block = FALSE;
+    can_block = TRUE;
     error_type = NULL;
     buf = load_file(filename, &buf_len);
 
@@ -1588,8 +1619,8 @@ int run_test(const char *filename, int index)
                         is_module = TRUE;
                         skip |= skip_module;
                     }
-                    else if (str_equal(option, "CanBlockIsTrue")) {
-                        can_block = TRUE;
+                    else if (str_equal(option, "CanBlockIsFalse")) {
+                        can_block = FALSE;
                     }
                     free(option);
                 }
