@@ -766,3 +766,5 @@ We believe the current specification of tails calls is too complicated and prese
 
 - [go-quickjs](https://github.com/wspl/go-quickjs) Go的QuickJS库
 
+- [qjsuv](https://github.com/saghul/qjsuv) QuickJS ❤️ libuv
+
