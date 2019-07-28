@@ -762,7 +762,7 @@ We believe the current specification of tails calls is too complicated and prese
 
 - [quickjs-rs](https://github.com/quickjs-zh/quickjs-rs) Rust的QuickJS库
 
-- [quickjspp](https://github.com/quickjs-zh/quickjs-rs) C++的QuickJS库
+- [quickjspp](https://github.com/quickjs-zh/quickjspp) C++的QuickJS库
 
 - [go-quickjs](https://github.com/wspl/go-quickjs) Go的QuickJS库
 
