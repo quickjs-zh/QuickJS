@@ -557,7 +557,7 @@ Call the function `func` when the signal `signal` happens. Only a single handler
 
 POSIX signal numbers.
 
-`setTimeout(delay, func)`
+`setTimeout(func, delay)`
 
 Call the function `func` after `delay` ms. Return a handle to the timer.
 
