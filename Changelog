@@ -1,3 +1,15 @@
+2019-07-28:
+
+- added dynamic import
+- added Promise.allSettled
+- added String.prototype.matchAll
+- added Object.fromEntries
+- reduced number of ticks in await
+- added BigInt support in Atomics
+- exported JS_NewPromiseCapability()
+- misc async function and async generator fixes
+- enabled hashbang support by default
+
 2019-07-21:
 
 - updated test262 tests

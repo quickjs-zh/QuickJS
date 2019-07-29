@@ -414,7 +414,6 @@ int main(int argc, char **argv)
                 eval_flags = JS_EVAL_TYPE_MODULE;
             else
                 eval_flags = JS_EVAL_TYPE_GLOBAL;
-            eval_flags |= JS_EVAL_FLAG_SHEBANG;
             if (eval_file(ctx, filename, eval_flags))
                 goto fail;
         }

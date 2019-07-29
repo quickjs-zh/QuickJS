@@ -2522,11 +2522,12 @@ int bf_atof2(bf_t *r, slimb_t *pexponent,
                    radix == 0 && (flags & BF_ATOF_BIN_OCT)) {
             p += 2;
             radix = 2;
-        } else if ((p[1] >= '0' && p[1] <= '7') &&
+        } else if ((p[1] >= '0' && p[1] <= '9') &&
                    radix == 0 && (flags & BF_ATOF_LEGACY_OCTAL)) {
             int i;
             /* the separator is not allowed in legacy octal literals */
-            for (i = 2; (p[i] >= '0' && p[i] <= '7'); i++)
+            sep = 256;
+            for (i = 1; (p[i] >= '0' && p[i] <= '7'); i++)
                 continue;
             if (p[i] == '8' || p[i] == '9')
                 goto no_prefix;

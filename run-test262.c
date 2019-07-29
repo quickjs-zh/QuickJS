@@ -644,13 +644,17 @@ static JSValue js_agent_sleep(JSContext *ctx, JSValue this_val,
     return JS_UNDEFINED;
 }
 
-static JSValue js_agent_monotonicNow(JSContext *ctx, JSValue this_val,
-                                     int argc, JSValue *argv)
+static int64_t get_clock_ms(void)
 {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return JS_NewInt64(ctx, (uint64_t)ts.tv_sec * 1000 +
-                       (ts.tv_nsec / 1000000));
+    return (uint64_t)ts.tv_sec * 1000 + (ts.tv_nsec / 1000000);
+}
+
+static JSValue js_agent_monotonicNow(JSContext *ctx, JSValue this_val,
+                                     int argc, JSValue *argv)
+{
+    return JS_NewInt64(ctx, get_clock_ms());
 }
 
 static JSValue js_agent_getReport(JSContext *ctx, JSValue this_val,
@@ -1792,6 +1796,8 @@ void show_progress(int force) {
     }
 }
 
+static int slow_test_threshold;
+
 void run_test_dir_list(namelist_t *lp, int start_index, int stop_index)
 {
     int i;
@@ -1806,7 +1812,18 @@ void run_test_dir_list(namelist_t *lp, int start_index, int stop_index)
         } else if (stop_index >= 0 && test_index > stop_index) {
             test_skipped++;
         } else {
+            int ti;
+            if (slow_test_threshold != 0) {
+                ti = get_clock_ms();
+            } else {
+                ti = 0;
+            }
             run_test(p, test_index);
+            if (slow_test_threshold != 0) {
+                ti = get_clock_ms() - ti;
+                if (ti >= slow_test_threshold)
+                    fprintf(stderr, "\n%s (%d ms)\n", p, ti);
+            }
             show_progress(FALSE);
         }
         test_index++;
@@ -1824,6 +1841,7 @@ void help(void)
            "-s             run tests in strict mode, skip @nostrict tests\n"
            "-u             update error file\n"
            "-v             verbose: output error messages\n"
+           "-T duration    display tests taking more than 'duration' ms\n"
            "-c file        read configuration from 'file'\n"
            "-d dir         run all test files in directory tree 'dir'\n"
            "-e file        load the known errors from 'file'\n"
@@ -1890,6 +1908,8 @@ int main(int argc, char **argv)
             report_filename = get_opt_arg(arg, argv[optind++]);
         } else if (str_equal(arg, "-E")) {
             only_check_errors = TRUE;
+        } else if (str_equal(arg, "-T")) {
+            slow_test_threshold = atoi(get_opt_arg(arg, argv[optind++]));
         } else {
             fatal(1, "unknown option: %s", arg);
             break;

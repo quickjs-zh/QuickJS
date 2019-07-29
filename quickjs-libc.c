@@ -336,7 +336,7 @@ static JSValue js_loadScript(JSContext *ctx, JSValueConst this_val,
         return JS_EXCEPTION;
     }
     ret = JS_Eval(ctx, (char *)buf, buf_len, filename,
-                  JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_SHEBANG);
+                  JS_EVAL_TYPE_GLOBAL);
     js_free(ctx, buf);
     JS_FreeCString(ctx, filename);
     return ret;

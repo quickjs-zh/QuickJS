@@ -11,8 +11,6 @@
 - use 2 bytecode DynBufs in JSFunctionDef, one for reading, one for writing
   and use the same wrappers in all phases
 - use more generic method for line numbers in resolve_variables and resolve_labels
-- bignum:
-  - fix Atomics support
 
 Memory:
 - test border cases for max number of atoms, object properties, string length
@@ -78,6 +76,6 @@ REPL:
 - close all predefined methods in repl.js and jscalc.js
 
 Test262o:   0/11262 errors, 463 excluded
-Test262:   51/56682 errors, 787 excluded, 6289 skipped
-Test262bn: 56/58017 errors, 1007 excluded, 5398 skipped
-test262 commit: 51d1abadce1de0b38594b7c9972ee60762f35dd0
+Test262:   33/58145 errors, 785 excluded, 5576 skipped
+Test262bn: 39/60250 errors, 718 excluded, 4587 skipped
+test262 commit: 2ee3864136747ee69401b2d266e234cdd0a95965

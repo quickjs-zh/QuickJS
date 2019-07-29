@@ -273,7 +273,6 @@ static inline JSValue __JS_NewFloat64(JSContext *ctx, double d)
 #define JS_EVAL_TYPE_INDIRECT (3 << 0) /* indirect call (internal use) */
 #define JS_EVAL_TYPE_MASK     (3 << 0)
 
-#define JS_EVAL_FLAG_SHEBANG  (1 << 2) /* skip first line beginning with '#!' */
 #define JS_EVAL_FLAG_STRICT   (1 << 3) /* force 'strict' mode */
 #define JS_EVAL_FLAG_STRIP    (1 << 4) /* force 'strip' mode */
 #define JS_EVAL_FLAG_COMPILE_ONLY (1 << 5) /* internal use */
@@ -698,6 +697,8 @@ JSValue JS_NewArrayBuffer(JSContext *ctx, uint8_t *buf, size_t len,
 JSValue JS_NewArrayBufferCopy(JSContext *ctx, const uint8_t *buf, size_t len);
 void JS_DetachArrayBuffer(JSContext *ctx, JSValueConst obj);
 uint8_t *JS_GetArrayBuffer(JSContext *ctx, size_t *psize, JSValueConst obj);
+
+JSValue JS_NewPromiseCapability(JSContext *ctx, JSValue *resolving_funcs);
 
 /* return != 0 if the JS code needs to be interrupted */
 typedef int JSInterruptHandler(JSRuntime *rt, void *opaque);

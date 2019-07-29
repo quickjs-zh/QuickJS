@@ -29,23 +29,5 @@ test262/test/language/computed-property-names/class/static/method-string.js:9: T
 test262/test/language/computed-property-names/class/static/method-string.js:9: strict mode: Test262Error: `compareArray(Object.getOwnPropertyNames(C), ['length', 'prototype', 'name', 'a', 'b', 'c', 'd'])` returns `true`
 test262/test/language/computed-property-names/class/static/method-symbol.js:10: Test262Error: `compareArray(Object.getOwnPropertyNames(C), ['length', 'prototype', 'name', 'a', 'c'])` returns `true`
 test262/test/language/computed-property-names/class/static/method-symbol.js:10: strict mode: Test262Error: `compareArray(Object.getOwnPropertyNames(C), ['length', 'prototype', 'name', 'a', 'c'])` returns `true`
-test262/test/language/expressions/await/async-await-interleaved.js:15: TypeError: $DONE() not called
-test262/test/language/expressions/await/async-await-interleaved.js:15: strict mode: TypeError: $DONE() not called
-test262/test/language/expressions/await/async-generator-interleaved.js:15: TypeError: $DONE() not called
-test262/test/language/expressions/await/async-generator-interleaved.js:15: strict mode: TypeError: $DONE() not called
-test262/test/language/expressions/await/await-monkey-patched-promise.js:16: TypeError: $DONE() not called
-test262/test/language/expressions/await/await-monkey-patched-promise.js:16: strict mode: TypeError: $DONE() not called
-test262/test/language/expressions/await/for-await-of-interleaved.js:15: TypeError: $DONE() not called
-test262/test/language/expressions/await/for-await-of-interleaved.js:15: strict mode: TypeError: $DONE() not called
-test262/test/language/statements/async-generator/return-undefined-implicit-and-explicit.js:74: TypeError: $DONE() not called
-test262/test/language/statements/async-generator/return-undefined-implicit-and-explicit.js:74: strict mode: TypeError: $DONE() not called
-test262/test/language/statements/async-generator/yield-star-async-from-sync-iterator-inaccessible.js:38: TypeError: $DONE() not called
-test262/test/language/statements/async-generator/yield-star-async-from-sync-iterator-inaccessible.js:38: strict mode: TypeError: $DONE() not called
-test262/test/language/statements/async-generator/yield-star-return-then-getter-ticks.js:132: TypeError: $DONE() not called
-test262/test/language/statements/async-generator/yield-star-return-then-getter-ticks.js:132: strict mode: TypeError: $DONE() not called
-test262/test/language/statements/for-await-of/async-from-sync-iterator-continuation-abrupt-completion-get-constructor.js:20: TypeError: $DONE() not called
-test262/test/language/statements/for-await-of/async-from-sync-iterator-continuation-abrupt-completion-get-constructor.js:20: strict mode: TypeError: $DONE() not called
-test262/test/language/statements/for-await-of/ticks-with-async-iter-resolved-promise-and-constructor-lookup-two.js:45: TypeError: $DONE() not called
-test262/test/language/statements/for-await-of/ticks-with-async-iter-resolved-promise-and-constructor-lookup-two.js:45: strict mode: TypeError: $DONE() not called
-test262/test/language/statements/for-await-of/ticks-with-sync-iter-resolved-promise-and-constructor-lookup.js:58: TypeError: $DONE() not called
-test262/test/language/statements/for-await-of/ticks-with-sync-iter-resolved-promise-and-constructor-lookup.js:58: strict mode: TypeError: $DONE() not called
+test262/test/language/expressions/dynamic-import/usage-from-eval.js:26: TypeError: $DONE() not called
+test262/test/language/expressions/dynamic-import/usage-from-eval.js:26: strict mode: TypeError: $DONE() not called

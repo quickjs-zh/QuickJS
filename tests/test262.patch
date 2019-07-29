@@ -1,3 +1,26 @@
+diff --git a/harness/atomicsHelper.js b/harness/atomicsHelper.js
+index 135c16e..b19f2ef 100644
+--- a/harness/atomicsHelper.js
++++ b/harness/atomicsHelper.js
+@@ -222,10 +222,14 @@ $262.agent.waitUntil = function(typedArray, index, expected) {
+  *   }
+  */
+ $262.agent.timeouts = {
+-  yield: 100,
+-  small: 200,
+-  long: 1000,
+-  huge: 10000,
++//  yield: 100,
++//  small: 200,
++//  long: 1000,
++//  huge: 10000,
++  yield: 20,
++  small: 20,
++  long: 100,
++  huge: 1000,
+ };
+ 
+ /**
 diff --git a/harness/doneprintHandle.js b/harness/doneprintHandle.js
 index a6ea799..b3dec87 100644
 --- a/harness/doneprintHandle.js
@@ -57,3 +80,16 @@ index 2abfee3..e7c07b1 100644
  }
  
  function testPropertyEscapes(regex, string, expression) {
+diff --git a/test/language/comments/hashbang/use-strict.js b/test/language/comments/hashbang/use-strict.js
+index 962614c..541c115 100644
+--- a/test/language/comments/hashbang/use-strict.js
++++ b/test/language/comments/hashbang/use-strict.js
+@@ -10,7 +10,7 @@ description: >
+ info: |
+     HashbangComment::
+       #! SingleLineCommentChars[opt]
+-flags: [raw]
++flags: [raw, noStrict]
+ features: [hashbang]
+ ---*/
+ 

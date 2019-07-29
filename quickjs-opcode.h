@@ -75,11 +75,8 @@ DEF(     push_false, 1, 0, 1, none)
 DEF(      push_true, 1, 0, 1, none)
 DEF(         object, 1, 0, 1, none)
 DEF(     var_object, 1, 0, 1, none)
-DEF(      this_func, 1, 0, 1, none) /* only used at the start of a function */
-DEF(      arguments, 2, 0, 1, none) /* only used at the start of a function */
+DEF( special_object, 2, 0, 1, u8) /* only used at the start of a function */
 DEF(           rest, 3, 0, 1, u16) /* only used at the start of a function */
-DEF(     new_target, 1, 0, 1, none) /* only used at the start of a function */
-DEF(    home_object, 1, 0, 1, none) /* only used at the start of a function */
 
 DEF(           drop, 1, 1, 0, none) /* a -> */
 DEF(            nip, 1, 2, 1, none) /* a b -> b */
@@ -120,6 +117,7 @@ DEF(         regexp, 1, 2, 1, none) /* create a RegExp object from the pattern a
                                        bytecode string */
 DEF( get_super_ctor, 1, 1, 1, none)
 DEF(      get_super, 1, 1, 1, none)
+DEF(         import, 1, 1, 1, none) /* dynamic module import */
 
 DEF(      check_var, 5, 0, 1, atom) /* check if a variable exists */
 DEF(  get_var_undef, 5, 0, 1, atom) /* push undefined if the variable does not exist */

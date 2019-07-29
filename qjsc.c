@@ -250,7 +250,7 @@ static void compile_file(JSContext *ctx, FILE *fo,
         fprintf(stderr, "Could not load '%s'\n", filename);
         exit(1);
     }
-    eval_flags = JS_EVAL_FLAG_SHEBANG | JS_EVAL_FLAG_COMPILE_ONLY;
+    eval_flags = JS_EVAL_FLAG_COMPILE_ONLY;
     if (is_module)
         eval_flags |= JS_EVAL_TYPE_MODULE;
     else

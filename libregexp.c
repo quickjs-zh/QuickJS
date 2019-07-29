@@ -2511,7 +2511,8 @@ int main(int argc, char **argv)
         printf("usage: %s regexp input\n", argv[0]);
         exit(1);
     }
-    bc = lre_compile(&len, error_msg, sizeof(error_msg), argv[1], 0, 0, NULL);
+    bc = lre_compile(&len, error_msg, sizeof(error_msg), argv[1],
+                     strlen(argv[1]), 0, NULL);
     if (!bc) {
         fprintf(stderr, "error: %s\n", error_msg);
         exit(1);
