@@ -60,7 +60,7 @@ QuickJS Javascript引擎
 1 简介
 --------------
 
-QuickJS是一个小型并且可嵌入的Javascript引擎，它支持ES2019规范，包括模块，异步生成器和代理器。
+QuickJS是一个小型并且可嵌入的Javascript引擎，它支持ES2020规范，包括模块，异步生成器和代理器。
 
 它可选支持数学扩展，例如大整数 (BigInt)，大浮点数 (BigFloat) 以及运算符重载。
 
