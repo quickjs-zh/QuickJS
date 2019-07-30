@@ -50,7 +50,7 @@ QuickJS Javascript引擎
         *   [4.3.4 Numbers](#434-numbers)
         *   [4.3.5 垃圾回收](#435-垃圾回收)
         *   [4.3.6 JSValue](#436-jsvalue)
-        *   [4.3.7 Function call](#437-function-call)
+        *   [4.3.7 函数调用](#437-函数调用)
     *   [4.4 RegExp](#44-regexp)
     *   [4.5 Unicode](#45-unicode)
     *   [4.6 BigInt and BigFloat](#46-bigint-and-bigfloat)
@@ -358,31 +358,31 @@ ES6模块完全支持。默认名称解析规则如下：
 
 `EPIPE`
 
-Integer value of common errors (additional error codes may be defined).
+常见错误的整数值 （可以定义附加错误代码）。
 
 `strerror(errno)`
 
-Return a string that describes the error `errno`.
+返回描述错误的字符串`errno`.
 
 `open(filename, flags)`
 
-Open a file (wrapper to the libc `fopen()`). Throws `std.Error` in case of I/O error.
+打开一个文件（libc的包装器`fopen()`）。在I/O错误时抛出 `std.Error` 
 
 `tmpfile()`
 
-Open a temporary file. Throws `std.Error` in case of I/O error.
+打开一个临时文件。在I/O错误时抛出`std.Error` 。
 
 `puts(str)`
 
-Equivalent to `std.out.puts(str)`.
+相当于`std.out.puts(str)`.
 
 `printf(fmt, ...args)`
 
-Equivalent to `std.out.printf(fmt, ...args)`
+相当于`std.out.printf(fmt, ...args)`
 
 `sprintf(fmt, ...args)`
 
-Equivalent to the libc sprintf().
+相当于libc的sprintf().
 
 `in`
 
@@ -390,7 +390,7 @@ Equivalent to the libc sprintf().
 
 `err`
 
-Wrappers to the libc file `stdin`, `stdout`, `stderr`.
+包装libc文件的`stdin`, `stdout`, `stderr`.
 
 `SEEK_SET`
 
@@ -398,57 +398,57 @@ Wrappers to the libc file `stdin`, `stdout`, `stderr`.
 
 `SEEK_END`
 
-Constants for seek().
+seek()的常量
 
 `global`
 
-Reference to the global object.
+引用全局对象。
 
 `gc()`
 
-Manually invoke the cycle removal algorithm. The cycle removal algorithm is automatically started when needed, so this function is useful in case of specific memory constraints or for testing.
+手动调用循环删除算法。循环移除算法在需要时自动启动，因此该功能在特定内存限制或测试时非常有用。
 
 `getenv(name)`
 
-Return the value of the environment variable `name` or `undefined` if it is not defined.
+返回环境变量的值 `name` ，或未定义时返回 `undefined` .
 
-FILE prototype:
+FILE 原型：
 
 `close()`
 
-Close the file.
+关闭文件。
 
 `puts(str)`
 
-Outputs the string with the UTF-8 encoding.
+使用UTF-8编码输出字符串。
 
 `printf(fmt, ...args)`
 
-Formatted printf, same formats as the libc printf.
+格式化printf，与libc printf格式相同。
 
 `flush()`
 
-Flush the buffered file.
+刷新缓冲的文件。
 
 `seek(offset, whence)`
 
-Seek to a give file position (whence is `std.SEEK_*`). Throws a `std.Error` in case of I/O error.
+寻找特定文件位置 (从哪里`std.SEEK_*`)。在I/O错误时抛出 `std.Error`。
 
 `tell()`
 
-Return the current file position.
+返回当前文件位置。
 
 `eof()`
 
-Return true if end of file.
+如果文件结束，则返回true。
 
 `fileno()`
 
-Return the associated OS handle.
+返回关联的OS句柄。
 
 `read(buffer, position, length)`
 
-Read `length` bytes from the file to the ArrayBuffer `buffer` at byte position `position` (wrapper to the libc `fread`).
+Read `length` bytes from the file to the ArrayBuffer `buffer` at byte position `position` （libc的包装器`fread`）。
 
 `write(buffer, position, length)`
 
@@ -456,32 +456,32 @@ Write `length` bytes to the file from the ArrayBuffer `buffer` at byte position 
 
 `getline()`
 
-Return the next line from the file, assuming UTF-8 encoding, excluding the trailing line feed.
+返回文件中的下一行，假设为UTF-8编码，不包括尾随换行符。
 
 `getByte()`
 
-Return the next byte from the file.
+返回文件中的下一个字节。
 
 `putByte(c)`
 
-Write one byte to the file.
+将一个字节写入文件。
 
 #### 3.3.3 `os` 模块
 
-The `os` module provides Operating System specific functions:
+ `os` 模块提供操作系统特定功能：
 
-*   low level file access
-*   signals
-*   timers
-*   asynchronous I/O
+*   底层文件访问
+*   信号
+*   计时器
+*   异步 I/O
 
-The OS functions usually return 0 if OK or an OS specific negative error code.
+如果是OK，OS函数通常返回0，或者OS返回特定的错误代码。
 
-Available exports:
+可用导出函数：
 
 `open(filename, flags, mode = 0o666)`
 
-Open a file. Return a handle or < 0 if error.
+打开一个文件。如果错误，返回句柄或<0。
 
 `O_RDONLY`
 
@@ -497,19 +497,19 @@ Open a file. Return a handle or < 0 if error.
 
 `O_TRUNC`
 
-POSIX open flags.
+POSIX打开标志。
 
 `O_TEXT`
 
-(Windows specific). Open the file in text mode. The default is binary mode.
+(Windows特定)。以文本模式打开文件。默认为二进制模式。
 
 `close(fd)`
 
-Close the file handle `fd`.
+关闭文件句柄`fd`.
 
 `seek(fd, offset, whence)`
 
-Seek in the file. Use `std.SEEK_*` for `whence`.
+寻找文件。使用 `std.SEEK_*` 或 `whence`.
 
 `read(fd, buffer, offset, length)`
 
@@ -521,35 +521,35 @@ Write `length` bytes to the file handle `fd` from the ArrayBuffer `buffer` at by
 
 `isatty(fd)`
 
-Return `true` is `fd` is a TTY (terminal) handle.
+`fd` 是一个TTY (终端)句柄返回 `true` 。
 
 `ttyGetWinSize(fd)`
 
-Return the TTY size as `[width, height]` or `null` if not available.
+返回TTY大小 `[width, height]` 或者如果不可用返回 `null` 。
 
 `ttySetRaw(fd)`
 
-Set the TTY in raw mode.
+在原始模式下设置TTY。
 
 `remove(filename)`
 
-Remove a file. Return 0 if OK or < 0 if error.
+删除文件。如果正常则返回0，如果错误则返回<0
 
 `rename(oldname, newname)`
 
-Rename a file. Return 0 if OK or < 0 if error.
+重命名文件。如果正常则返回0，如果错误则返回<0
 
 `setReadHandler(fd, func)`
 
-Add a read handler to the file handle `fd`. `func` is called each time there is data pending for `fd`. A single read handler per file handle is supported. Use `func = null` to remove the hander.
+将读处理程序添加到文件句柄`fd`。 `fd`每次有数据待增加处理时调用`func` 。支持每个文件句柄的单个读处理程序。使用 `func = null` 来删除句柄。
 
 `setWriteHandler(fd, func)`
 
-Add a write handler to the file handle `fd`. `func` is called each time data can be written to `fd`. A single write handler per file handle is supported. Use `func = null` to remove the hander.
+将写处理程序添加到文件句柄`fd`。  `fd`每次有数据待写入处理时调用`func` . 支持每个文件句柄一个写处理程序。使用 `func = null来删除句柄。
 
 `signal(signal, func)`
 
-Call the function `func` when the signal `signal` happens. Only a single handler per signal number is supported. Use `null` to set the default handler or `undefined` to ignore the signal.
+当信号 `signal` 发生时调用 `func` 。 每个信号编号只支持一个处理程序。使用 `null` 设定的默认处理或 `undefined` 忽略的信号。
 
 `SIGINT`
 
@@ -563,23 +563,23 @@ Call the function `func` when the signal `signal` happens. Only a single handler
 
 `SIGTERM`
 
-POSIX signal numbers.
+POSIX 信号编号。
 
 `setTimeout(func, delay)`
 
-Call the function `func` after `delay` ms. Return a handle to the timer.
+在 `delay` 毫秒之后调用函数 `func` 。返回计时器的句柄。
 
 `clearTimer(handle)`
 
-Cancel a timer.
+取消计时器。
 
 `platform`
 
-Return a string representing the platform: `"linux"`, `"darwin"`, `"win32"` or `"js"`.
+返回表示该平台的字符串： `"linux"`, `"darwin"`, `"win32"` or `"js"`.
 
 ### 3.4 QuickJS C API
 
-The C API was designed to be simple and efficient. The C API is defined in the header `quickjs.h`.
+C API的设计简单而有效。C API在`quickjs.h`标头中定义。
 
 #### 3.4.1 运行时和上下文
 
@@ -708,42 +708,42 @@ In 64-bit code, JSValue are 128-bit large and no NaN boxing is used. The rationa
 
 In both cases (32 or 64 bits), JSValue exactly fits two CPU registers, so it can be efficiently returned by C functions.
 
-#### 4.3.7 Function call
+#### 4.3.7 函数调用
 
-The engine is optimized so that function calls are fast. The system stack holds the Javascript parameters and local variables.
+引擎已经过优化，因此函数调用很快。系统堆栈包含Javascript参数和局部变量。
 
 ### 4.4 RegExp
 
-A specific regular expression engine was developped. It is both small and efficient and supports all the ES2019 features including the Unicode properties. As the Javascript compiler, it directly generates bytecode without a parse tree.
+开发了一个特定的正则表达式引擎。它既小又高效，并支持所有ES2020功能，包括Unicode属性。作为Javascript编译器，它直接生成没有解析树的字节码。
 
-Backtracking with an explicit stack is used so that there is no recursion on the system stack. Simple quantizers are specifically optimized to avoid recursions.
+使用显式堆栈的回溯使得系统堆栈上没有递归。简单的量化器经过专门优化，以避免递归。
 
-Infinite recursions coming from quantizers with empty terms are avoided.
+来自具有空项的量化器的无限递归被避免。
 
-The full regexp library weights about 15 KiB (x86 code), excluding the Unicode library.
+完整的正则表达式文件库的权重约为15 KiB（x86代码），不包括Unicode库。
 
 ### 4.5 Unicode
 
-A specific Unicode library was developped so that there is no dependency on an external large Unicode library such as ICU. All the Unicode tables are compressed while keeping a reasonnable access speed.
+开发了一个特定的Unicode库，因此不依赖于外部大型Unicode库，例如ICU。压缩所有Unicode表，同时保持合理的访问速度。
 
-The library supports case conversion, Unicode normalization, Unicode script queries, Unicode general category queries and all Unicode binary properties.
+该库支持大小写转换，Unicode规范化，Unicode脚本查询，Unicode常规类别查询和所有Unicode二进制属性。
 
-The full Unicode library weights about 45 KiB (x86 code).
+完整的Unicode库大约重量为45 KiB（x86代码）。
 
-### 4.6 BigInt and BigFloat
+### 4.6 BigInt 和 BigFloat
 
-BigInt and BigFloat are implemented with the `libbf` library[4](#FOOT4). It weights about 60 KiB (x86 code) and provides arbitrary precision IEEE 754 floating point operations and transcendental functions with exact rounding.
+BigInt 和 BigFloat 是用`libbf` 库 `libbf` 库实现的[4](#FOOT4)。 它大概有60 KiB (x86 代码) 并提供任意精度的IEEE 754 浮点运算和具有精确舍入的超越函数。
 
 5 许可协议
 ---------
 
-QuickJS is released under the MIT license.
+QuickJS 在MIT协议下发布。
 
-Unless otherwise specified, the QuickJS sources are copyright Fabrice Bellard and Charlie Gordon.
+除非另有说明，否则QuickJS来源的版权归Fabrice Bellard和Charlie Gordon所有。
 
 * * *
 
-#### Footnotes
+#### 脚注
 
 ### [(1)](#DOCF1)
 
@@ -755,7 +755,7 @@ Unless otherwise specified, the QuickJS sources are copyright Fabrice Bellard an
 
 ### [(3)](#DOCF3)
 
-We believe the current specification of tails calls is too complicated and presents limited practical interests.
+我们认为目前的尾部调用规范过于复杂，并且实际利益有限。
 
 ### [(4)](#DOCF4)
 
