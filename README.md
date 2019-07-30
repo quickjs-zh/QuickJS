@@ -250,85 +250,85 @@ make test2
 
 ### 3.1 语言支持
 
-#### 3.1.1 ES2019支持
+#### 3.1.1 ES2020支持
 
-The ES2019 specification [2](#FOOT2) is almost fully supported including the Annex B (legacy web compatibility) and the Unicode related features. The following features are not supported yet:
+包含Annex B (遗留Web兼容)和Unicode相关功能的ES2020规范 [2](#FOOT2) 已经基本支持。 目前尚未支持以下功能:
 
-*   Realms (althougth the C API supports different runtimes and contexts)
+*   Realms (尽管C API支持不同的运行时和上下文)
 *   Tail calls[3](#FOOT3)
 
 #### 3.1.2 JSON
 
-The JSON parser is currently more tolerant than the specification.
+JSON解析器目前比规范支持范围更宽.
 
 #### 3.1.3 ECMA402
 
-ECMA402 (Internationalization API) is not supported.
+ECMA402 (国际化API)尚未支持.
 
 #### 3.1.4 扩展
 
-*   The directive `"use strip"` indicates that the debug information (including the source code of the functions) should not be retained to save memory. As `"use strict"`, the directive can be global to a script or local to a function.
-*   The first line of a script beginning with `#!` is ignored.
+*   指令 `"use strip"` 不保留调试信息 (包括函数源代码) 以节省内存。 `"use strict"`指令可以应用全局脚本，或者特定函数。
+*   脚本开头第一行 `#!` 会被忽略。
 
 #### 3.1.5 数学扩展
 
-The mathematical extensions are available in the `qjsbn` version and are fully backward compatible with standard Javascript. See `jsbignum.pdf` for more information.
+数学扩展在`qjsbn` 版本中可用，并且完全向后兼容标准Javascript. 查看`jsbignum.pdf`获取更多信息。
 
-*   The `BigInt` (big integers) TC39 proposal is supported.
-*   `BigFloat` support: arbitrary large floating point numbers in base 2.
-*   Operator overloading.
-*   The directive `"use bigint"` enables the bigint mode where integers are `BigInt` by default.
-*   The directive `"use math"` enables the math mode where the division and power operators on integers produce fractions. Floating point literals are `BigFloat` by default and integers are `BigInt` by default.
+*   `BigInt` (大整数) TC39已经支持。
+*   `BigFloat` 支持: 基数2中任意大浮点数。
+*   运算符重载。
+*   指令`"use bigint"`启用bigint模式， `BigInt`默认情况下为整数。
+*   指令`"use math"`启用数学模式，其中整数上的除法和幂运算符产生分数。BigFloat默认情况下，浮点文字是默认值，整数是BigInt默认值。
 
 ### 3.2 模块
 
-ES6 modules are fully supported. The default name resolution is the following:
+ES6模块完全支持。默认名称解析规则如下：
 
-*   Module names with a leading `.` or `..` are relative to the current module path.
-*   Module names without a leading `.` or `..` are system modules, such as `std` or `os`.
-*   Module names ending with `.so` are native modules using the QuickJS C API.
+*   模块名称带有前导`.`或 `..`是相对于当前模块的路径。
+*   模块名称没有前导`.`或`..`是系统模块，例如`std`或`os`。
+*   模块名称以`.so`结尾，是使用QuickJS C API的原生模块。
 
 ### 3.3 标准库
 
-The standard library is included by default in the command line interpreter. It contains the two modules `std` and `os` and a few global objects.
+默认情况下，标准库包含在命令行解释器中。 它包含两个模块`std`和`os`以及一些全局对象.
 
 #### 3.3.1 全局对象
 
 `scriptArgs`
 
-Provides the command line arguments. The first argument is the script name.
+提供命令行参数。第一个参数是脚本名称。
 
 `print(...args)`
 
-Print the arguments separated by spaces and a trailing newline.
+打印由空格和尾随换行符分隔的参数。
 
 `console.log(...args)`
 
-Same as print().
+与print()相同。
 
 #### 3.3.2 `std` 模块
 
-The `std` module provides wrappers to the libc stdlib.h and stdio.h and a few other utilities.
+该`std`模块为libc提供包装器stdlib.h和stdio.h和其他一些实用程序。
 
-Available exports:
+可用出口：
 
 `exit(n)`
 
-Exit the process.
+退出进程。
 
 `evalScript(str)`
 
-Evaluate the string `str` as a script (global eval).
+将字符串`str`以脚本方式运行（全局eval）。
 
 `loadScript(filename)`
 
-Evaluate the file `filename` as a script (global eval).
+将文件`filename`以脚本方式运行（全局eval）。
 
 `Error(errno)`
 
-`std.Error` constructor. Error instances contain the field `errno` (error code) and `message` (result of `std.Error.strerror(errno)`).
+`std.Error` 构造函数。 错误实例包含字段`errno`（错误代码）和`message`（`std.Error.strerror(errno)`的结果）。
 
-The constructor contains the following fields:
+构造函数包含以下字段：
 
 `EINVAL`
 
