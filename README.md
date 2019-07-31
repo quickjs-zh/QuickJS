@@ -621,21 +621,21 @@ Examples are available in js\_libc.c.
 
 #### 3.4.7 C模块
 
-Native ES6 modules are supported and can be dynamically or statically linked. Look at the test\_bjson and bjson.so examples. The standard library js\_libc.c is also a good example of a native module.
+支持动态或者静态链接的原生ES6模块。查看test\_bjson和bjson.so示例。标准库js\_libc.c也是原生模块很好的一个例子。
 
 #### 3.4.8 内存处理
 
-Use `JS_SetMemoryLimit()` to set a global memory allocation limit to a given JSRuntime.
+使用 `JS_SetMemoryLimit()` 为给定的JSRuntime设置全局内存分配限制。
 
-Custom memory allocation functions can be provided with `JS_NewRuntime2()`.
+`JS_NewRuntime2()`可以提供自定义内存分配功能。
 
-The maximum system stack size can be set with `JS_SetMaxStackSize()`.
+`JS_SetMaxStackSize()`可以使用设置最大系统堆栈大小
 
 #### 3.4.9 执行超时和中断
 
 Use `JS_SetInterruptHandler()` to set a callback which is regularly called by the engine when it is executing code. This callback can be used to implement an execution timeout.
 
-It is used by the command line interpreter to implement a `Ctrl-C` handler.
+命令行解释器使用它来实现 `Ctrl-C` 处理程序。
 
 4 内部实现
 -----------
@@ -676,9 +676,9 @@ Warning: the binary JSON format may change without notice, so it should not be u
 
 #### 4.3.1 Strings
 
-Strings are stored either as an 8 bit or a 16 bit array of characters. Hence random access to characters is always fast.
+字符串存储为8位或16位字符数组。因此，随机访问字符总是很快。
 
-The C API provides functions to convert Javascript Strings to C UTF-8 encoded strings. The most common case where the Javascript string contains only ASCII characters involves no copying.
+C API提供将Javascript字符串转换为C UTF-8编码字符串的函数。最常见情况是 Javascript字符串仅包含ASCII 字符串不涉及复制。
 
 #### 4.3.2 Objects
 
@@ -686,7 +686,7 @@ The object shapes (object prototype, property names and flags) are shared betwee
 
 Arrays with no holes (except at the end of the array) are optimized.
 
-TypedArray accesses are optimized.
+TypedArray访问已优化。
 
 #### 4.3.3 Atoms
 
@@ -698,7 +698,7 @@ Numbers are represented either as 32-bit signed integers or 64-bit IEEE-754 floa
 
 #### 4.3.5 垃圾回收
 
-Reference counting is used to free objects automatically and deterministically. A separate cycle removal pass is done when the allocated memory becomes too large. The cycle removal algorithm only uses the reference counts and the object content, so no explicit garbage collection roots need to be manipulated in the C code.
+引用计数用于自动和准确地释放对象。A separate cycle removal pass is done when the allocated memory becomes too large. The cycle removal algorithm only uses the reference counts and the object content, so no explicit garbage collection roots need to be manipulated in the C code.
 
 #### 4.3.6 JSValue
 
