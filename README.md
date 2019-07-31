@@ -72,6 +72,8 @@ QuickJS是一个小型并且可嵌入的Javascript引擎，它支持ES2020规范
 
 QuickJS QQ群：**598609506**。
 
+中文Wiki：https://github.com/quickjs-zh/QuickJS/wiki
+
 ### 1.1 主要功能
 
 *   轻量而且易于嵌入：只需几个C文件，没有外部依赖，一个x86下的简单的“hello world”程序只要180 KiB。
