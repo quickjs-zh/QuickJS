@@ -101,7 +101,7 @@ QuickJS QQ群：**598609506**。
 
 使用root身份执行 `make install` 可以将编译的二进制文件和支持文件安装到 `/usr/local` (这不是使用QuickJS所必需的).
 
-**注：**可以参考QuickJS中文关于[Windows下编译安装](https://github.com/quickjs-zh/QuickJS/wiki/%E5%9C%A8Windows%E4%B8%8B%E7%BC%96%E8%AF%91QuickJS)及[Linux下编译安装](https://github.com/quickjs-zh/QuickJS/wiki/%E5%9C%A8Linux%E4%B8%8B%E7%BC%96%E8%AF%91QuickJS)相关文档。
+**注**：可以参考QuickJS中文关于[Windows下编译安装](https://github.com/quickjs-zh/QuickJS/wiki/%E5%9C%A8Windows%E4%B8%8B%E7%BC%96%E8%AF%91QuickJS)及[Linux下编译安装](https://github.com/quickjs-zh/QuickJS/wiki/%E5%9C%A8Linux%E4%B8%8B%E7%BC%96%E8%AF%91QuickJS)相关文档。
 
 ### 2.2 快速入门
 
