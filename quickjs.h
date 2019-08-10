@@ -369,7 +369,7 @@ void JS_ComputeMemoryUsage(JSRuntime *rt, JSMemoryUsage *s);
 void JS_DumpMemoryUsage(FILE *fp, const JSMemoryUsage *s, JSRuntime *rt);
 
 /* atom support */
-JSAtom JS_NewAtomLen(JSContext *ctx, const char *str, int len);
+JSAtom JS_NewAtomLen(JSContext *ctx, const char *str, size_t len);
 JSAtom JS_NewAtom(JSContext *ctx, const char *str);
 JSAtom JS_NewAtomUInt32(JSContext *ctx, uint32_t n);
 JSAtom JS_DupAtom(JSContext *ctx, JSAtom v);
@@ -461,6 +461,8 @@ static js_force_inline JSValue JS_NewCatchOffset(JSContext *ctx, int32_t val)
 }
 
 JSValue JS_NewInt64(JSContext *ctx, int64_t v);
+JSValue JS_NewBigInt64(JSContext *ctx, int64_t v);
+JSValue JS_NewBigUint64(JSContext *ctx, uint64_t v);
 
 static js_force_inline JSValue JS_NewFloat64(JSContext *ctx, double d)
 {
@@ -598,16 +600,21 @@ static int inline JS_ToUint32(JSContext *ctx, uint32_t *pres, JSValueConst val)
 int JS_ToInt64(JSContext *ctx, int64_t *pres, JSValueConst val);
 int JS_ToIndex(JSContext *ctx, uint64_t *plen, JSValueConst val);
 int JS_ToFloat64(JSContext *ctx, double *pres, JSValueConst val);
+int JS_ToBigInt64(JSContext *ctx, int64_t *pres, JSValueConst val);
 
-JSValue JS_NewStringLen(JSContext *ctx, const char *str1, int len1);
+JSValue JS_NewStringLen(JSContext *ctx, const char *str1, size_t len1);
 JSValue JS_NewString(JSContext *ctx, const char *str);
 JSValue JS_NewAtomString(JSContext *ctx, const char *str);
 JSValue JS_ToString(JSContext *ctx, JSValueConst val);
 JSValue JS_ToPropertyKey(JSContext *ctx, JSValueConst val);
-const char *JS_ToCStringLen(JSContext *ctx, int *plen, JSValueConst val1, JS_BOOL cesu8);
+const char *JS_ToCStringLen2(JSContext *ctx, size_t *plen, JSValueConst val1, JS_BOOL cesu8);
+static inline const char *JS_ToCStringLen(JSContext *ctx, size_t *plen, JSValueConst val1)
+{
+    return JS_ToCStringLen2(ctx, plen, val1, 0);
+}
 static inline const char *JS_ToCString(JSContext *ctx, JSValueConst val1)
 {
-    return JS_ToCStringLen(ctx, NULL, val1, 0);
+    return JS_ToCStringLen2(ctx, NULL, val1, 0);
 }
 void JS_FreeCString(JSContext *ctx, const char *ptr);
 
@@ -655,6 +662,19 @@ int JS_PreventExtensions(JSContext *ctx, JSValueConst obj);
 int JS_DeleteProperty(JSContext *ctx, JSValueConst obj, JSAtom prop, int flags);
 int JS_SetPrototype(JSContext *ctx, JSValueConst obj, JSValueConst proto_val);
 JSValueConst JS_GetPrototype(JSContext *ctx, JSValueConst val);
+
+#define JS_GPN_STRING_MASK  (1 << 0)
+#define JS_GPN_SYMBOL_MASK  (1 << 1)
+#define JS_GPN_PRIVATE_MASK (1 << 2)
+/* only include the enumerable properties */
+#define JS_GPN_ENUM_ONLY    (1 << 4)
+/* set theJSPropertyEnum.is_enumerable field */
+#define JS_GPN_SET_ENUM     (1 << 5)
+
+int JS_GetOwnPropertyNames(JSContext *ctx, JSPropertyEnum **ptab,
+                           uint32_t *plen, JSValueConst obj, int flags);
+int JS_GetOwnProperty(JSContext *ctx, JSPropertyDescriptor *desc,
+                      JSValueConst obj, JSAtom prop);
 
 JSValue JS_ParseJSON(JSContext *ctx, const char *buf, size_t buf_len,
                      const char *filename);

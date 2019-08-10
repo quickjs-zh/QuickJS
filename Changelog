@@ -1,3 +1,15 @@
+2019-08-10:
+
+- added public class fields and private class fields, methods and
+  accessors (TC39 proposal)
+- changed JS_ToCStringLen() prototype
+- qjsc: handle '-' in module names and modules with the same filename
+- added std.urlGet
+- exported JS_GetOwnPropertyNames() and JS_GetOwnProperty()
+- exported some bigint C functions
+- added support for eshost in run-test262
+- misc bug fixes
+
 2019-07-28:
 
 - added dynamic import

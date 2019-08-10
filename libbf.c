@@ -2475,6 +2475,7 @@ int bf_atof2(bf_t *r, slimb_t *pexponent,
 {
     const char *p, *p_start;
     int is_neg, radix_bits, exp_is_neg, ret, digits_per_limb, shift, sep;
+    int ret_legacy_octal = 0;
     limb_t cur_limb;
     slimb_t pos, expn, int_len, digit_count;
     BOOL has_decpt, is_bin_exp, is_float;
@@ -2525,6 +2526,7 @@ int bf_atof2(bf_t *r, slimb_t *pexponent,
         } else if ((p[1] >= '0' && p[1] <= '9') &&
                    radix == 0 && (flags & BF_ATOF_LEGACY_OCTAL)) {
             int i;
+            ret_legacy_octal = BF_ATOF_ST_LEGACY_OCTAL;
             /* the separator is not allowed in legacy octal literals */
             sep = 256;
             for (i = 1; (p[i] >= '0' && p[i] <= '7'); i++)
@@ -2745,7 +2747,7 @@ int bf_atof2(bf_t *r, slimb_t *pexponent,
  done:
     if (pnext)
         *pnext = p;
-    return ret;
+    return ret | ret_legacy_octal;
  error:
     if (!radix_bits)
         bf_delete(a);

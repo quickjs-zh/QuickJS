@@ -570,6 +570,8 @@ import * as os from "os";
                     obj = get_context_object(line, pos - base.length);
                     if (obj === null || obj === void 0)
                         return obj;
+                    if (obj === g && obj[base] === void 0)
+                        return eval(base);
                     else
                         return obj[base];
                 }

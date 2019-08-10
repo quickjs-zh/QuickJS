@@ -412,12 +412,26 @@ function test_json()
 
 function test_date()
 {
-    var d = new Date(1506098258091), a;
+    var d = new Date(1506098258091), a, s;
     assert(d.toISOString(), "2017-09-22T16:37:38.091Z");
     d.setUTCHours(18, 10, 11);
     assert(d.toISOString(), "2017-09-22T18:10:11.091Z");
     a = Date.parse(d.toISOString());
     assert((new Date(a)).toISOString(), d.toISOString());
+    s = new Date("2020-01-01T01:01:01.1Z").toISOString();
+    assert(s ==  "2020-01-01T01:01:01.100Z");
+    s = new Date("2020-01-01T01:01:01.12Z").toISOString();
+    assert(s ==  "2020-01-01T01:01:01.120Z");
+    s = new Date("2020-01-01T01:01:01.123Z").toISOString();
+    assert(s ==  "2020-01-01T01:01:01.123Z");
+    s = new Date("2020-01-01T01:01:01.1234Z").toISOString();
+    assert(s ==  "2020-01-01T01:01:01.123Z");
+    s = new Date("2020-01-01T01:01:01.12345Z").toISOString();
+    assert(s ==  "2020-01-01T01:01:01.123Z");
+    s = new Date("2020-01-01T01:01:01.1235Z").toISOString();
+    assert(s ==  "2020-01-01T01:01:01.124Z");
+    s = new Date("2020-01-01T01:01:01.9999Z").toISOString();
+    assert(s ==  "2020-01-01T01:01:02.000Z");
 }
 
 function test_regexp()

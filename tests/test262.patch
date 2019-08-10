@@ -21,17 +21,6 @@ index 135c16e..b19f2ef 100644
  };
  
  /**
-diff --git a/harness/doneprintHandle.js b/harness/doneprintHandle.js
-index a6ea799..b3dec87 100644
---- a/harness/doneprintHandle.js
-+++ b/harness/doneprintHandle.js
-@@ -18,5 +18,6 @@ function $DONE(error) {
-     }
-   } else {
-     __consolePrintHandle__('Test262:AsyncTestComplete');
-+    $async_done = true;
-   }
- }
 diff --git a/harness/regExpUtils.js b/harness/regExpUtils.js
 index 2abfee3..e7c07b1 100644
 --- a/harness/regExpUtils.js
@@ -91,5 +80,83 @@ index 962614c..541c115 100644
 -flags: [raw]
 +flags: [raw, noStrict]
  features: [hashbang]
+ ---*/
+ 
+diff --git a/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js b/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
+index 48ed9a8..f486a2c 100644
+--- a/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
++++ b/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
+@@ -16,7 +16,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-methods-private]
++features: [class, class-methods-private, cross-realm]
+ ---*/
+ 
+ let classStringExpression = `
+diff --git a/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm.js b/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm.js
+index 5f3b3b5..7991e7c 100644
+--- a/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm.js
++++ b/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm.js
+@@ -16,7 +16,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-methods-private]
++features: [class, class-methods-private, cross-realm]
+ flags: [noStrict]
+ ---*/
+ 
+diff --git a/test/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-realm-function-ctor.js b/test/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
+index 71c536a..514cb2f 100644
+--- a/test/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
++++ b/test/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
+@@ -16,7 +16,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-methods-private]
++features: [class, class-methods-private, cross-realm]
+ ---*/
+ 
+ let classStringExpression = `
+diff --git a/test/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-realm.js b/test/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-realm.js
+index 929e9c0..7a887c4 100644
+--- a/test/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-realm.js
++++ b/test/language/expressions/class/private-method-brand-check-multiple-evaluations-of-class-realm.js
+@@ -16,7 +16,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-methods-private]
++features: [class, class-methods-private, cross-realm]
+ flags: [noStrict]
+ ---*/
+ 
+diff --git a/test/language/expressions/class/private-setter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js b/test/language/expressions/class/private-setter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
+index 1227a41..9f42680 100644
+--- a/test/language/expressions/class/private-setter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
++++ b/test/language/expressions/class/private-setter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
+@@ -16,7 +16,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-methods-private]
++features: [class, class-methods-private, cross-realm]
+ ---*/
+ 
+ let classStringExpression = `
+diff --git a/test/language/expressions/class/private-setter-brand-check-multiple-evaluations-of-class-realm.js b/test/language/expressions/class/private-setter-brand-check-multiple-evaluations-of-class-realm.js
+index d73056f..6a943c9 100644
+--- a/test/language/expressions/class/private-setter-brand-check-multiple-evaluations-of-class-realm.js
++++ b/test/language/expressions/class/private-setter-brand-check-multiple-evaluations-of-class-realm.js
+@@ -16,7 +16,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-methods-private]
++features: [class, class-methods-private, cross-realm]
+ flags: [noStrict]
  ---*/
  

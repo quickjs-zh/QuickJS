@@ -61,20 +61,20 @@ FMT(label_u16)
 #define def(id, size, n_pop, n_push, f) DEF(id, size, n_pop, n_push, f)
 #endif
 
-def(invalid, 1, 0, 0, none) /* never emitted */
+DEF(invalid, 1, 0, 0, none) /* never emitted */
 
 /* push values */
 DEF(       push_i32, 5, 0, 1, i32)
 DEF(     push_const, 5, 0, 1, const)
 DEF(       fclosure, 5, 0, 1, const) /* must follow push_const */
 DEF(push_atom_value, 5, 0, 1, atom)
+DEF( private_symbol, 5, 0, 1, atom)
 DEF(      undefined, 1, 0, 1, none)
 DEF(           null, 1, 0, 1, none)
 DEF(      push_this, 1, 0, 1, none) /* only used at the start of a function */
 DEF(     push_false, 1, 0, 1, none)
 DEF(      push_true, 1, 0, 1, none)
 DEF(         object, 1, 0, 1, none)
-DEF(     var_object, 1, 0, 1, none)
 DEF( special_object, 2, 0, 1, u8) /* only used at the start of a function */
 DEF(           rest, 3, 0, 1, u16) /* only used at the start of a function */
 
@@ -109,6 +109,8 @@ DEF(         return, 1, 1, 0, none)
 DEF(   return_undef, 1, 0, 0, none)
 DEF(check_ctor_return, 1, 1, 2, none)
 DEF(     check_ctor, 1, 0, 0, none)
+DEF(    check_brand, 1, 2, 2, none) /* this_obj func -> this_obj func */
+DEF(      add_brand, 1, 2, 0, none) /* this_obj home_obj -> */
 DEF(   return_async, 1, 1, 0, none)
 DEF(          throw, 1, 1, 0, none)
 DEF(      throw_var, 6, 0, 0, atom_u8)
@@ -135,6 +137,9 @@ DEF(    define_func, 6, 1, 0, atom_u8)
 DEF(      get_field, 5, 1, 1, atom)
 DEF(     get_field2, 5, 1, 2, atom)
 DEF(      put_field, 5, 2, 0, atom)
+DEF( get_private_field, 1, 2, 1, none) /* obj prop -> value */
+DEF( put_private_field, 1, 3, 0, none) /* obj value prop -> */
+DEF(define_private_field, 1, 3, 1, none) /* obj prop value -> obj */
 DEF(   get_array_el, 1, 2, 1, none)
 DEF(  get_array_el2, 1, 2, 2, none) /* obj prop -> obj value */
 DEF(   put_array_el, 1, 3, 0, none)
@@ -144,12 +149,13 @@ DEF(   define_field, 5, 2, 1, atom)
 DEF(       set_name, 5, 1, 1, atom)
 DEF(set_name_computed, 1, 2, 2, none)
 DEF(      set_proto, 1, 2, 1, none)
+DEF(set_home_object, 1, 2, 2, none)
 DEF(define_array_el, 1, 3, 2, none)
 DEF(         append, 1, 3, 2, none) /* append enumerated object, update length */
 DEF(copy_data_properties, 2, 3, 3, u8)
 DEF(  define_method, 6, 2, 1, atom_u8)
 DEF(define_method_computed, 2, 3, 1, u8) /* must come after define_method */
-DEF(   define_class, 2, 2, 2, u8)
+DEF(   define_class, 6, 2, 2, atom_u8)
 
 DEF(        get_loc, 3, 0, 1, loc)
 DEF(        put_loc, 3, 1, 0, loc) /* must come after get_loc */
@@ -161,7 +167,6 @@ DEF(    get_var_ref, 3, 0, 1, var_ref)
 DEF(    put_var_ref, 3, 1, 0, var_ref) /* must come after get_var_ref */
 DEF(    set_var_ref, 3, 1, 1, var_ref) /* must come after put_var_ref */
 DEF(set_loc_uninitialized, 3, 0, 0, loc)
-def(set_arg_valid_upto, 3, 0, 0, arg) /* emitted in phase 1, removed in phase 2 */
 DEF(  get_loc_check, 3, 0, 1, loc)
 DEF(  put_loc_check, 3, 1, 0, loc) /* must come after get_loc_check */
 DEF(  put_loc_check_init, 3, 1, 0, loc)
@@ -169,25 +174,12 @@ DEF(get_var_ref_check, 3, 0, 1, var_ref)
 DEF(put_var_ref_check, 3, 1, 0, var_ref) /* must come after get_var_ref_check */
 DEF(put_var_ref_check_init, 3, 1, 0, var_ref)
 DEF(      close_loc, 3, 0, 0, loc)
-def(close_var_object, 1, 0, 0, none) /* emitted in phase 1, removed in phase 2 */
-def(    enter_scope, 3, 0, 0, u16)  /* emitted in phase 1, removed in phase 2 */
-def(    leave_scope, 3, 0, 0, u16)  /* emitted in phase 1, removed in phase 2 */
-
 DEF(       if_false, 5, 1, 0, label)
 DEF(        if_true, 5, 1, 0, label) /* must come after if_false */
 DEF(           goto, 5, 0, 0, label) /* must come after if_true */
-def(          label, 5, 0, 0, label) /* emitted in phase 1, removed in phase 3 */
 DEF(          catch, 5, 0, 1, label)
 DEF(          gosub, 5, 0, 0, label) /* used to execute the finally block */
 DEF(            ret, 1, 1, 0, none) /* used to return from the finally block */
-
-def(scope_get_var_undef, 7, 0, 1, atom_u16) /* emitted in phase 1, removed in phase 2 */
-def(  scope_get_var, 7, 0, 1, atom_u16) /* emitted in phase 1, removed in phase 2 */
-def(  scope_put_var, 7, 1, 0, atom_u16) /* emitted in phase 1, removed in phase 2 */
-def(scope_delete_var, 7, 0, 1, atom_u16) /* emitted in phase 1, removed in phase 2 */
-def( scope_make_ref, 11, 0, 2, atom_label_u16) /* emitted in phase 1, removed in phase 2 */
-def(  scope_get_ref, 7, 0, 2, atom_u16) /* emitted in phase 1, removed in phase 2 */
-def(scope_put_var_init, 7, 0, 2, atom_u16) /* emitted in phase 1, removed in phase 2 */
 
 DEF(      to_object, 1, 1, 1, none)
 //DEF(      to_string, 1, 1, 1, none)
@@ -205,8 +197,6 @@ DEF(   make_loc_ref, 7, 0, 2, atom_u16)
 DEF(   make_arg_ref, 7, 0, 2, atom_u16)
 DEF(make_var_ref_ref, 7, 0, 2, atom_u16)
 DEF(   make_var_ref, 5, 0, 2, atom)
-
-def(       line_num, 5, 0, 0, u32) /* emitted in phase 1, removed in phase 3 */
 
 DEF(   for_in_start, 1, 1, 1, none)
 DEF(   for_of_start, 1, 1, 3, none)
@@ -270,6 +260,31 @@ DEF(       math_div, 1, 2, 1, none)
 DEF(       math_mod, 1, 2, 1, none)
 DEF(       math_pow, 1, 2, 1, none)
 #endif
+/* must be the last non short and non temporary opcode */
+DEF(            nop, 1, 0, 0, none) 
+
+/* temporary opcodes: never emitted in the final bytecode */
+
+def(set_arg_valid_upto, 3, 0, 0, arg) /* emitted in phase 1, removed in phase 2 */
+
+def(close_var_object, 1, 0, 0, none) /* emitted in phase 1, removed in phase 2 */
+def(    enter_scope, 3, 0, 0, u16)  /* emitted in phase 1, removed in phase 2 */
+def(    leave_scope, 3, 0, 0, u16)  /* emitted in phase 1, removed in phase 2 */
+
+def(          label, 5, 0, 0, label) /* emitted in phase 1, removed in phase 3 */
+
+def(scope_get_var_undef, 7, 0, 1, atom_u16) /* emitted in phase 1, removed in phase 2 */
+def(  scope_get_var, 7, 0, 1, atom_u16) /* emitted in phase 1, removed in phase 2 */
+def(  scope_put_var, 7, 1, 0, atom_u16) /* emitted in phase 1, removed in phase 2 */
+def(scope_delete_var, 7, 0, 1, atom_u16) /* emitted in phase 1, removed in phase 2 */
+def( scope_make_ref, 11, 0, 2, atom_label_u16) /* emitted in phase 1, removed in phase 2 */
+def(  scope_get_ref, 7, 0, 2, atom_u16) /* emitted in phase 1, removed in phase 2 */
+def(scope_put_var_init, 7, 0, 2, atom_u16) /* emitted in phase 1, removed in phase 2 */
+def(scope_get_private_field, 7, 1, 1, atom_u16) /* obj -> value, emitted in phase 1, removed in phase 2 */
+def(scope_get_private_field2, 7, 1, 2, atom_u16) /* obj -> obj value, emitted in phase 1, removed in phase 2 */
+def(scope_put_private_field, 7, 1, 1, atom_u16) /* obj value ->, emitted in phase 1, removed in phase 2 */
+
+def(       line_num, 5, 0, 0, u32) /* emitted in phase 1, removed in phase 3 */
 
 #if SHORT_OPCODES
 DEF(    push_minus1, 1, 0, 1, none_int)
@@ -344,8 +359,6 @@ DEF(   is_undefined, 1, 1, 1, none)
 DEF(        is_null, 1, 1, 1, none)
 DEF(    is_function, 1, 1, 1, none)
 #endif
-
-DEF(            nop, 1, 0, 0, none) /* temporary use during code generation */
 
 #undef DEF
 #undef def

@@ -1583,16 +1583,15 @@ var Integer, Float, Fraction, Complex, Mod, Polynomial, PolyMod, RationalFunctio
         },
         exp() {
             var c, i, r, n, a = this;
-            n = a.emin;
-            if (n < 0)
+            if (a.emin < 0)
                 throw RangeError("negative exponent in exp");
-            if (n > 0 || a[0] == 0) {
+            n = a.emin + a.length;
+            if (a.emin > 0 || a[0] == 0) {
                 c = 1;
             } else {
                 c = global.exp(a[0]);
                 a -= a[0];
             }
-            n += a.length;
             r = Series.zero(n, 0);
             for(i = 0; i < n; i++) {
                 r[i] = c / fact(i);

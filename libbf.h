@@ -269,10 +269,12 @@ void bf_logic_and(bf_t *r, const bf_t *a, const bf_t *b);
 /* only accept decimal floating point if radix = 0 */
 #define BF_ATOF_ONLY_DEC_FLOAT (1 << 26)
 
-/* one more return flag: indicate that the parsed number is an integer
-   (only set when the flags BF_ATOF_INT_PREC_INF or
-   BF_ATOF_INT_N_SUFFIX are used) */
+/* additional return flags */
+/* indicate that the parsed number is an integer (only set when the
+   flags BF_ATOF_INT_PREC_INF or BF_ATOF_INT_N_SUFFIX are used) */
 #define BF_ATOF_ST_INTEGER   (1 << 5)
+/* integer parsed as legacy octal */
+#define BF_ATOF_ST_LEGACY_OCTAL (1 << 6)
 
 int bf_atof(bf_t *a, const char *str, const char **pnext, int radix,
             limb_t prec, bf_flags_t flags);

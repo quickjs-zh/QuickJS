@@ -100,6 +100,7 @@ static JSValue js_printf_internal(JSContext *ctx,
     const uint8_t *p;
     char *q;
     int i, c, len;
+    size_t fmt_len;
     int32_t int32_arg;
     int64_t int64_arg;
     double double_arg;
@@ -112,13 +113,13 @@ static JSValue js_printf_internal(JSContext *ctx,
     js_std_dbuf_init(ctx, &dbuf);
 
     if (argc > 0) {
-        fmt_str = JS_ToCStringLen(ctx, &len, argv[0], FALSE);
+        fmt_str = JS_ToCStringLen(ctx, &fmt_len, argv[0]);
         if (!fmt_str)
             goto fail;
 
         i = 1;
         fmt = (const uint8_t *)fmt_str;
-        fmt_end = fmt + len;
+        fmt_end = fmt + fmt_len;
         while (fmt < fmt_end) {
             for (p = fmt; fmt < fmt_end && *fmt != '%'; fmt++)
                 continue;
@@ -477,9 +478,9 @@ static JSValue js_evalScript(JSContext *ctx, JSValueConst this_val,
                              int argc, JSValueConst *argv)
 {
     const char *str;
-    int len;
+    size_t len;
     JSValue ret;
-    str = JS_ToCStringLen(ctx, &len, argv[0], FALSE);
+    str = JS_ToCStringLen(ctx, &len, argv[0]);
     if (!str)
         return JS_EXCEPTION;
     if (++eval_script_recurse == 1) {
@@ -878,6 +879,196 @@ static JSValue js_std_file_putByte(JSContext *ctx, JSValueConst this_val,
     return JS_NewInt32(ctx, c);
 }
 
+/* urlGet */
+
+#define URL_GET_PROGRAM "curl -s -i"
+#define URL_GET_BUF_SIZE 4096
+
+static int http_get_header_line(FILE *f, char *buf, size_t buf_size,
+                                DynBuf *dbuf)
+{
+    int c;
+    char *p;
+    
+    p = buf;
+    for(;;) {
+        c = fgetc(f);
+        if (c < 0)
+            return -1;
+        if ((p - buf) < buf_size - 1)
+            *p++ = c;
+        if (dbuf)
+            dbuf_putc(dbuf, c);
+        if (c == '\n')
+            break;
+    }
+    *p = '\0';
+    return 0;
+}
+
+static int http_get_status(const char *buf)
+{
+    const char *p = buf;
+    while (*p != ' ' && *p != '\0')
+        p++;
+    if (*p != ' ')
+        return 0;
+    while (*p == ' ')
+        p++;
+    return atoi(p);
+}
+
+static JSValue js_std_urlGet(JSContext *ctx, JSValueConst this_val,
+                             int argc, JSValueConst *argv)
+{
+    const char *url;
+    DynBuf cmd_buf;
+    DynBuf data_buf_s, *data_buf = &data_buf_s;
+    DynBuf header_buf_s, *header_buf = &header_buf_s;
+    char *buf; 
+    size_t i, len;
+    int c, status;
+    JSValue val, response = JS_UNDEFINED, ret_obj;
+    JSValueConst options_obj;
+    FILE *f;
+    BOOL binary_flag, full_flag;
+    
+    url = JS_ToCString(ctx, argv[0]);
+    if (!url)
+        return JS_EXCEPTION;
+    
+    binary_flag = FALSE;
+    full_flag = FALSE;
+    
+    if (argc >= 2) {
+        options_obj = argv[1];
+
+        val = JS_GetPropertyStr(ctx, options_obj, "binary");
+        if (JS_IsException(val))
+            goto fail_opt;
+        binary_flag = JS_ToBool(ctx, val);
+        JS_FreeValue(ctx, val);
+
+        val = JS_GetPropertyStr(ctx, options_obj, "full");
+        if (JS_IsException(val)) {
+        fail_opt:
+            JS_FreeCString(ctx, url);
+            return JS_EXCEPTION;
+        }
+        full_flag = JS_ToBool(ctx, val);
+        JS_FreeValue(ctx, val);
+    }
+    
+
+    js_std_dbuf_init(ctx, &cmd_buf);
+    dbuf_printf(&cmd_buf, "%s ''", URL_GET_PROGRAM);
+    len = strlen(url);
+    for(i = 0; i < len; i++) {
+        c = url[i];
+        if (c == '\'' || c == '\\')
+            dbuf_putc(&cmd_buf, '\\');
+        dbuf_putc(&cmd_buf, c);
+    }
+    JS_FreeCString(ctx, url);
+    dbuf_putstr(&cmd_buf, "''");
+    dbuf_putc(&cmd_buf, '\0');
+    if (dbuf_error(&cmd_buf)) {
+        dbuf_free(&cmd_buf);
+        return JS_EXCEPTION;
+    }
+    //    printf("%s\n", (char *)cmd_buf.buf);
+    f = popen((char *)cmd_buf.buf, "r");
+    dbuf_free(&cmd_buf);
+    if (!f) {
+        return js_std_throw_errno(ctx, errno);
+    }
+
+    js_std_dbuf_init(ctx, data_buf);
+    js_std_dbuf_init(ctx, header_buf);
+    
+    buf = js_malloc(ctx, URL_GET_BUF_SIZE);
+    if (!buf)
+        goto fail;
+
+    /* get the HTTP status */
+    if (http_get_header_line(f, buf, URL_GET_BUF_SIZE, NULL) < 0)
+        goto bad_header;
+    status = http_get_status(buf);
+    if (!full_flag && !(status >= 200 && status <= 299)) {
+        js_std_throw_errno(ctx, ENOENT);
+        goto fail;
+    }
+    
+    /* wait until there is an empty line */
+    for(;;) {
+        if (http_get_header_line(f, buf, URL_GET_BUF_SIZE, header_buf) < 0) {
+        bad_header:
+            js_std_throw_errno(ctx, EINVAL);
+            goto fail;
+        }
+        if (!strcmp(buf, "\r\n"))
+            break;
+    }
+    if (dbuf_error(header_buf))
+        goto fail;
+    header_buf->size -= 2; /* remove the trailing CRLF */
+
+    /* download the data */
+    for(;;) {
+        len = fread(buf, 1, URL_GET_BUF_SIZE, f);
+        if (len == 0)
+            break;
+        dbuf_put(data_buf, (uint8_t *)buf, len);
+    }
+    js_free(ctx, buf);
+    buf = NULL;
+    pclose(f);
+    f = NULL;
+
+    if (dbuf_error(data_buf))
+        goto fail;
+    if (binary_flag) {
+        response = JS_NewArrayBufferCopy(ctx,
+                                         data_buf->buf, data_buf->size);
+    } else {
+        response = JS_NewStringLen(ctx, (char *)data_buf->buf, data_buf->size);
+    }
+    dbuf_free(data_buf);
+    data_buf = NULL;
+    if (JS_IsException(response))
+        goto fail;
+
+    if (full_flag) {
+        ret_obj = JS_NewObject(ctx);
+        if (JS_IsException(ret_obj))
+            goto fail;
+        JS_DefinePropertyValueStr(ctx, ret_obj, "response",
+                                  response,
+                                  JS_PROP_C_W_E);
+        JS_DefinePropertyValueStr(ctx, ret_obj, "responseHeaders",
+                                  JS_NewStringLen(ctx, (char *)header_buf->buf,
+                                                  header_buf->size),
+                                  JS_PROP_C_W_E);
+        JS_DefinePropertyValueStr(ctx, ret_obj, "status",
+                                  JS_NewInt32(ctx, status),
+                                  JS_PROP_C_W_E);
+    } else {
+        ret_obj = response;
+    }
+    dbuf_free(header_buf);
+    return ret_obj;
+ fail:
+    if (f)
+        pclose(f);
+    js_free(ctx, buf);
+    if (data_buf)
+        dbuf_free(data_buf);
+    if (header_buf)
+        dbuf_free(header_buf);
+    JS_FreeValue(ctx, response);
+    return JS_EXCEPTION;
+}
+
 static JSClassDef js_std_file_class = {
     "FILE",
     .finalizer = js_std_file_finalizer,
@@ -889,6 +1080,7 @@ static const JSCFunctionListEntry js_std_funcs[] = {
     JS_CFUNC_DEF("evalScript", 1, js_evalScript ),
     JS_CFUNC_DEF("loadScript", 1, js_loadScript ),
     JS_CFUNC_DEF("getenv", 1, js_std_getenv ),
+    JS_CFUNC_DEF("urlGet", 1, js_std_urlGet ),
 
     /* FILE I/O */
     JS_CFUNC_DEF("open", 2, js_std_open ),

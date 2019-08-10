@@ -85,6 +85,7 @@ char *report_filename;
 int update_errors;
 int test_count, test_failed, test_index, test_skipped, test_excluded;
 int new_errors, changed_errors, fixed_errors;
+int async_done;
 
 void warning(const char *, ...) __attribute__((__format__(__printf__, 1, 2)));
 void fatal(int, const char *, ...) __attribute__((__format__(__printf__, 2, 3)));
@@ -384,6 +385,8 @@ static JSValue js_print(JSContext *ctx, JSValueConst this_val,
             str = JS_ToCString(ctx, argv[i]);
             if (!str)
                 return JS_EXCEPTION;
+            if (!strcmp(str, "Test262:AsyncTestComplete"))
+                async_done++;
             fputs(str, outfile);
             JS_FreeCString(ctx, str);
         }
@@ -403,9 +406,9 @@ static JSValue js_evalScript(JSContext *ctx, JSValue this_val,
                              int argc, JSValue *argv)
 {
     const char *str;
-    int len;
+    size_t len;
     JSValue ret;
-    str = JS_ToCStringLen(ctx, &len, argv[0], FALSE);
+    str = JS_ToCStringLen(ctx, &len, argv[0]);
     if (!str)
         return JS_EXCEPTION;
     ret = JS_Eval(ctx, str, len, "<evalScript>", JS_EVAL_TYPE_GLOBAL);
@@ -747,6 +750,11 @@ static JSValue add_helpers1(JSContext *ctx)
     JS_SetPropertyStr(ctx, global_obj, "print",
                       JS_NewCFunction(ctx, js_print, "print", 1));
 
+    /* add it in the engine once the proposal is accepted */
+    JS_DefinePropertyValueStr(ctx, global_obj, "globalThis",
+                              JS_DupValue(ctx, global_obj),
+                              JS_PROP_CONFIGURABLE | JS_PROP_WRITABLE);
+
     /* $262 special object used by the tests */
     obj262 = JS_NewObject(ctx);
     JS_SetPropertyStr(ctx, obj262, "detachArrayBuffer",
@@ -762,10 +770,10 @@ static JSValue add_helpers1(JSContext *ctx)
     JS_SetPropertyStr(ctx, obj262, "agent", js_new_agent(ctx));
 #endif
 
-#ifdef CONFIG_REALM
     JS_SetPropertyStr(ctx, obj262, "global",
                       JS_DupValue(ctx, global_obj));
 
+#ifdef CONFIG_REALM
     JS_SetPropertyStr(ctx, obj262, "createRealm",
                       JS_NewCFunction(ctx, js_createRealm,
                                       "createRealm", 0));
@@ -1171,6 +1179,8 @@ static int eval_buf(JSContext *ctx, const char *buf, size_t buf_len,
     exception_val = JS_UNDEFINED;
     error_name = NULL;
 
+    async_done = 0; /* counter of "Test262:AsyncTestComplete" messages */
+
     res_val = JS_Eval(ctx, buf, buf_len, filename, eval_flags);
 
     if (is_async && !JS_IsException(res_val)) {
@@ -1182,13 +1192,11 @@ static int eval_buf(JSContext *ctx, const char *buf, size_t buf_len,
                 res_val = JS_EXCEPTION;
                 break;
             } else if (ret == 0) {
-                JSValue global;
-                /* test if the test called $DONE() */
-                global = JS_GetGlobalObject(ctx);
-                res_val = JS_GetPropertyStr(ctx, global, "$async_done");
-                JS_FreeValue(ctx, global);
-                if (!JS_IsException(res_val) && JS_IsUndefined(res_val)) {
+                /* test if the test called $DONE() once */
+                if (async_done != 1) {
                     res_val = JS_ThrowTypeError(ctx, "$DONE() not called");
+                } else {
+                    res_val = JS_UNDEFINED;
                 }
                 break;
             }
@@ -1517,14 +1525,6 @@ int run_test_buf(const char *filename, char *harness, namelist_t *ip,
        object */
     JS_EnableIsErrorProperty(ctx, TRUE);
 
-    /* a few tests use it, probably a bug in the tests */
-    {
-        JSValue global_obj = JS_GetGlobalObject(ctx);
-        JS_DefinePropertyValueStr(ctx, global_obj, "global",
-                                  global_obj,
-                                  JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE);
-    }
-    
     for (i = 0; i < ip->count; i++) {
         if (eval_file(ctx, harness, ip->array[i],
                       JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_STRIP)) {
@@ -1783,6 +1783,76 @@ int run_test(const char *filename, int index)
     return ret;
 }
 
+/* run a test when called by test262-harness+eshost */
+int run_test262_harness_test(const char *filename, BOOL is_module)
+{
+    JSRuntime *rt;
+    JSContext *ctx;
+    char *buf;
+    size_t buf_len;
+    int eval_flags, ret_code, ret;
+    JSValue res_val;
+    BOOL can_block;
+    
+    outfile = stdout; /* for js_print */
+
+    rt = JS_NewRuntime();
+    if (rt == NULL) {
+        fatal(1, "JS_NewRuntime failure");
+    }        
+    ctx = JS_NewContext(rt);
+    if (ctx == NULL) {
+        JS_FreeRuntime(rt);
+        fatal(1, "JS_NewContext failure");
+    }
+    JS_SetRuntimeInfo(rt, filename);
+
+    can_block = TRUE;
+    JS_SetCanBlock(rt, can_block);
+    
+    /* loader for ES6 modules */
+    JS_SetModuleLoaderFunc(rt, NULL, js_module_loader_test, NULL);
+        
+    add_helpers(ctx);
+
+    /* add backtrace if the isError property is present in a thrown
+       object */
+    JS_EnableIsErrorProperty(ctx, TRUE);
+
+    buf = load_file(filename, &buf_len);
+
+    if (is_module) {
+      eval_flags = JS_EVAL_TYPE_MODULE;
+    } else {
+      eval_flags = JS_EVAL_TYPE_GLOBAL;
+    }
+    res_val = JS_Eval(ctx, buf, buf_len, filename, eval_flags);
+    ret_code = 0;
+    if (JS_IsException(res_val)) {
+       js_std_dump_error(ctx);
+       ret_code = 1;
+    } else {
+        JS_FreeValue(ctx, res_val);
+        for(;;) {
+            JSContext *ctx1;
+            ret = JS_ExecutePendingJob(JS_GetRuntime(ctx), &ctx1);
+            if (ret < 0) {
+	      js_std_dump_error(ctx1);
+	      ret_code = 1;
+            } else if (ret == 0) {
+	      break;
+            }
+        }
+    }
+    free(buf);
+#ifdef CONFIG_AGENT
+    js_agent_free(ctx);
+#endif
+    JS_FreeContext(ctx);
+    JS_FreeRuntime(rt);
+    return ret_code;
+}
+
 clock_t last_clock;
 
 void show_progress(int force) {
@@ -1838,6 +1908,7 @@ void help(void)
            "-a             run tests in strict and nostrict modes\n"
            "-m             print memory usage summary\n"
            "-n             use new style harness\n"
+           "-N             run test prepared by test262-harness+eshost\n"
            "-s             run tests in strict mode, skip @nostrict tests\n"
            "-u             update error file\n"
            "-v             verbose: output error messages\n"
@@ -1865,7 +1936,9 @@ int main(int argc, char **argv)
     BOOL is_dir_list;
     BOOL only_check_errors = FALSE;
     const char *filename;
-    
+    BOOL is_test262_harness = FALSE;
+    BOOL is_module = FALSE;
+
 #if !defined(_WIN32)
     /* Date tests assume California local time */
     setenv("TZ", "America/Los_Angeles", 1);
@@ -1910,6 +1983,10 @@ int main(int argc, char **argv)
             only_check_errors = TRUE;
         } else if (str_equal(arg, "-T")) {
             slow_test_threshold = atoi(get_opt_arg(arg, argv[optind++]));
+        } else if (str_equal(arg, "-N")) {
+            is_test262_harness = TRUE;
+        } else if (str_equal(arg, "--module")) {
+            is_module = TRUE;
         } else {
             fatal(1, "unknown option: %s", arg);
             break;
@@ -1919,6 +1996,10 @@ int main(int argc, char **argv)
     if (optind >= argc && !test_list.count)
         help();
 
+    if (is_test262_harness) {
+        return run_test262_harness_test(argv[optind], is_module);
+    }
+			       
     error_out = stdout;
     if (error_filename) {
         error_file = load_file(error_filename, NULL);

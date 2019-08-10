@@ -51,8 +51,6 @@ Optimizations:
 
 Extensions:
 - support more features in [features] section
-- add TC39 stage 3 proposals: String.prototype.matchAll, Symbol.matchAll
-- fix preprocessor bug if nested #ifdef in jscompress.c
 - add built-in preprocessor in compiler, get rid of jscompress
   handle #if, #ifdef, #line, limited support for #define
 - limited support for web assembly 
@@ -76,6 +74,8 @@ REPL:
 - close all predefined methods in repl.js and jscalc.js
 
 Test262o:   0/11262 errors, 463 excluded
-Test262:   33/58145 errors, 785 excluded, 5576 skipped
-Test262bn: 39/60250 errors, 718 excluded, 4587 skipped
-test262 commit: 2ee3864136747ee69401b2d266e234cdd0a95965
+Test262o commit: 7da91bceb9ce7613f87db47ddd1292a2dda58b42 (es5-tests branch)
+
+Test262:   27/66629 errors, 784 excluded, 1406 skipped
+Test262bn: 27/68730 errors, 717 excluded, 419 skipped
+test262 commit: 8f5f6a1aa1a99640483d067f84fcf7719d9e6c38

@@ -201,8 +201,9 @@ function test_op2()
     assert((delete a.x), true, "delete");
     assert(("x" in a), false, "delete");
 
-    a = {x: 1, if: 2};
+    a = {x: 1, if: 2, async: 3};
     assert(a.if === 2);
+    assert(a.async === 3);
 }
 
 function test_prototype()

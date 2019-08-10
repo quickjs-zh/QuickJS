@@ -144,6 +144,11 @@ DEF(raw, "raw")
 DEF(new_target, "new.target")
 DEF(this_active_func, "this.active_func")
 DEF(home_object, "<home_object>")
+DEF(computed_field, "<computed_field>")
+DEF(static_computed_field, "<static_computed_field>") /* must come after computed_fields */
+DEF(class_fields_init, "<class_fields_init>")
+DEF(brand, "<brand>")
+DEF(hash_constructor, "#constructor")
 DEF(as, "as")
 DEF(from, "from")
 DEF(_default_, "*default*")
@@ -234,7 +239,8 @@ DEF(SyntaxError, "SyntaxError")
 DEF(TypeError, "TypeError")
 DEF(URIError, "URIError")
 DEF(InternalError, "InternalError")
-
+/* private symbols */
+DEF(Private_brand, "<brand>")
 /* symbols */
 DEF(Symbol_toPrimitive, "Symbol.toPrimitive")
 DEF(Symbol_iterator, "Symbol.iterator")
