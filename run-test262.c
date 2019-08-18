@@ -1607,7 +1607,8 @@ int run_test(const char *filename, int index)
             p = find_tag(desc, "flags:", &state);
             if (p) {
                 while ((option = get_option(&p, &state)) != NULL) {
-                    if (str_equal(option, "noStrict")) {
+                    if (str_equal(option, "noStrict") ||
+                        str_equal(option, "raw")) {
                         is_nostrict = TRUE;
                         skip |= (test_mode == TEST_STRICT);
                     }
@@ -1718,6 +1719,8 @@ int run_test(const char *filename, int index)
     }
 
     use_strict = use_nostrict = 0;
+    /* XXX: should remove 'test_mode' or simplify it just to force
+       strict or non strict mode for single file tests */
     switch (test_mode) {
     case TEST_DEFAULT_NOSTRICT:
         if (is_onlystrict)
@@ -1740,10 +1743,14 @@ int run_test(const char *filename, int index)
             use_strict = 1;
         break;
     case TEST_ALL:
-        if (!is_nostrict)
-            use_strict = 1;
-        if (!is_onlystrict)
+        if (is_module) {
             use_nostrict = 1;
+        } else {
+            if (!is_nostrict)
+                use_strict = 1;
+            if (!is_onlystrict)
+                use_nostrict = 1;
+        }
         break;
     }
 

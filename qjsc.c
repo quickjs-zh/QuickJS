@@ -266,7 +266,7 @@ JSModuleDef *jsc_module_loader(JSContext *ctx,
 static void compile_file(JSContext *ctx, FILE *fo,
                          const char *filename,
                          const char *c_name1,
-                         BOOL is_module)
+                         int module)
 {
     uint8_t *buf;
     char c_name[1024];
@@ -280,11 +280,14 @@ static void compile_file(JSContext *ctx, FILE *fo,
         exit(1);
     }
     eval_flags = JS_EVAL_FLAG_COMPILE_ONLY;
-    if (is_module)
+    if (module < 0) {
+        module = JS_DetectModule((const char *)buf, buf_len);
+    }
+    if (module)
         eval_flags |= JS_EVAL_TYPE_MODULE;
     else
         eval_flags |= JS_EVAL_TYPE_GLOBAL;
-    obj = JS_Eval(ctx, (char *)buf, buf_len, filename, eval_flags);
+    obj = JS_Eval(ctx, (const char *)buf, buf_len, filename, eval_flags);
     if (JS_IsException(obj)) {
         js_std_dump_error(ctx);
         exit(1);
@@ -330,7 +333,7 @@ void help(void)
            "-e          output main() and bytecode in a C file (default = executable output)\n"
            "-o output   set the output filename\n"
            "-N cname    set the C name of the generated data\n"
-           "-m          compile as Javascript module\n"
+           "-m          compile as Javascript module (default=autodetect)\n"
            "-M module_name[,cname] add initialization code for an external C module\n"
            "-x          byte swapped output\n"
            );
@@ -467,14 +470,15 @@ int main(int argc, char **argv)
     FILE *fo;
     JSRuntime *rt;
     JSContext *ctx;
-    BOOL module, use_lto;
+    BOOL use_lto;
+    int module;
     OutputTypeEnum output_type;
     
     out_filename = NULL;
     output_type = OUTPUT_EXECUTABLE;
     cname = NULL;
     feature_bitmap = FE_ALL;
-    module = FALSE;
+    module = -1;
     byte_swap = FALSE;
     verbose = 0;
     use_lto = FALSE;
@@ -526,7 +530,7 @@ int main(int argc, char **argv)
             }
             break;
         case 'm':
-            module = TRUE;
+            module = 1;
             break;
         case 'M':
             {
@@ -608,8 +612,7 @@ int main(int argc, char **argv)
 
     for(i = optind; i < argc; i++) {
         const char *filename = argv[i];
-        BOOL module1 = module || has_suffix(filename, ".mjs");
-        compile_file(ctx, fo, filename, cname, module1);
+        compile_file(ctx, fo, filename, cname, module);
         cname = NULL;
     }
 

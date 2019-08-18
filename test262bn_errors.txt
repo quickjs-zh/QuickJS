@@ -1,27 +1,2 @@
-test262/test/annexB/built-ins/Function/createdynfn-no-line-terminator-html-close-comment-body.js:25: Test262Error: Expected a SyntaxError to be thrown but no exception was thrown at all
-test262/test/annexB/built-ins/Function/createdynfn-no-line-terminator-html-close-comment-body.js:25: strict mode: Test262Error: Expected a SyntaxError to be thrown but no exception was thrown at all
-test262/test/annexB/language/eval-code/direct/var-env-lower-lex-catch-non-strict.js:32: SyntaxError: redeclaration of err
-test262/test/annexB/language/function-code/function-redeclaration-block.js:18: SyntaxError: invalid redefinition of lexical identifier
-test262/test/annexB/language/function-code/function-redeclaration-switch.js:32: SyntaxError: invalid redefinition of lexical identifier
-test262/test/annexB/language/statements/try/catch-redeclared-for-of-var.js:19: SyntaxError: invalid redefinition of lexical identifier
-test262/test/annexB/language/statements/try/catch-redeclared-for-of-var.js:19: strict mode: SyntaxError: invalid redefinition of lexical identifier
-test262/test/built-ins/TypedArray/prototype/sort/stability.js:15: Test262Error: pre-sorted (Testing with Float64Array.)
-test262/test/built-ins/TypedArray/prototype/sort/stability.js:15: strict mode: Test262Error: pre-sorted (Testing with Float64Array.)
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-async-function.js:37: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-async-function.js:37: strict mode: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-async-generator.js:37: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-async-generator.js:37: strict mode: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-class.js:36: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-class.js:36: strict mode: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-const.js:36: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-const.js:36: strict mode: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-function.js:36: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-function.js:36: strict mode: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-generator.js:37: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-generator.js:37: strict mode: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-let.js:36: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/block-scope/syntax/redeclaration/inner-block-var-name-redeclaration-attempt-with-let.js:36: strict mode: unexpected error type: Test262: This statement should not be evaluated.
-test262/test/language/expressions/class/elements/class-name-static-initializer-anonymous.js:20: Test262Error: Expected SameValue(«», «C») to be true
-test262/test/language/expressions/class/elements/class-name-static-initializer-anonymous.js:20: strict mode: Test262Error: Expected SameValue(«», «C») to be true
 test262/test/language/expressions/dynamic-import/usage-from-eval.js:26: TypeError: $DONE() not called
 test262/test/language/expressions/dynamic-import/usage-from-eval.js:26: strict mode: TypeError: $DONE() not called

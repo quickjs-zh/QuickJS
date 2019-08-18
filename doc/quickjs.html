@@ -244,7 +244,11 @@ compiler with the mathematical extensions:
 </dd>
 <dt><code>-m</code></dt>
 <dt><code>--module</code></dt>
-<dd><p>Load as ES6 module (default if .mjs file extension).
+<dd><p>Load as ES6 module (default=autodetect).
+</p>
+</dd>
+<dt><code>--script</code></dt>
+<dd><p>Load as ES6 script (default=autodetect).
 </p>
 </dd>
 </dl>
@@ -287,7 +291,7 @@ executable file.
 </p>
 </dd>
 <dt><code>-m</code></dt>
-<dd><p>Compile as Javascript module (default if <samp>.mjs</samp> extension).
+<dd><p>Compile as Javascript module (default=autodetect).
 </p>
 </dd>
 <dt><code>-M module_name[,cname]</code></dt>
@@ -540,6 +544,11 @@ and <samp>stdio.h</samp> and a few other utilities.
 <code>std.Error</code> in case of I/O error.
 </p>
 </dd>
+<dt><code>popen(command, flags)</code></dt>
+<dd><p>Open a process by creating a pipe (wrapper to the libc <code>popen()</code>). Throws 
+<code>std.Error</code> in case of I/O error.
+</p>
+</dd>
 <dt><code>tmpfile()</code></dt>
 <dd><p>Open a temporary file. Throws <code>std.Error</code> in case of I/O error.
 </p>
@@ -737,6 +746,67 @@ Return the number of written bytes or &lt; 0 if error.
 </dd>
 <dt><code>rename(oldname, newname)</code></dt>
 <dd><p>Rename a file. Return 0 if OK or &lt; 0 if error.
+</p>
+</dd>
+<dt><code>realpath(path)</code></dt>
+<dd><p>Return <code>[str, err]</code> where <code>str</code> is the canonicalized absolute
+pathname of <code>path</code> and <code>err</code> the error code.
+</p>
+</dd>
+<dt><code>getcwd()</code></dt>
+<dd><p>Return <code>[str, err]</code> where <code>str</code> is the current working directory
+and <code>err</code> the error code.
+</p>
+</dd>
+<dt><code>mkdir(path, mode = 0o777)</code></dt>
+<dd><p>Create a directory at <code>path</code>. Return the error code.
+</p>
+</dd>
+<dt><code>stat(path)</code></dt>
+<dt><code>lstat(path)</code></dt>
+<dd>
+<p>Return <code>[obj, err]</code> where <code>obj</code> is an object containing the
+file status of <code>path</code>. <code>err</code> is the error code. The
+following fields are defined in <code>obj</code>: dev, ino, mode, nlink,
+uid, gid, rdev, size, blocks, atime, mtime, ctime. The times are
+specified in milliseconds since 1970. <code>lstat()</code> is the same as
+<code>stat()</code> excepts that it returns information about the link
+itself.
+</p>
+</dd>
+<dt><code>S_IFMT</code></dt>
+<dt><code>S_IFIFO</code></dt>
+<dt><code>S_IFCHR</code></dt>
+<dt><code>S_IFDIR</code></dt>
+<dt><code>S_IFBLK</code></dt>
+<dt><code>S_IFREG</code></dt>
+<dt><code>S_IFSOCK</code></dt>
+<dt><code>S_IFLNK</code></dt>
+<dt><code>S_ISGID</code></dt>
+<dt><code>S_ISUID</code></dt>
+<dd><p>Constants to interpret the <code>mode</code> property returned by
+<code>stat()</code>. They have the same value as in the C system header
+<samp>sys/stat.h</samp>.
+</p>
+</dd>
+<dt><code>utimes(path, atime, mtime)</code></dt>
+<dd><p>Change the access and modification times of the file <code>path</code>. The
+times are specified in milliseconds since 1970.
+</p>
+</dd>
+<dt><code>symlink(target, linkpath)</code></dt>
+<dd><p>Create a link at <code>linkpath</code> containing the string <code>target</code>.
+</p>
+</dd>
+<dt><code>readlink(path)</code></dt>
+<dd><p>Return <code>[str, err]</code> where <code>str</code> is the link target and <code>err</code>
+the error code.
+</p>
+</dd>
+<dt><code>readdir(path)</code></dt>
+<dd><p>Return <code>[array, err]</code> where <code>array</code> is an array of strings
+containing the filenames of the directory <code>path</code>. <code>err</code> is
+the error code.
 </p>
 </dd>
 <dt><code>setReadHandler(fd, func)</code></dt>

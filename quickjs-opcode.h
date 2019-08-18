@@ -155,7 +155,8 @@ DEF(         append, 1, 3, 2, none) /* append enumerated object, update length *
 DEF(copy_data_properties, 2, 3, 3, u8)
 DEF(  define_method, 6, 2, 1, atom_u8)
 DEF(define_method_computed, 2, 3, 1, u8) /* must come after define_method */
-DEF(   define_class, 6, 2, 2, atom_u8)
+DEF(   define_class, 6, 2, 2, atom_u8) /* parent ctor -> ctor proto */
+DEF(   define_class_computed, 6, 3, 3, atom_u8) /* field_name parent ctor -> field_name ctor proto (class with computed name) */
 
 DEF(        get_loc, 3, 0, 1, loc)
 DEF(        put_loc, 3, 1, 0, loc) /* must come after get_loc */
@@ -284,6 +285,8 @@ def(scope_get_private_field, 7, 1, 1, atom_u16) /* obj -> value, emitted in phas
 def(scope_get_private_field2, 7, 1, 2, atom_u16) /* obj -> obj value, emitted in phase 1, removed in phase 2 */
 def(scope_put_private_field, 7, 1, 1, atom_u16) /* obj value ->, emitted in phase 1, removed in phase 2 */
 
+def( set_class_name, 5, 1, 1, u32) /* emitted in phase 1, removed in phase 2 */
+    
 def(       line_num, 5, 0, 0, u32) /* emitted in phase 1, removed in phase 3 */
 
 #if SHORT_OPCODES

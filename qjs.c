@@ -65,10 +65,10 @@ static int eval_buf(JSContext *ctx, const void *buf, int buf_len,
     return ret;
 }
 
-static int eval_file(JSContext *ctx, const char *filename, int eval_flags)
+static int eval_file(JSContext *ctx, const char *filename, int module)
 {
     uint8_t *buf;
-    int ret;
+    int ret, eval_flags;
     size_t buf_len;
     
     buf = js_load_file(ctx, &buf_len, filename);
@@ -76,6 +76,14 @@ static int eval_file(JSContext *ctx, const char *filename, int eval_flags)
         perror(filename);
         exit(1);
     }
+
+    if (module < 0) {
+        module = JS_DetectModule((const char *)buf, buf_len);
+    }
+    if (module)
+        eval_flags = JS_EVAL_TYPE_MODULE;
+    else
+        eval_flags = JS_EVAL_TYPE_GLOBAL;
     ret = eval_buf(ctx, buf, buf_len, filename, eval_flags);
     js_free(ctx, buf);
     return ret;
@@ -239,11 +247,13 @@ static const JSMallocFunctions trace_mf = {
 void help(void)
 {
     printf("QuickJS version " CONFIG_VERSION "\n"
-           "usage: " PROG_NAME " [options] [files]\n"
+           "usage: " PROG_NAME " [options] [file]\n"
            "-h  --help         list options\n"
            "-e  --eval EXPR    evaluate EXPR\n"
            "-i  --interactive  go to interactive mode\n"
-           "-m  --module       load as ES6 module (default if .mjs file extension)\n"
+           "-m  --module       load as ES6 module (default=autodetect)\n"
+           "    --script       load as ES6 script (default=autodetect)\n"
+           "    --std          make 'std' and 'os' available to the loaded script\n"
 #ifdef CONFIG_BIGNUM
            "    --qjscalc      load the QJSCalc runtime (default if invoked as qjscalc)\n"
 #endif
@@ -264,8 +274,8 @@ int main(int argc, char **argv)
     int dump_memory = 0;
     int trace_memory = 0;
     int empty_run = 0;
-    int module = 0;
-    int load_std = 1;
+    int module = -1;
+    int load_std = 0;
 #ifdef CONFIG_BIGNUM
     int load_jscalc;
 #endif
@@ -327,6 +337,10 @@ int main(int argc, char **argv)
                 module = 1;
                 continue;
             }
+            if (!strcmp(longopt, "script")) {
+                module = 0;
+                continue;
+            }
             if (opt == 'd' || !strcmp(longopt, "dump")) {
                 dump_memory++;
                 continue;
@@ -335,8 +349,8 @@ int main(int argc, char **argv)
                 trace_memory++;
                 continue;
             }
-            if (!strcmp(longopt, "nostd")) {
-                load_std = 0;
+            if (!strcmp(longopt, "std")) {
+                load_std = 1;
                 continue;
             }
 #ifdef CONFIG_BIGNUM
@@ -406,15 +420,9 @@ int main(int argc, char **argv)
             /* interactive mode */
             interactive = 1;
         } else {
-            int eval_flags;
             const char *filename;
             filename = argv[optind];
-
-            if (module || has_suffix(filename, ".mjs"))
-                eval_flags = JS_EVAL_TYPE_MODULE;
-            else
-                eval_flags = JS_EVAL_TYPE_GLOBAL;
-            if (eval_file(ctx, filename, eval_flags))
+            if (eval_file(ctx, filename, module))
                 goto fail;
         }
         if (interactive) {

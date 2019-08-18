@@ -69,19 +69,6 @@ index 2abfee3..e7c07b1 100644
  }
  
  function testPropertyEscapes(regex, string, expression) {
-diff --git a/test/language/comments/hashbang/use-strict.js b/test/language/comments/hashbang/use-strict.js
-index 962614c..541c115 100644
---- a/test/language/comments/hashbang/use-strict.js
-+++ b/test/language/comments/hashbang/use-strict.js
-@@ -10,7 +10,7 @@ description: >
- info: |
-     HashbangComment::
-       #! SingleLineCommentChars[opt]
--flags: [raw]
-+flags: [raw, noStrict]
- features: [hashbang]
- ---*/
- 
 diff --git a/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js b/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
 index 48ed9a8..f486a2c 100644
 --- a/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
@@ -157,6 +144,32 @@ index d73056f..6a943c9 100644
        a. Throw a TypeError exception.
 -features: [class, class-methods-private]
 +features: [class, class-methods-private, cross-realm]
+ flags: [noStrict]
+ ---*/
+ 
+diff --git a/test/language/expressions/class/private-static-field-multiple-evaluations-of-class-realm.js b/test/language/expressions/class/private-static-field-multiple-evaluations-of-class-realm.js
+index 0c12f51..b59d32a 100644
+--- a/test/language/expressions/class/private-static-field-multiple-evaluations-of-class-realm.js
++++ b/test/language/expressions/class/private-static-field-multiple-evaluations-of-class-realm.js
+@@ -35,7 +35,7 @@ info: |
+     ...
+     8. If fieldName is a Private Name,
+       a. Perform ? PrivateFieldAdd(fieldName, receiver, initValue).
+-features: [class, class-static-fields-private]
++features: [class, class-static-fields-private, cross-realm]
+ flags: [noStrict]
+ ---*/
+ 
+diff --git a/test/language/expressions/class/private-static-method-brand-check-multiple-evaluations-of-class-realm.js b/test/language/expressions/class/private-static-method-brand-check-multiple-evaluations-of-class-realm.js
+index 3ada7fe..7d8f0a2 100644
+--- a/test/language/expressions/class/private-static-method-brand-check-multiple-evaluations-of-class-realm.js
++++ b/test/language/expressions/class/private-static-method-brand-check-multiple-evaluations-of-class-realm.js
+@@ -19,7 +19,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-static-methods-private]
++features: [class, class-static-methods-private, cross-realm]
  flags: [noStrict]
  ---*/
  

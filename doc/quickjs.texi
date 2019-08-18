@@ -127,7 +127,10 @@ Go to interactive mode (it is not the default when files are provided on the com
 
 @item -m
 @item --module
-Load as ES6 module (default if .mjs file extension).
+Load as ES6 module (default=autodetect).
+
+@item --script
+Load as ES6 script (default=autodetect).
 
 @end table
 
@@ -164,7 +167,7 @@ Set the output filename (default = @file{out.c} or @file{a.out}).
 Set the C name of the generated data.
 
 @item -m
-Compile as Javascript module (default if @file{.mjs} extension).
+Compile as Javascript module (default=autodetect).
 
 @item -M module_name[,cname]
 Add initialization code for an external C module. See the
@@ -395,6 +398,10 @@ The constructor contains the following fields:
 Open a file (wrapper to the libc @code{fopen()}). Throws 
 @code{std.Error} in case of I/O error.
 
+@item popen(command, flags)
+Open a process by creating a pipe (wrapper to the libc @code{popen()}). Throws 
+@code{std.Error} in case of I/O error.
+
 @item tmpfile()
 Open a temporary file. Throws @code{std.Error} in case of I/O error.
 
@@ -555,6 +562,58 @@ Remove a file. Return 0 if OK or < 0 if error.
 
 @item rename(oldname, newname)
 Rename a file. Return 0 if OK or < 0 if error.
+
+@item realpath(path)
+Return @code{[str, err]} where @code{str} is the canonicalized absolute
+pathname of @code{path} and @code{err} the error code.
+
+@item getcwd()
+Return @code{[str, err]} where @code{str} is the current working directory
+and @code{err} the error code.
+
+@item mkdir(path, mode = 0o777)
+Create a directory at @code{path}. Return the error code.
+
+@item stat(path)
+@item lstat(path)
+
+Return @code{[obj, err]} where @code{obj} is an object containing the
+file status of @code{path}. @code{err} is the error code. The
+following fields are defined in @code{obj}: dev, ino, mode, nlink,
+uid, gid, rdev, size, blocks, atime, mtime, ctime. The times are
+specified in milliseconds since 1970. @code{lstat()} is the same as
+@code{stat()} excepts that it returns information about the link
+itself.
+
+@item S_IFMT
+@item S_IFIFO
+@item S_IFCHR
+@item S_IFDIR
+@item S_IFBLK
+@item S_IFREG
+@item S_IFSOCK
+@item S_IFLNK
+@item S_ISGID
+@item S_ISUID
+Constants to interpret the @code{mode} property returned by
+@code{stat()}. They have the same value as in the C system header
+@file{sys/stat.h}.
+
+@item utimes(path, atime, mtime)
+Change the access and modification times of the file @code{path}. The
+times are specified in milliseconds since 1970.
+
+@item symlink(target, linkpath)
+Create a link at @code{linkpath} containing the string @code{target}.
+
+@item readlink(path)
+Return @code{[str, err]} where @code{str} is the link target and @code{err}
+the error code.
+
+@item readdir(path)
+Return @code{[array, err]} where @code{array} is an array of strings
+containing the filenames of the directory @code{path}. @code{err} is
+the error code.
 
 @item setReadHandler(fd, func)
 Add a read handler to the file handle @code{fd}. @code{func} is called

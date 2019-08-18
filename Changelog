@@ -1,3 +1,11 @@
+2019-08-18:
+
+- added os.realpath, os.getcwd, os.mkdir, os.stat, os.lstat,
+  os.readlink, os.readdir, os.utimes, std.popen
+- module autodetection
+- added import.meta
+- misc bug fixes
+
 2019-08-10:
 
 - added public class fields and private class fields, methods and

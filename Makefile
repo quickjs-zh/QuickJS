@@ -382,15 +382,15 @@ test: qjs qjsbn
 	./qjs tests/test_op.js
 	./qjs tests/test_builtin.js
 	./qjs tests/test_loop.js
-	./qjs -m tests/test_std.js
+	./qjs tests/test_std.js
 ifndef CONFIG_DARWIN
-	./qjs -m tests/test_bjson.js
+	./qjs tests/test_bjson.js
 endif
 	./qjsbn tests/test_closure.js
 	./qjsbn tests/test_op.js
 	./qjsbn tests/test_builtin.js
 	./qjsbn tests/test_loop.js
-	./qjsbn -m tests/test_std.js
+	./qjsbn tests/test_std.js
 	./qjsbn --qjscalc tests/test_bignum.js
 
 test-32: qjs32 qjsbn32
@@ -398,12 +398,12 @@ test-32: qjs32 qjsbn32
 	./qjs32 tests/test_op.js
 	./qjs32 tests/test_builtin.js
 	./qjs32 tests/test_loop.js
-	./qjs32 -m tests/test_std.js
+	./qjs32 tests/test_std.js
 	./qjsbn32 tests/test_closure.js
 	./qjsbn32 tests/test_op.js
 	./qjsbn32 tests/test_builtin.js
 	./qjsbn32 tests/test_loop.js
-	./qjsbn32 -m tests/test_std.js
+	./qjsbn32 tests/test_std.js
 	./qjsbn32 --qjscalc tests/test_bignum.js
 
 stats: qjs qjs32
@@ -411,10 +411,10 @@ stats: qjs qjs32
 	./qjs32 -qd
 
 microbench: qjs
-	./qjs tests/microbench.js
+	./qjs --std tests/microbench.js
 
 microbench-32: qjs32
-	./qjs32 tests/microbench.js
+	./qjs32 --std tests/microbench.js
 
 # ES5 tests (obsolete)
 test2o: run-test262

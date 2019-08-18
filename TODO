@@ -1,4 +1,3 @@
-- fix regexp skip in js_parse_skip_parens_token()
 - 64-bit atoms in 64-bit mode?
 - rename CONFIG_ALL_UNICODE, CONFIG_BIGNUM, CONFIG_ATOMICS, CONFIG_CHECK_JSVALUE ?
 - unify coding style and naming conventions
@@ -76,6 +75,6 @@ REPL:
 Test262o:   0/11262 errors, 463 excluded
 Test262o commit: 7da91bceb9ce7613f87db47ddd1292a2dda58b42 (es5-tests branch)
 
-Test262:   27/66629 errors, 784 excluded, 1406 skipped
-Test262bn: 27/68730 errors, 717 excluded, 419 skipped
-test262 commit: 8f5f6a1aa1a99640483d067f84fcf7719d9e6c38
+Test262:   2/67090 errors, 842 excluded, 1386 skipped
+Test262bn: 2/69191 errors, 775 excluded, 399 skipped
+test262 commit: 59a1a016b7cf5cf43f66b274c7d1db4ec6066935

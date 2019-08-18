@@ -12,11 +12,26 @@ if [ "$1" = "-h" ] ; then
     exit 1
 fi
 
-    
+unicode="no"
+tests="no"
+binary="no"
+quickjs="no"
+
 if [ "$1" = "all" ] ; then
+    unicode="yes"
+    tests="yes"
+    binary="yes"
+    quickjs="yes"
+elif [ "$1" = "binary" ] ; then
+    binary="yes"
+else
+    quickjs="yes"
+fi
 
 #################################################"
 # unicode data
+
+if [ "$unicode" = "yes" ] ; then
 
 d="quickjs-${version}"
 name="quickjs-unicode-data-${version}"
@@ -29,8 +44,12 @@ cp unicode/* $outdir/unicode
 
 ( cd /tmp && tar Jcvf /tmp/${name}.tar.xz ${d} )
 
+fi
+
 #################################################"
 # all tests
+
+if [ "$tests" = "yes" ] ; then
 
 d="quickjs-${version}"
 name="quickjs-tests-${version}"
@@ -47,10 +66,35 @@ cp -a tests/bench-v8 $outdir/tests
 
 ( cd /tmp && tar Jcvf /tmp/${name}.tar.xz ${d} )
 
-fi # all
+fi
+
+#################################################"
+# binary release
+
+if [ "$binary" = "yes" ] ; then
+
+d="quickjs-linux-x86_64-${version}"
+name="quickjs-linux-x86_64-${version}"
+outdir="/tmp/${d}"
+
+rm -rf $outdir
+mkdir -p $outdir
+
+files="qjs qjsbn run-test262 run-test262-bn "
+
+make -j4 $files
+
+strip $files
+cp $files $outdir
+
+( cd /tmp && tar Jcvf /tmp/${name}.tar.xz ${d} )
+
+fi
 
 #################################################"
 # quickjs
+
+if [ "$quickjs" = "yes" ] ; then
 
 make build_doc
 
@@ -83,3 +127,5 @@ cp doc/quickjs.texi doc/quickjs.pdf doc/quickjs.html \
    $outdir/doc 
 
 ( cd /tmp && tar Jcvf /tmp/${d}.tar.xz ${d} )
+
+fi
