@@ -780,3 +780,4 @@ QuickJS 在MIT协议下发布。
 
 - [qjsuv](https://github.com/saghul/qjsuv) QuickJS ❤️ libuv
 
+- [QuickJS-Pascal](https://github.com/Coldzer0/QuickJS-Pascal) Quickjs FreePascal / Delphi Bindings
