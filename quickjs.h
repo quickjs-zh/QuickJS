@@ -279,7 +279,10 @@ static inline JSValue __JS_NewFloat64(JSContext *ctx, double d)
 
 #define JS_EVAL_FLAG_STRICT   (1 << 3) /* force 'strict' mode */
 #define JS_EVAL_FLAG_STRIP    (1 << 4) /* force 'strip' mode */
-#define JS_EVAL_FLAG_COMPILE_ONLY (1 << 5) /* internal use */
+/* compile but do not run. The result is an object with a
+   JS_TAG_FUNCTION_BYTECODE or JS_TAG_MODULE tag. It can be executed
+   with JS_EvalFunction(). */
+#define JS_EVAL_FLAG_COMPILE_ONLY (1 << 5)
 
 typedef JSValue JSCFunction(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 typedef JSValue JSCFunctionMagic(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, int magic);
@@ -694,9 +697,7 @@ JSValue JS_CallConstructor2(JSContext *ctx, JSValueConst func_obj,
 JS_BOOL JS_DetectModule(const char *input, size_t input_len);
 JSValue JS_Eval(JSContext *ctx, const char *input, size_t input_len,
                 const char *filename, int eval_flags);
-#define JS_EVAL_BINARY_LOAD_ONLY (1 << 0) /* only load the module */
-JSValue JS_EvalBinary(JSContext *ctx,
-                      const uint8_t *buf, size_t buf_len, int flags);
+JSValue JS_EvalFunction(JSContext *ctx, JSValue fun_obj);
 JSValue JS_GetGlobalObject(JSContext *ctx);
 int JS_IsInstanceOf(JSContext *ctx, JSValueConst val, JSValueConst obj);
 int JS_DefineProperty(JSContext *ctx, JSValueConst this_obj,
@@ -746,6 +747,9 @@ typedef JSModuleDef *JSModuleLoaderFunc(JSContext *ctx,
 void JS_SetModuleLoaderFunc(JSRuntime *rt,
                             JSModuleNormalizeFunc *module_normalize,
                             JSModuleLoaderFunc *module_loader, void *opaque);
+/* return the import.meta object of a module */
+JSValue JS_GetImportMeta(JSContext *ctx, JSModuleDef *m);
+JSAtom JS_GetModuleName(JSContext *ctx, JSModuleDef *m);
 
 /* JS Job support */
 
@@ -764,7 +768,9 @@ uint8_t *JS_WriteObject(JSContext *ctx, size_t *psize, JSValueConst obj,
 #define JS_READ_OBJ_ROM_DATA  (1 << 1) /* avoid duplicating 'buf' data */
 JSValue JS_ReadObject(JSContext *ctx, const uint8_t *buf, size_t buf_len,
                       int flags);
-JSValue JS_EvalFunction(JSContext *ctx, JSValue fun_obj, JSValueConst this_obj);
+/* load the dependencies of the module 'obj'. Useful when JS_ReadObject()
+   returns a module. */
+int JS_ResolveModule(JSContext *ctx, JSValueConst obj);
 
 /* C function definition */
 typedef enum JSCFunctionEnum {  /* XXX: should rename for namespace isolation */

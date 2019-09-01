@@ -54,7 +54,18 @@ static int eval_buf(JSContext *ctx, const void *buf, int buf_len,
     JSValue val;
     int ret;
 
-    val = JS_Eval(ctx, buf, buf_len, filename, eval_flags);
+    if ((eval_flags & JS_EVAL_TYPE_MASK) == JS_EVAL_TYPE_MODULE) {
+        /* for the modules, we compile then run to be able to set
+           import.meta */
+        val = JS_Eval(ctx, buf, buf_len, filename,
+                      eval_flags | JS_EVAL_FLAG_COMPILE_ONLY);
+        if (!JS_IsException(val)) {
+            js_module_set_import_meta(ctx, val, TRUE, TRUE);
+            val = JS_EvalFunction(ctx, val);
+        }
+    } else {
+        val = JS_Eval(ctx, buf, buf_len, filename, eval_flags);
+    }
     if (JS_IsException(val)) {
         js_std_dump_error(ctx);
         ret = -1;
@@ -78,7 +89,8 @@ static int eval_file(JSContext *ctx, const char *filename, int module)
     }
 
     if (module < 0) {
-        module = JS_DetectModule((const char *)buf, buf_len);
+        module = (has_suffix(filename, ".mjs") ||
+                  JS_DetectModule((const char *)buf, buf_len));
     }
     if (module)
         eval_flags = JS_EVAL_TYPE_MODULE;

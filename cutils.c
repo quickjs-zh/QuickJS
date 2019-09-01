@@ -572,7 +572,6 @@ void rqsort(void *base, size_t nmemb, size_t size, cmp_f cmp, void *opaque)
              */
             span = plt - ptr;
             span2 = pi - plt;
-            plt = pi - span;
             lt = i - lt;
             if (span > span2)
                 span = span2;

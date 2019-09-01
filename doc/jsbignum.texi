@@ -238,8 +238,6 @@ The following changes are visible:
 
 @item Operators with integer operands never return the minus zero floating point value as result. Hence @code{Object.is(0, -0) === true}. Use @code{-0.0} to create a minus zero floating point value.
 
-@item Division or modulo with a zero integer dividend raises an exception i.e. @code{1/0} throws a @code{RangeError} exception. However, division by the floating point zero returns Infinity or NaN as in standard mode: @code{1/0.0 === Infinity}. The same holds for zero elevated to a negative integer power i.e. @code{0**-1} throws a @code{RangeError} exception.
-
 @item The @code{ToPrimitive} abstract operation is called with the @code{"integer"} preferred type when an integer is required (e.g. for bitwise binary or shift operations).
 
 @item The prototype of integers is no longer @code{Number.prototype}. Instead@* @code{Object.getPrototypeOf(1) === BigInt.prototype}. The prototype of floats remains Number.prototype.

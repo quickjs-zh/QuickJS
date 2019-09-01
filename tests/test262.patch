@@ -69,6 +69,29 @@ index 2abfee3..e7c07b1 100644
  }
  
  function testPropertyEscapes(regex, string, expression) {
+diff --git a/test/built-ins/TypedArray/prototype/sort/sorted-values.js b/test/built-ins/TypedArray/prototype/sort/sorted-values.js
+index 83d870e..85a9bcd 100644
+--- a/test/built-ins/TypedArray/prototype/sort/sorted-values.js
++++ b/test/built-ins/TypedArray/prototype/sort/sorted-values.js
+@@ -25,9 +25,6 @@ testWithTypedArrayConstructors(function(TA) {
+ 
+   sample = new TA([3, 4, 3, 1, 0, 1, 2]).sort();
+   assert(compareArray(sample, [0, 1, 1, 2, 3, 3, 4]), "repeating numbers");
+-
+-  sample = new TA([1, 0, -0, 2]).sort();
+-  assert(compareArray(sample, [0, 0, 1, 2]), "0s");
+ });
+ 
+ testWithTypedArrayConstructors(function(TA) {
+@@ -45,7 +42,7 @@ testWithTypedArrayConstructors(function(TA) {
+   assert(compareArray(sample, [-1.5, -1, -0.5, 0, 0.5, 1, 1.5]), "non integers + negatives");
+ 
+   sample = new TA([1, 0, -0, 2]).sort();
+-  assert(compareArray(sample, [0, 0, 1, 2]), "0 and -0");
++  assert(compareArray(sample, [-0, 0, 1, 2]), "0 and -0");
+ 
+   sample = new TA([3, 4, Infinity, -Infinity, 1, 2]).sort();
+   assert(compareArray(sample, [-Infinity, 1, 2, 3, 4, Infinity]), "infinities");
 diff --git a/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js b/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
 index 48ed9a8..f486a2c 100644
 --- a/test/language/expressions/class/private-getter-brand-check-multiple-evaluations-of-class-realm-function-ctor.js
@@ -160,10 +183,36 @@ index 0c12f51..b59d32a 100644
  flags: [noStrict]
  ---*/
  
+diff --git a/test/language/expressions/class/private-static-getter-multiple-evaluations-of-class-realm.js b/test/language/expressions/class/private-static-getter-multiple-evaluations-of-class-realm.js
+index 79b0920..e97e326 100644
+--- a/test/language/expressions/class/private-static-getter-multiple-evaluations-of-class-realm.js
++++ b/test/language/expressions/class/private-static-getter-multiple-evaluations-of-class-realm.js
+@@ -19,7 +19,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-static-methods-private]
++features: [class, class-static-methods-private, cross-realm]
+ flags: [noStrict]
+ ---*/
+ 
 diff --git a/test/language/expressions/class/private-static-method-brand-check-multiple-evaluations-of-class-realm.js b/test/language/expressions/class/private-static-method-brand-check-multiple-evaluations-of-class-realm.js
-index 3ada7fe..7d8f0a2 100644
+index b5e25b9..bfef8f6 100644
 --- a/test/language/expressions/class/private-static-method-brand-check-multiple-evaluations-of-class-realm.js
 +++ b/test/language/expressions/class/private-static-method-brand-check-multiple-evaluations-of-class-realm.js
+@@ -19,7 +19,7 @@ info: |
+   PrivateBrandCheck(O, P)
+     1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,
+       a. Throw a TypeError exception.
+-features: [class, class-static-methods-private]
++features: [class, class-static-methods-private, cross-realm]
+ flags: [noStrict]
+ ---*/
+ 
+diff --git a/test/language/expressions/class/private-static-setter-multiple-evaluations-of-class-realm.js b/test/language/expressions/class/private-static-setter-multiple-evaluations-of-class-realm.js
+index acaf7cf..412d37a 100644
+--- a/test/language/expressions/class/private-static-setter-multiple-evaluations-of-class-realm.js
++++ b/test/language/expressions/class/private-static-setter-multiple-evaluations-of-class-realm.js
 @@ -19,7 +19,7 @@ info: |
    PrivateBrandCheck(O, P)
      1. If O.[[PrivateBrands]] does not contain an entry e such that SameValue(e, P.[[Brand]]) is true,

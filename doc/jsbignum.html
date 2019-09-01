@@ -1,7 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 6.5, http://www.gnu.org/software/texinfo/ -->
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Javascript Bignum Extensions</title>
 
 <meta name="description" content="Javascript Bignum Extensions">
@@ -9,21 +10,20 @@
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="makeinfo">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link href="#SEC_Contents" rel="contents" title="Table of Contents">
 <style type="text/css">
 <!--
 a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+blockquote.smallindentedblock {margin-right: 0em; font-size: smaller}
 blockquote.smallquotation {font-size: smaller}
 div.display {margin-left: 3.2em}
 div.example {margin-left: 3.2em}
-div.indentedblock {margin-left: 3.2em}
 div.lisp {margin-left: 3.2em}
 div.smalldisplay {margin-left: 3.2em}
 div.smallexample {margin-left: 3.2em}
-div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
 div.smalllisp {margin-left: 3.2em}
-kbd {font-style:oblique}
+kbd {font-style: oblique}
 pre.display {font-family: inherit}
 pre.format {font-family: inherit}
 pre.menu-comment {font-family: serif}
@@ -32,10 +32,9 @@ pre.smalldisplay {font-family: inherit; font-size: smaller}
 pre.smallexample {font-size: smaller}
 pre.smallformat {font-family: inherit; font-size: smaller}
 pre.smalllisp {font-size: smaller}
-span.nocodebreak {white-space:nowrap}
-span.nolinebreak {white-space:nowrap}
-span.roman {font-family:serif; font-weight:normal}
-span.sansserif {font-family:sans-serif; font-weight:normal}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
 ul.no-bullet {list-style: none}
 -->
 </style>
@@ -44,7 +43,7 @@ ul.no-bullet {list-style: none}
 
 </head>
 
-<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<body lang="en">
 <h1 class="settitle" align="center">Javascript Bignum Extensions</h1>
 
 <a name="SEC_Contents"></a>
@@ -356,8 +355,6 @@ BigInt is not observable (i.e. they are both integers).
 </li><li> Bitwise shift operators do not truncate to 32 bits and do not mask the shift count with <code>0x1f</code> i.e. <code>1 &lt;&lt; 32 === 4294967296</code> while it gives <code>1</code> in standard mode. However, the <code>&gt;&gt;&gt;</code> operator (unsigned right shift) which is useless with bignums keeps its standard mode behavior<a name="DOCF4" href="#FOOT4"><sup>4</sup></a>.
 
 </li><li> Operators with integer operands never return the minus zero floating point value as result. Hence <code>Object.is(0, -0) === true</code>. Use <code>-0.0</code> to create a minus zero floating point value.
-
-</li><li> Division or modulo with a zero integer dividend raises an exception i.e. <code>1/0</code> throws a <code>RangeError</code> exception. However, division by the floating point zero returns Infinity or NaN as in standard mode: <code>1/0.0 === Infinity</code>. The same holds for zero elevated to a negative integer power i.e. <code>0**-1</code> throws a <code>RangeError</code> exception.
 
 </li><li> The <code>ToPrimitive</code> abstract operation is called with the <code>&quot;integer&quot;</code> preferred type when an integer is required (e.g. for bitwise binary or shift operations).
 

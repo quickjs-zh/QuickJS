@@ -256,8 +256,8 @@ options of the test262 runner.
 @code{test262-harness}@footnote{@url{https://github.com/bterlson/test262-harness}}
 thru @code{eshost}. Unless you want to compare QuickJS with other
 engines under the same conditions, we do not recommend to run the
-tests this way as it is much slower (typically more than one hour
-instead of about 100 seconds).
+tests this way as it is much slower (typically half an hour instead of
+about 100 seconds).
 
 @chapter Specifications
 
@@ -423,9 +423,6 @@ Wrappers to the libc file @code{stdin}, @code{stdout}, @code{stderr}.
 @item SEEK_CUR
 @item SEEK_END
 Constants for seek().
-
-@item global
-Reference to the global object.
 
 @item gc()
 Manually invoke the cycle removal algorithm. The cycle removal

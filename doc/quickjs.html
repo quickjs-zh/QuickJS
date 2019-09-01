@@ -1,7 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 6.5, http://www.gnu.org/software/texinfo/ -->
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>QuickJS Javascript Engine</title>
 
 <meta name="description" content="QuickJS Javascript Engine">
@@ -9,21 +10,20 @@
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="makeinfo">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link href="#SEC_Contents" rel="contents" title="Table of Contents">
 <style type="text/css">
 <!--
 a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+blockquote.smallindentedblock {margin-right: 0em; font-size: smaller}
 blockquote.smallquotation {font-size: smaller}
 div.display {margin-left: 3.2em}
 div.example {margin-left: 3.2em}
-div.indentedblock {margin-left: 3.2em}
 div.lisp {margin-left: 3.2em}
 div.smalldisplay {margin-left: 3.2em}
 div.smallexample {margin-left: 3.2em}
-div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
 div.smalllisp {margin-left: 3.2em}
-kbd {font-style:oblique}
+kbd {font-style: oblique}
 pre.display {font-family: inherit}
 pre.format {font-family: inherit}
 pre.menu-comment {font-family: serif}
@@ -32,10 +32,9 @@ pre.smalldisplay {font-family: inherit; font-size: smaller}
 pre.smallexample {font-size: smaller}
 pre.smallformat {font-family: inherit; font-size: smaller}
 pre.smalllisp {font-size: smaller}
-span.nocodebreak {white-space:nowrap}
-span.nolinebreak {white-space:nowrap}
-span.roman {font-family:serif; font-weight:normal}
-span.sansserif {font-family:sans-serif; font-weight:normal}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
 ul.no-bullet {list-style: none}
 -->
 </style>
@@ -44,7 +43,7 @@ ul.no-bullet {list-style: none}
 
 </head>
 
-<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<body lang="en">
 <h1 class="settitle" align="center">QuickJS Javascript Engine</h1>
 
 <a name="SEC_Contents"></a>
@@ -386,8 +385,8 @@ options of the test262 runner.
 <code>test262-harness</code><a name="DOCF5" href="#FOOT5"><sup>5</sup></a>
 thru <code>eshost</code>. Unless you want to compare QuickJS with other
 engines under the same conditions, we do not recommend to run the
-tests this way as it is much slower (typically more than one hour
-instead of about 100 seconds).
+tests this way as it is much slower (typically half an hour instead of
+about 100 seconds).
 </p>
 <a name="Specifications"></a>
 <h2 class="chapter">3 Specifications</h2>
@@ -575,10 +574,6 @@ and <samp>stdio.h</samp> and a few other utilities.
 <dt><code>SEEK_CUR</code></dt>
 <dt><code>SEEK_END</code></dt>
 <dd><p>Constants for seek().
-</p>
-</dd>
-<dt><code>global</code></dt>
-<dd><p>Reference to the global object.
 </p>
 </dd>
 <dt><code>gc()</code></dt>

@@ -80,14 +80,14 @@ outdir="/tmp/${d}"
 rm -rf $outdir
 mkdir -p $outdir
 
-files="qjs qjsbn run-test262 run-test262-bn "
+files="qjs qjsbn run-test262 run-test262-bn"
 
 make -j4 $files
 
 strip $files
 cp $files $outdir
 
-( cd /tmp && tar Jcvf /tmp/${name}.tar.xz ${d} )
+( cd /tmp/$d && rm -f ../${name}.zip && zip -r ../${name}.zip . )
 
 fi
 

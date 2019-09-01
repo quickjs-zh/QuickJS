@@ -281,7 +281,8 @@ static void compile_file(JSContext *ctx, FILE *fo,
     }
     eval_flags = JS_EVAL_FLAG_COMPILE_ONLY;
     if (module < 0) {
-        module = JS_DetectModule((const char *)buf, buf_len);
+        module = (has_suffix(filename, ".mjs") ||
+                  JS_DetectModule((const char *)buf, buf_len));
     }
     if (module)
         eval_flags |= JS_EVAL_TYPE_MODULE;
@@ -648,7 +649,7 @@ int main(int argc, char **argv)
             namelist_entry_t *e = &cname_list.array[i];
             fprintf(fo, "  js_std_eval_binary(ctx, %s, %s_size, %s);\n",
                     e->name, e->name,
-                    e->flags ? "JS_EVAL_BINARY_LOAD_ONLY" : "0");
+                    e->flags ? "1" : "0");
         }
         fputs(main_c_template2, fo);
     }

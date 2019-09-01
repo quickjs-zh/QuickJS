@@ -750,11 +750,6 @@ static JSValue add_helpers1(JSContext *ctx)
     JS_SetPropertyStr(ctx, global_obj, "print",
                       JS_NewCFunction(ctx, js_print, "print", 1));
 
-    /* add it in the engine once the proposal is accepted */
-    JS_DefinePropertyValueStr(ctx, global_obj, "globalThis",
-                              JS_DupValue(ctx, global_obj),
-                              JS_PROP_CONFIGURABLE | JS_PROP_WRITABLE);
-
     /* $262 special object used by the tests */
     obj262 = JS_NewObject(ctx);
     JS_SetPropertyStr(ctx, obj262, "detachArrayBuffer",
@@ -1910,7 +1905,8 @@ void run_test_dir_list(namelist_t *lp, int start_index, int stop_index)
 
 void help(void)
 {
-    printf("usage: run-test262 [options] {-f file ... | [dir_list] [index range]}\n"
+    printf("run-test262 version " CONFIG_VERSION "\n"
+           "usage: run-test262 [options] {-f file ... | [dir_list] [index range]}\n"
            "-h             help\n"
            "-a             run tests in strict and nostrict modes\n"
            "-m             print memory usage summary\n"

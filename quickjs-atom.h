@@ -166,6 +166,7 @@ DEF(exec, "exec")
 DEF(groups, "groups")
 DEF(status, "status")
 DEF(reason, "reason")
+DEF(globalThis, "globalThis")
 #ifdef CONFIG_BIGNUM
 DEF(bigint, "bigint")
 DEF(bigfloat, "bigfloat")
