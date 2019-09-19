@@ -31,11 +31,9 @@ endif
 CONFIG_LTO=y
 # consider warnings as errors (for development)
 #CONFIG_WERROR=y
-
-ifndef CONFIG_WIN32
 # force 32 bit build for some utilities
-CONFIG_M32=y
-endif
+#CONFIG_M32=y
+
 ifdef CONFIG_DARWIN
 # use clang instead of gcc
 CONFIG_CLANG=y
@@ -60,6 +58,7 @@ else
   EXE=
 endif
 ifdef CONFIG_CLANG
+  HOST_CC=clang
   CC=$(CROSS_PREFIX)clang
   CFLAGS=-g -Wall -MMD -MF $(OBJDIR)/$(@F).d
   CFLAGS += -Wextra
@@ -80,15 +79,17 @@ ifdef CONFIG_CLANG
     endif
   endif
 else
+  HOST_CC=gcc
   CC=$(CROSS_PREFIX)gcc
   CFLAGS=-g -Wall -MMD -MF $(OBJDIR)/$(@F).d
-  CFLAGS += -Wno-array-bounds
+  CFLAGS += -Wno-array-bounds -Wno-format-truncation
   ifdef CONFIG_LTO
     AR=$(CROSS_PREFIX)gcc-ar
   else
     AR=$(CROSS_PREFIX)ar
   endif
 endif
+STRIP=$(CROSS_PREFIX)strip
 ifdef CONFIG_WERROR
 CFLAGS+=-Werror
 endif
@@ -118,7 +119,17 @@ else
 LDEXPORT=-rdynamic
 endif
 
-PROGS=qjs$(EXE) qjsbn$(EXE) qjsc qjsbnc run-test262 run-test262-bn
+PROGS=qjs$(EXE) qjsbn$(EXE) qjsc$(EXE) qjsbnc$(EXE) run-test262 run-test262-bn
+ifneq ($(CROSS_PREFIX),)
+QJSC_CC=gcc
+QJSC=./host-qjsc
+QJSBNC=./host-qjsbnc
+PROGS+=$(QJSC) $(QJSBNC)
+else
+QJSC_CC=$(CC)
+QJSC=./qjsc$(EXE)
+QJSBNC=./qjsbnc$(EXE)
+endif
 ifndef CONFIG_WIN32
 PROGS+=qjscalc
 endif
@@ -129,13 +140,14 @@ PROGS+=libquickjs.a libquickjs.bn.a
 ifdef CONFIG_LTO
 PROGS+=libquickjs.lto.a libquickjs.bn.lto.a
 endif
+
 # examples
+ifeq ($(CROSS_PREFIX),)
 ifdef CONFIG_ASAN
-PROGS+=
-else ifdef CONFIG_WIN32
 PROGS+=
 else
 PROGS+=examples/hello examples/hello_module examples/c_module
+endif
 endif
 
 all: $(OBJDIR) $(OBJDIR)/quickjs.check.o $(OBJDIR)/qjs.check.o $(PROGS)
@@ -162,20 +174,32 @@ qjs$(EXE): $(QJS_OBJS)
 qjs-debug$(EXE): $(patsubst %.o, %.debug.o, $(QJS_OBJS))
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-qjsc: $(OBJDIR)/qjsc.o $(QJS_LIB_OBJS)
+qjsc$(EXE): $(OBJDIR)/qjsc.o $(QJS_LIB_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-qjsbnc: $(OBJDIR)/qjsc.bn.o $(QJSBN_LIB_OBJS)
+qjsbnc$(EXE): $(OBJDIR)/qjsc.bn.o $(QJSBN_LIB_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
+ifneq ($(CROSS_PREFIX),)
 
-QJSC_DEFINES:=-DCONFIG_CC=\"$(CC)\"
+$(QJSC): $(OBJDIR)/qjsc.host.o \
+    $(patsubst %.o, %.host.o, $(QJS_LIB_OBJS))
+	$(HOST_CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(QJSBNC): $(OBJDIR)/qjsc.bn.host.o \
+    $(patsubst %.o, %.host.o, $(QJSBN_LIB_OBJS))
+	$(HOST_CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+endif #CROSS_PREFIX
+
+QJSC_DEFINES:=-DCONFIG_CC=\"$(QJSC_CC)\" -DCONFIG_PREFIX=\"$(prefix)\"
 ifdef CONFIG_LTO
 QJSC_DEFINES+=-DCONFIG_LTO
 endif
-QJSC_DEFINES+=-DCONFIG_PREFIX=\"$(prefix)\"
+QJSC_HOST_DEFINES:=-DCONFIG_CC=\"$(HOST_CC)\" -DCONFIG_PREFIX=\"$(prefix)\"
 
 $(OBJDIR)/qjsc.o $(OBJDIR)/qjsc.bn.o: CFLAGS+=$(QJSC_DEFINES)
+$(OBJDIR)/qjsc.host.o $(OBJDIR)/qjsc.bn.host.o: CFLAGS+=$(QJSC_HOST_DEFINES)
 
 qjs32: $(patsubst %.o, %.m32.o, $(QJS_OBJS))
 	$(CC) -m32 $(LDFLAGS) $(LDEXPORT) -o $@ $^ $(LIBS)
@@ -216,14 +240,14 @@ libquickjs.bn.a: $(patsubst %.o, %.nolto.o, $(QJSBN_LIB_OBJS))
 	$(AR) rcs $@ $^
 endif # CONFIG_LTO
 
-repl.c: qjsc repl.js 
-	./qjsc -c -o $@ -m repl.js
+repl.c: $(QJSC) repl.js 
+	$(QJSC) -c -o $@ -m repl.js
 
-repl-bn.c: qjsbnc repl.js 
-	./qjsbnc -c -o $@ -m repl.js
+repl-bn.c: $(QJSBNC) repl.js 
+	$(QJSBNC) -c -o $@ -m repl.js
 
-qjscalc.c: qjsbnc qjscalc.js
-	./qjsbnc -c -o $@ qjscalc.js
+qjscalc.c: $(QJSBNC) qjscalc.js
+	$(QJSBNC) -c -o $@ qjscalc.js
 
 ifneq ($(wildcard unicode/UnicodeData.txt),)
 $(OBJDIR)/libunicode.o $(OBJDIR)/libunicode.m32.o $(OBJDIR)/libunicode.m32s.o $(OBJDIR)/libunicode.bn.o $(OBJDIR)/libunicode.bn.m32.o \
@@ -253,11 +277,17 @@ run-test262-bn32: $(patsubst %.o, %.m32.o, $(OBJDIR)/run-test262.bn.o $(QJSBN_LI
 $(OBJDIR)/%.o: %.c | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -c -o $@ $<
 
+$(OBJDIR)/%.host.o: %.c | $(OBJDIR)
+	$(HOST_CC) $(CFLAGS_OPT) -c -o $@ $<
+
 $(OBJDIR)/%.pic.o: %.c | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -fPIC -DJS_SHARED_LIBRARY -c -o $@ $<
 
 $(OBJDIR)/%.bn.o: %.c | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -DCONFIG_BIGNUM -c -o $@ $<
+
+$(OBJDIR)/%.bn.host.o: %.c | $(OBJDIR)
+	$(HOST_CC) $(CFLAGS_OPT) -DCONFIG_BIGNUM -c -o $@ $<
 
 $(OBJDIR)/%.nolto.o: %.c | $(OBJDIR)
 	$(CC) $(CFLAGS_NOLTO) -c -o $@ $<
@@ -289,8 +319,8 @@ regexp_test: libregexp.c libunicode.c cutils.c
 jscompress: jscompress.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ jscompress.c
 
-unicode_gen: unicode_gen.c cutils.c libunicode.c unicode_gen_def.h
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ unicode_gen.c cutils.c
+unicode_gen: $(OBJDIR)/unicode_gen.host.o $(OBJDIR)/cutils.host.o libunicode.c unicode_gen_def.h
+	$(HOST_CC) $(LDFLAGS) $(CFLAGS) -o $@ $(OBJDIR)/unicode_gen.host.o $(OBJDIR)/cutils.host.o
 
 clean:
 	rm -f repl.c repl-bn.c qjscalc.c out.c
@@ -300,17 +330,17 @@ clean:
 	rm -rf run-test262-debug run-test262-32 run-test262-bn32
 
 install: all
-	mkdir -p "$(prefix)/bin"
-	install -m755 -s qjs qjsc qjsbn qjsbnc "$(prefix)/bin"
-	ln -sf qjsbn "$(prefix)/bin/qjscalc"
-	mkdir -p "$(prefix)/lib/quickjs"
-	install -m755 libquickjs.a libquickjs.bn.a "$(prefix)/lib/quickjs"
+	mkdir -p "$(DESTDIR)$(prefix)/bin"
+	$(STRIP) qjs qjsbn qjsc qjsbnc
+	install -m755 qjs qjsbn qjsc qjsbnc "$(DESTDIR)$(prefix)/bin"
+	ln -sf qjsbn "$(DESTDIR)$(prefix)/bin/qjscalc"
+	mkdir -p "$(DESTDIR)$(prefix)/lib/quickjs"
+	install -m644 libquickjs.a libquickjs.bn.a "$(DESTDIR)$(prefix)/lib/quickjs"
 ifdef CONFIG_LTO
-	install -m755 libquickjs.lto.a libquickjs.bn.lto.a "$(prefix)/lib/quickjs"
+	install -m644 libquickjs.lto.a libquickjs.bn.lto.a "$(DESTDIR)$(prefix)/lib/quickjs"
 endif
-	mkdir -p "$(prefix)/include/quickjs"
-	install -m755 quickjs.h quickjs-libc.h "$(prefix)/include/quickjs"
-
+	mkdir -p "$(DESTDIR)$(prefix)/include/quickjs"
+	install -m644 quickjs.h quickjs-libc.h "$(DESTDIR)$(prefix)/include/quickjs"
 
 ###############################################################################
 # examples
@@ -319,10 +349,10 @@ endif
 HELLO_SRCS=examples/hello.js
 HELLO_OPTS=-fno-string-normalize -fno-map -fno-promise -fno-typedarray \
            -fno-typedarray -fno-regexp -fno-json -fno-eval -fno-proxy \
-           -fno-date
+           -fno-date -fno-module-loader
 
-hello.c: qjsc $(HELLO_SRCS)
-	./qjsc -e $(HELLO_OPTS) -o $@ $(HELLO_SRCS)
+hello.c: $(QJSC) $(HELLO_SRCS)
+	$(QJSC) -e $(HELLO_OPTS) -o $@ $(HELLO_SRCS)
 
 ifdef CONFIG_M32
 examples/hello: $(OBJDIR)/hello.m32s.o $(patsubst %.o, %.m32s.o, $(QJS_LIB_OBJS))
@@ -337,13 +367,13 @@ HELLO_MODULE_SRCS=examples/hello_module.js
 HELLO_MODULE_OPTS=-fno-string-normalize -fno-map -fno-promise -fno-typedarray \
            -fno-typedarray -fno-regexp -fno-json -fno-eval -fno-proxy \
            -fno-date -m
-examples/hello_module: qjsc libquickjs$(LTOEXT).a $(HELLO_MODULE_SRCS)
-	./qjsc $(HELLO_MODULE_OPTS) -o $@ $(HELLO_MODULE_SRCS)
+examples/hello_module: $(QJSC) libquickjs$(LTOEXT).a $(HELLO_MODULE_SRCS)
+	$(QJSC) $(HELLO_MODULE_OPTS) -o $@ $(HELLO_MODULE_SRCS)
 
 # use of an external C module (static compilation)
 
-c_module.c: qjsc examples/c_module.js
-	./qjsc -e -M examples/fib.so,fib -m -o $@ examples/c_module.js
+c_module.c: $(QJSC) examples/c_module.js
+	$(QJSC) -e -M examples/fib.so,fib -m -o $@ examples/c_module.js
 
 examples/c_module: $(OBJDIR)/c_module.o $(OBJDIR)/fib.o libquickjs$(LTOEXT).a
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)

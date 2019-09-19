@@ -41,7 +41,6 @@
 #define USE_FFT_MUL
 
 //#define inline __attribute__((always_inline))
-#define unused __attribute__((unused))
 
 #ifdef __AVX2__
 #define FFT_MUL_THRESHOLD 100 /* in limbs of the smallest factor */
@@ -613,7 +612,7 @@ int bf_round(bf_t *r, limb_t prec, bf_flags_t flags)
 }
 
 /* for debugging */
-static unused void dump_limbs(const char *str, const limb_t *tab, limb_t n)
+static __maybe_unused void dump_limbs(const char *str, const limb_t *tab, limb_t n)
 {
     limb_t i;
     printf("%s: len=%" PRId_LIMB "\n", str, n);
@@ -1570,7 +1569,7 @@ int bf_remquo(slimb_t *pq, bf_t *r, const bf_t *a, const bf_t *b, limb_t prec,
     return ret;
 }
 
-static unused inline limb_t mul_mod(limb_t a, limb_t b, limb_t m)
+static __maybe_unused inline limb_t mul_mod(limb_t a, limb_t b, limb_t m)
 {
     dlimb_t t;
     t = (dlimb_t)a * (dlimb_t)b;

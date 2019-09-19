@@ -35,6 +35,7 @@
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 #define force_inline inline __attribute__((always_inline))
 #define no_inline __attribute__((noinline))
+#define __maybe_unused __attribute__((unused))
 
 #define xglue(x, y) x ## y
 #define glue(x, y) xglue(x, y)

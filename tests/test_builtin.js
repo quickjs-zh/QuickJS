@@ -312,6 +312,22 @@ function test_number()
     assert((-1.125).toFixed(2), "-1.13");
 }
 
+function test_eval2()
+{
+    var g_call_count = 0;
+    /* force non strict mode for f1 and f2 */
+    var f1 = new Function("eval", "eval(1, 2)");
+    var f2 = new Function("eval", "eval(...[1, 2])");
+    function g(a, b) {
+        assert(a, 1);
+        assert(b, 2);
+        g_call_count++;
+    }
+    f1(g);
+    f2(g);
+    assert(g_call_count, 2);
+}
+
 function test_eval()
 {
     function f(b) {
@@ -345,6 +361,8 @@ function test_eval()
     assert(f("a"), 4);
     f("a=3");
     assert(a, 3);
+
+    test_eval2();
 }
 
 function test_typed_array()

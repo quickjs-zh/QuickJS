@@ -548,6 +548,11 @@ and <samp>stdio.h</samp> and a few other utilities.
 <code>std.Error</code> in case of I/O error.
 </p>
 </dd>
+<dt><code>fdopen(fd, flags)</code></dt>
+<dd><p>Open a file from a file handle (wrapper to the libc
+<code>fdopen()</code>). Throws <code>std.Error</code> in case of I/O error.
+</p>
+</dd>
 <dt><code>tmpfile()</code></dt>
 <dd><p>Open a temporary file. Throws <code>std.Error</code> in case of I/O error.
 </p>
@@ -834,6 +839,69 @@ the signal.
 <dd><p>POSIX signal numbers.
 </p>
 </dd>
+<dt><code>kill(pid, sig)</code></dt>
+<dd><p>Send the signal <code>sig</code> to the process <code>pid</code>.
+</p>
+</dd>
+<dt><code>exec(args[, options])</code></dt>
+<dd><p>Execute a process with the arguments <code>args</code>. <code>options</code> is an
+object containing optional parameters:
+</p>
+<dl compact="compact">
+<dt><code>block</code></dt>
+<dd><p>Boolean (default = true). If true, wait until the process is
+  termined. In this case, <code>exec</code> return the exit code if positive
+  or the negated signal number if the process was interrupted by a
+  signal. If false, do not block and return the process id of the child.
+</p>  
+</dd>
+<dt><code>usePath</code></dt>
+<dd><p>Boolean (default = true). If true, the file is searched in the
+  <code>PATH</code> environment variable.
+</p>
+</dd>
+<dt><code>file</code></dt>
+<dd><p>String (default = <code>args[0]</code>). Set the file to be executed.
+</p>
+</dd>
+<dt><code>cwd</code></dt>
+<dd><p>String. If present, set the working directory of the new process.
+</p>
+</dd>
+<dt><code>stdin</code></dt>
+<dt><code>stdout</code></dt>
+<dt><code>stderr</code></dt>
+<dd><p>If present, set the handle in the child for stdin, stdout or stderr.
+</p> 
+</dd>
+</dl>
+
+</dd>
+<dt><code>waitpid(pid, options)</code></dt>
+<dd><p><code>waitpid</code> Unix system call. Return the array <code>[ret, status]</code>.
+</p>
+</dd>
+<dt><code>WNOHANG</code></dt>
+<dd><p>Constant for the <code>options</code> argument of <code>waitpid</code>.
+</p>
+</dd>
+<dt><code>dup(fd)</code></dt>
+<dd><p><code>dup</code> Unix system call.
+</p>
+</dd>
+<dt><code>dup2(oldfd, newfd)</code></dt>
+<dd><p><code>dup2</code> Unix system call.
+</p>
+</dd>
+<dt><code>pipe()</code></dt>
+<dd><p><code>pipe</code> Unix system call. Return two handles as <code>[read_fd,
+write_fd]</code> or null in case of error.
+</p>
+</dd>
+<dt><code>sleep(delay_ms)</code></dt>
+<dd><p>Sleep during <code>delay_ms</code> milliseconds.
+</p>
+</dd>
 <dt><code>setTimeout(func, delay)</code></dt>
 <dd><p>Call the function <code>func</code> after <code>delay</code> ms. Return a handle
 to the timer.
@@ -907,10 +975,11 @@ occured. The actual exception object is stored in the
 
 <p>Use <code>JS_Eval()</code> to evaluate a script or module source.
 </p>
-<p>If the script or module was compiled to bytecode with <code>qjsc</code>,
-<code>JS_EvalBinary()</code> achieves the same result. The advantage is that
-no compilation is needed so it is faster and smaller because the compiler
-can be removed from the executable if no <code>eval</code> is required.
+<p>If the script or module was compiled to bytecode with <code>qjsc</code>, it
+can be evaluated by calling <code>js_std_eval_binary()</code>. The advantage
+is that no compilation is needed so it is faster and smaller because
+the compiler can be removed from the executable if no <code>eval</code> is
+required.
 </p>
 <p>Note: the bytecode format is linked to a given QuickJS
 version. Moreover, no security check is done before its

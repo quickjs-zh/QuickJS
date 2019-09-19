@@ -269,7 +269,7 @@ static int cr_canonicalize(CharRange *cr)
 }
 
 #ifdef DUMP_REOP
-static __attribute__((unused)) void lre_dump_bytecode(const uint8_t *buf,
+static __maybe_unused void lre_dump_bytecode(const uint8_t *buf,
                                                      int buf_len)
 {
     int pos, len, opcode, bc_len, re_flags, i;

@@ -41,11 +41,11 @@
 #include "cutils.h"
 #include "quickjs-libc.h"
 
-extern const uint8_t repl[];
-extern const uint32_t repl_size;
+extern const uint8_t qjsc_repl[];
+extern const uint32_t qjsc_repl_size;
 #ifdef CONFIG_BIGNUM
-extern const uint8_t qjscalc[];
-extern const uint32_t qjscalc_size;
+extern const uint8_t qjsc_qjscalc[];
+extern const uint32_t qjsc_qjscalc_size;
 #endif
 
 static int eval_buf(JSContext *ctx, const void *buf, int buf_len,
@@ -406,7 +406,7 @@ int main(int argc, char **argv)
     if (!empty_run) {
 #ifdef CONFIG_BIGNUM
         if (load_jscalc) {
-            js_std_eval_binary(ctx, qjscalc, qjscalc_size, 0);
+            js_std_eval_binary(ctx, qjsc_qjscalc, qjsc_qjscalc_size, 0);
         }
 #endif
         js_std_add_helpers(ctx, argc - optind, argv + optind);
@@ -419,8 +419,8 @@ int main(int argc, char **argv)
         if (load_std) {
             const char *str = "import * as std from 'std';\n"
                 "import * as os from 'os';\n"
-                "std.global.std = std;\n"
-                "std.global.os = os;\n";
+                "globalThis.std = std;\n"
+                "globalThis.os = os;\n";
             eval_buf(ctx, str, strlen(str), "<input>", JS_EVAL_TYPE_MODULE);
         }
 
@@ -438,7 +438,7 @@ int main(int argc, char **argv)
                 goto fail;
         }
         if (interactive) {
-            js_std_eval_binary(ctx, repl, repl_size, 0);
+            js_std_eval_binary(ctx, qjsc_repl, qjsc_repl_size, 0);
         }
         js_std_loop(ctx);
     }

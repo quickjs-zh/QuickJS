@@ -402,6 +402,10 @@ Open a file (wrapper to the libc @code{fopen()}). Throws
 Open a process by creating a pipe (wrapper to the libc @code{popen()}). Throws 
 @code{std.Error} in case of I/O error.
 
+@item fdopen(fd, flags)
+Open a file from a file handle (wrapper to the libc
+@code{fdopen()}). Throws @code{std.Error} in case of I/O error.
+
 @item tmpfile()
 Open a temporary file. Throws @code{std.Error} in case of I/O error.
 
@@ -638,6 +642,56 @@ the signal.
 @item SIGTERM
 POSIX signal numbers.
 
+@item kill(pid, sig)
+Send the signal @code{sig} to the process @code{pid}.
+
+@item exec(args[, options])
+Execute a process with the arguments @code{args}. @code{options} is an
+object containing optional parameters:
+
+  @table @code
+  @item block
+  Boolean (default = true). If true, wait until the process is
+  termined. In this case, @code{exec} return the exit code if positive
+  or the negated signal number if the process was interrupted by a
+  signal. If false, do not block and return the process id of the child.
+  
+  @item usePath
+  Boolean (default = true). If true, the file is searched in the
+  @code{PATH} environment variable.
+
+  @item file
+  String (default = @code{args[0]}). Set the file to be executed.
+
+  @item cwd
+  String. If present, set the working directory of the new process.
+
+  @item stdin
+  @item stdout
+  @item stderr
+  If present, set the handle in the child for stdin, stdout or stderr.
+ 
+  @end table
+
+@item waitpid(pid, options)
+@code{waitpid} Unix system call. Return the array @code{[ret, status]}.
+
+@item WNOHANG
+Constant for the @code{options} argument of @code{waitpid}.
+
+@item dup(fd)
+@code{dup} Unix system call.
+
+@item dup2(oldfd, newfd)
+@code{dup2} Unix system call.
+
+@item pipe()
+@code{pipe} Unix system call. Return two handles as @code{[read_fd,
+write_fd]} or null in case of error.
+
+@item sleep(delay_ms)
+Sleep during @code{delay_ms} milliseconds.
+
 @item setTimeout(func, delay)
 Call the function @code{func} after @code{delay} ms. Return a handle
 to the timer.
@@ -702,10 +756,11 @@ occured. The actual exception object is stored in the
 
 Use @code{JS_Eval()} to evaluate a script or module source.
 
-If the script or module was compiled to bytecode with @code{qjsc},
-@code{JS_EvalBinary()} achieves the same result. The advantage is that
-no compilation is needed so it is faster and smaller because the compiler
-can be removed from the executable if no @code{eval} is required.
+If the script or module was compiled to bytecode with @code{qjsc}, it
+can be evaluated by calling @code{js_std_eval_binary()}. The advantage
+is that no compilation is needed so it is faster and smaller because
+the compiler can be removed from the executable if no @code{eval} is
+required.
 
 Note: the bytecode format is linked to a given QuickJS
 version. Moreover, no security check is done before its
