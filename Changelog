@@ -1,3 +1,9 @@
+2019-10-27:
+
+- added example of C class in a module (examples/test_point.js)
+- added JS_GetTypedArrayBuffer()
+- misc bug fixes
+
 2019-09-18:
 
 - added os.exec and other system calls

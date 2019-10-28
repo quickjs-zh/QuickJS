@@ -1,8 +1,8 @@
 diff --git a/harness/atomicsHelper.js b/harness/atomicsHelper.js
-index 135c16e..b19f2ef 100644
+index 9c1217351e..3c24755558 100644
 --- a/harness/atomicsHelper.js
 +++ b/harness/atomicsHelper.js
-@@ -222,10 +222,14 @@ $262.agent.waitUntil = function(typedArray, index, expected) {
+@@ -227,10 +227,14 @@ $262.agent.waitUntil = function(typedArray, index, expected) {
   *   }
   */
  $262.agent.timeouts = {
@@ -22,11 +22,11 @@ index 135c16e..b19f2ef 100644
  
  /**
 diff --git a/harness/regExpUtils.js b/harness/regExpUtils.js
-index 2abfee3..e7c07b1 100644
+index be7039fda0..7b38abf8df 100644
 --- a/harness/regExpUtils.js
 +++ b/harness/regExpUtils.js
-@@ -5,24 +5,27 @@ description: |
-     Collection of functions used to assert the correctness of RegExp objects.
+@@ -6,24 +6,27 @@ description: |
+ defines: [buildString, testPropertyEscapes, matchValidator]
  ---*/
  
 +if ($262 && typeof $262.codePointRange === "function") {

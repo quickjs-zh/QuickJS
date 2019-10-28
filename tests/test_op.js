@@ -337,6 +337,17 @@ function test_regexp_skip()
     assert(a === 2);
 }
 
+function test_labels()
+{
+    do x: { break x; } while(0);
+    if (1)
+        x: { break x; }
+    else
+        x: { break x; }
+    with ({}) x: { break x; };
+    while (0) x: { break x; };
+}
+
 test_op1();
 test_cvt();
 test_eq();
@@ -349,4 +360,4 @@ test_class();
 test_template();
 test_object_literal();
 test_regexp_skip();
-
+test_labels();

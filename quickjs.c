@@ -7970,7 +7970,8 @@ retry:
     }
 
     if (p->is_exotic) {
-        if (p->class_id == JS_CLASS_ARRAY && p->fast_array) {
+        if (p->class_id == JS_CLASS_ARRAY && p->fast_array &&
+            __JS_AtomIsTaggedInt(prop)) {
             uint32_t idx = __JS_AtomToUInt32(prop);
             if (idx == p->u.array.count) {
                 /* fast case */
@@ -20437,11 +20438,7 @@ static int define_var(JSParseState *s, JSFunctionDef *fd, JSAtom name,
         }
         if (var_def_type != JS_VAR_DEF_FUNCTION_DECL &&
             var_def_type != JS_VAR_DEF_NEW_FUNCTION_DECL &&
-            (fd->func_kind == JS_FUNC_ASYNC ||
-             fd->func_kind == JS_FUNC_GENERATOR ||
-             fd->func_kind == JS_FUNC_ASYNC_GENERATOR ||
-             fd->func_type == JS_PARSE_FUNC_METHOD ||
-             fd->scope_level == 1) &&
+            fd->scope_level == 1 &&
             find_arg(ctx, fd, name) >= 0) {
             /* lexical variable redefines a parameter name */
             return js_parse_error(s, "invalid redefinition of parameter name");
@@ -24026,9 +24023,10 @@ static void emit_return(JSParseState *s, BOOL hasval)
 }
 
 #define DECL_MASK_FUNC  (1 << 0) /* allow normal function declaration */
-#define DECL_MASK_LABEL (1 << 1) /* allow labelled statement */
+/* ored with DECL_MASK_FUNC if function declarations are allowed with a label */
+#define DECL_MASK_FUNC_WITH_LABEL (1 << 1)
 #define DECL_MASK_OTHER (1 << 2) /* all other declarations */
-#define DECL_MASK_ALL   (DECL_MASK_FUNC | DECL_MASK_LABEL | DECL_MASK_OTHER)
+#define DECL_MASK_ALL   (DECL_MASK_FUNC | DECL_MASK_FUNC_WITH_LABEL | DECL_MASK_OTHER)
 
 static __exception int js_parse_statement_or_decl(JSParseState *s,
                                                   int decl_mask);
@@ -24463,10 +24461,6 @@ static __exception int js_parse_statement_or_decl(JSParseState *s,
     if (is_label(s)) {
         BlockEnv *be;
 
-        if (!(decl_mask & DECL_MASK_LABEL)) {
-            js_parse_error(s, "functions can only be labelled inside blocks");
-            goto fail;
-        }
         label_name = JS_DupAtom(ctx, s->token.u.ident.atom);
 
         for (be = s->cur_func->top_break; be; be = be->prev) {
@@ -24490,11 +24484,12 @@ static __exception int js_parse_statement_or_decl(JSParseState *s,
             label_break = new_label(s);
             push_break_entry(s->cur_func, &break_entry,
                              label_name, label_break, -1, 0);
-            if (s->cur_func->js_mode & JS_MODE_STRICT)
+            if (!(s->cur_func->js_mode & JS_MODE_STRICT) &&
+                (decl_mask & DECL_MASK_FUNC_WITH_LABEL)) {
+                mask = DECL_MASK_FUNC | DECL_MASK_FUNC_WITH_LABEL;
+            } else {
                 mask = 0;
-            else
-                mask = DECL_MASK_FUNC;
-            mask |= DECL_MASK_LABEL;
+            }
             if (js_parse_statement_or_decl(s, mask))
                 goto fail;
             emit_label(s, label_break);
@@ -26578,8 +26573,8 @@ static __exception int js_parse_export(JSParseState *s)
         emit_atom(s, local_name);
         emit_u16(s, 0);
 
-        if (add_export_entry(s, m, local_name, JS_ATOM_default,
-                             JS_EXPORT_TYPE_LOCAL) < 0)
+        if (!add_export_entry(s, m, local_name, JS_ATOM_default,
+                              JS_EXPORT_TYPE_LOCAL))
             return -1;
         break;
     case TOK_VAR:
@@ -28089,12 +28084,12 @@ static int find_private_class_field_all(JSContext *ctx, JSFunctionDef *fd,
 
 static void get_loc_or_ref(DynBuf *bc, BOOL is_ref, int idx)
 {
-    /* Note: the private field can be uninitialized, so the _check is
-       necessary */
+    /* if the field is not initialized, the error is catched when
+       accessing it */
     if (is_ref) 
-        dbuf_putc(bc, OP_get_var_ref_check);
+        dbuf_putc(bc, OP_get_var_ref);
     else
-        dbuf_putc(bc, OP_get_loc_check);
+        dbuf_putc(bc, OP_get_loc);
     dbuf_put_u16(bc, idx);
 }
 
@@ -33455,9 +33450,8 @@ static void JS_SetConstructor2(JSContext *ctx,
     set_cycle_flag(ctx, proto);
 }
 
-static void JS_SetConstructor(JSContext *ctx,
-                              JSValueConst func_obj,
-                              JSValueConst proto)
+void JS_SetConstructor(JSContext *ctx, JSValueConst func_obj, 
+                       JSValueConst proto)
 {
     JS_SetConstructor2(ctx, func_obj, proto,
                        0, JS_PROP_WRITABLE | JS_PROP_CONFIGURABLE);
@@ -37984,6 +37978,34 @@ static JSValue js_string_match(JSContext *ctx, JSValueConst this_val,
         matcher = JS_GetProperty(ctx, regexp, atom);
         if (JS_IsException(matcher))
             return JS_EXCEPTION;
+        if (atom == JS_ATOM_Symbol_matchAll) {
+            int ret;
+            JSValue flags;
+
+            ret = js_is_regexp(ctx, regexp);
+            if (ret < 0)
+                goto fail1;
+            if (ret) {
+                flags = JS_GetProperty(ctx, regexp, JS_ATOM_flags);
+                if (JS_IsException(flags))
+                    goto fail1;
+                if (JS_IsUndefined(flags) || JS_IsNull(flags)) {
+                    JS_ThrowTypeError(ctx, "cannot convert to object");
+                    goto fail1;
+                }
+                flags = JS_ToStringFree(ctx, flags);
+                if (JS_IsException(flags))
+                    goto fail1;
+                ret = string_indexof_char(JS_VALUE_GET_STRING(flags), 'g', 0);
+                JS_FreeValue(ctx, flags);
+                if (ret < 0) {
+                    JS_ThrowTypeError(ctx, "regexp must have the 'g' flag");
+                fail1:
+                    JS_FreeValue(ctx, matcher);
+                    return JS_EXCEPTION;
+                }
+            }
+        }
         if (!JS_IsUndefined(matcher) && !JS_IsNull(matcher)) {
             return JS_CallFree(ctx, matcher, regexp, 1, &O);
         }
@@ -42707,11 +42729,11 @@ static int js_proxy_get_own_property_names(JSContext *ctx,
     len2 = 0;
     if (js_get_length32(ctx, &len, prop_array))
         goto fail;
-    if (len == 0)
-        goto done;
-    tab = js_mallocz(ctx, sizeof(tab[0]) * len);
-    if (!tab)
-        goto fail;
+    if (len > 0) {
+        tab = js_mallocz(ctx, sizeof(tab[0]) * len);
+        if (!tab)
+            goto fail;
+    }
     for(i = 0; i < len; i++) {
         val = JS_GetPropertyUint32(ctx, prop_array, i);
         if (JS_IsException(val))
@@ -42783,7 +42805,6 @@ static int js_proxy_get_own_property_names(JSContext *ctx,
         }
     }
 
- done:
     js_free_prop_enum(ctx, tab2, len2);
     JS_FreeValue(ctx, prop_array);
     *ptab = tab;
@@ -45265,7 +45286,8 @@ static JSValue js_global_decodeURI(JSContext *ctx, JSValueConst this_val,
                     }
                     c = (c << 6) | (c1 & 0x3f);
                 }
-                if (c < c_min || c > 0x10FFFF) {
+                if (c < c_min || c > 0x10FFFF ||
+                    (c >= 0xd800 && c < 0xe000)) {
                     js_throw_URIError(ctx, "malformed UTF-8");
                     goto fail;
                 }
@@ -47817,6 +47839,32 @@ static JSValue js_typed_array_get_byteOffset(JSContext *ctx,
     return JS_NewInt32(ctx, ta->offset);
 }
 
+/* Return the buffer associated to the typed array or an exception if
+   it is not a typed array or if the buffer is detached. pbyte_offset,
+   pbyte_length or pbytes_per_element can be NULL. */
+JSValue JS_GetTypedArrayBuffer(JSContext *ctx, JSValueConst obj,
+                               size_t *pbyte_offset,
+                               size_t *pbyte_length,
+                               size_t *pbytes_per_element)
+{
+    JSObject *p;
+    JSTypedArray *ta;
+    p = get_typed_array(ctx, obj, FALSE);
+    if (!p)
+        return JS_EXCEPTION;
+    if (typed_array_is_detached(ctx, p))
+        return JS_ThrowTypeErrorDetachedArrayBuffer(ctx);
+    ta = p->u.typed_array;
+    if (pbyte_offset)
+        *pbyte_offset = ta->offset;
+    if (pbyte_length)
+        *pbyte_length = ta->length;
+    if (pbytes_per_element) {
+        *pbytes_per_element = 1 << typed_array_size_log2(p->class_id);
+    }
+    return JS_DupValue(ctx, JS_MKPTR(JS_TAG_OBJECT, ta->buffer));
+}
+                               
 static JSValue js_typed_array_get_toStringTag(JSContext *ctx,
                                               JSValueConst this_val)
 {
@@ -48877,7 +48925,7 @@ struct TA_sort_context {
     JSValueConst arr;
     JSValueConst cmp;
     JSValue (*getfun)(JSContext *ctx, const void *a);
-    void *array_ptr; /* cannot change unless the array is detached */
+    uint8_t *array_ptr; /* cannot change unless the array is detached */
     int elt_size;
 };
 

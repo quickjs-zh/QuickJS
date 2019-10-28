@@ -243,7 +243,9 @@ compiler with the mathematical extensions:
 </dd>
 <dt><code>-m</code></dt>
 <dt><code>--module</code></dt>
-<dd><p>Load as ES6 module (default=autodetect).
+<dd><p>Load as ES6 module (default=autodetect). A module is autodetected if
+the filename extension is <code>.mjs</code> or if the first keyword of the
+source is <code>import</code>.
 </p>
 </dd>
 <dt><code>--script</code></dt>
@@ -333,13 +335,8 @@ QuickJS archive.
 <a name="Test262-_0028ECMAScript-Test-Suite_0029"></a>
 <h3 class="section">2.6 Test262 (ECMAScript Test Suite)</h3>
 
-<p>A test262 runner is included in the QuickJS archive.
-</p>
-<p>For reference, the full test262 tests are provided in the archive
-<samp>qjs-tests-yyyy-mm-dd.tar.xz</samp>. You just need to untar it into the
-QuickJS source code directory.
-</p>
-<p>Alternatively, the test262 tests can be installed with:
+<p>A test262 runner is included in the QuickJS archive. The test262 tests
+can be installed in the QuickJS source directory with:
 </p>
 <div class="example">
 <pre class="example">git clone https://github.com/tc39/test262.git test262
@@ -663,8 +660,14 @@ position <code>position</code> (wrapper to the libc <code>fread</code>).
 the trailing line feed.
 </p>
 </dd>
+<dt><code>readAsString(max_size = undefined)</code></dt>
+<dd><p>Read <code>max_size</code> bytes from the file and return them as a string
+assuming UTF-8 encoding. If <code>max_size</code> is not present, the file
+is read up its end.
+</p>
+</dd>
 <dt><code>getByte()</code></dt>
-<dd><p>Return the next byte from the file.
+<dd><p>Return the next byte from the file. Return -1 if the end of file is reached.
 </p>
 </dd>
 <dt><code>putByte(c)</code></dt>

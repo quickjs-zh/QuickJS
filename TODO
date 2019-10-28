@@ -55,7 +55,7 @@ Extensions:
 - limited support for web assembly 
 - get rid of __loadScript, use more common name
 - BSD sockets
-- Process or thread control
+- Workers
 - use custom printf to avoid C library compatibility issues
 - use custom timezone support to avoid C library compatibility issues
 
@@ -75,6 +75,6 @@ REPL:
 Test262o:   0/11262 errors, 463 excluded
 Test262o commit: 7da91bceb9ce7613f87db47ddd1292a2dda58b42 (es5-tests branch)
 
-Test262:   2/67351 errors, 839 excluded, 1370 skipped
-Test262bn: 2/69452 errors, 772 excluded, 383 skipped
-test262 commit: d65b9b35be091147edf31ec527a47cb95a327217
+Test262:   2/67433 errors, 901 excluded, 1658 skipped
+Test262bn: 2/69536 errors, 834 excluded, 670 skipped
+test262 commit: 21195de94cfc36eadbde00a825ca7efb3d9c3dde

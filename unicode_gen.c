@@ -296,6 +296,7 @@ void parse_unicode_data(const char *filename)
         exit(1);
     }
 
+    last_code = 0;
     for(;;) {
         if (!get_line(line, sizeof(line), f))
             break;

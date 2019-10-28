@@ -1,4 +1,4 @@
-import * as bjson from "../bjson.so";
+import * as bjson from "./bjson.so";
 
 function assert(b, str)
 {

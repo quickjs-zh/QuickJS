@@ -146,7 +146,10 @@ ifeq ($(CROSS_PREFIX),)
 ifdef CONFIG_ASAN
 PROGS+=
 else
-PROGS+=examples/hello examples/hello_module examples/c_module
+PROGS+=examples/hello examples/hello_module examples/test_fib
+ifndef CONFIG_DARWIN
+PROGS+=examples/fib.so examples/point.so
+endif
 endif
 endif
 
@@ -166,7 +169,7 @@ LIBS+=-ldl
 endif
 
 $(OBJDIR):
-	mkdir -p $(OBJDIR)
+	mkdir -p $(OBJDIR) $(OBJDIR)/examples $(OBJDIR)/tests
 
 qjs$(EXE): $(QJS_OBJS)
 	$(CC) $(LDFLAGS) $(LDEXPORT) -o $@ $^ $(LIBS)
@@ -324,8 +327,9 @@ unicode_gen: $(OBJDIR)/unicode_gen.host.o $(OBJDIR)/cutils.host.o libunicode.c u
 
 clean:
 	rm -f repl.c repl-bn.c qjscalc.c out.c
-	rm -f *.a *.so *.o *.d *~ jscompress unicode_gen regexp_test $(PROGS)
-	rm -f hello.c hello_module.c c_module.c 
+	rm -f *.a *.o *.d *~ jscompress unicode_gen regexp_test $(PROGS)
+	rm -f hello.c hello_module.c test_fib.c
+	rm -f examples/*.so tests/*.so
 	rm -rf $(OBJDIR)/ *.dSYM/ qjs-debug qjsbn-debug
 	rm -rf run-test262-debug run-test262-32 run-test262-bn32
 
@@ -372,14 +376,17 @@ examples/hello_module: $(QJSC) libquickjs$(LTOEXT).a $(HELLO_MODULE_SRCS)
 
 # use of an external C module (static compilation)
 
-c_module.c: $(QJSC) examples/c_module.js
-	$(QJSC) -e -M examples/fib.so,fib -m -o $@ examples/c_module.js
+test_fib.c: $(QJSC) examples/test_fib.js
+	$(QJSC) -e -M examples/fib.so,fib -m -o $@ examples/test_fib.js
 
-examples/c_module: $(OBJDIR)/c_module.o $(OBJDIR)/fib.o libquickjs$(LTOEXT).a
+examples/test_fib: $(OBJDIR)/test_fib.o $(OBJDIR)/examples/fib.o libquickjs$(LTOEXT).a
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(OBJDIR)/fib.o: examples/fib.c
-	$(CC) $(CFLAGS_OPT) -c -o $@ $<
+examples/fib.so: $(OBJDIR)/examples/fib.pic.o
+	$(CC) $(LDFLAGS) -shared -o $@ $^
+
+examples/point.so: $(OBJDIR)/examples/point.pic.o
+	$(CC) $(LDFLAGS) -shared -o $@ $^
 
 ###############################################################################
 # documentation
@@ -404,7 +411,7 @@ doc/%.html: doc/%.html.pre
 # tests
 
 ifndef CONFIG_DARWIN
-test: bjson.so
+test: tests/bjson.so
 endif
 
 test: qjs qjsbn
@@ -415,6 +422,7 @@ test: qjs qjsbn
 	./qjs tests/test_std.js
 ifndef CONFIG_DARWIN
 	./qjs tests/test_bjson.js
+	./qjs examples/test_point.js
 endif
 	./qjsbn tests/test_closure.js
 	./qjsbn tests/test_op.js
@@ -492,7 +500,7 @@ bench-v8: qjs qjs32
 	make -C tests/bench-v8
 	./qjs -d tests/bench-v8/combined.js
 
-bjson.so: $(OBJDIR)/bjson.pic.o
+tests/bjson.so: $(OBJDIR)/tests/bjson.pic.o
 	$(CC) $(LDFLAGS) -shared -o $@ $^ $(LIBS)
 
 -include $(wildcard $(OBJDIR)/*.d)

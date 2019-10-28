@@ -127,7 +127,9 @@ Go to interactive mode (it is not the default when files are provided on the com
 
 @item -m
 @item --module
-Load as ES6 module (default=autodetect).
+Load as ES6 module (default=autodetect). A module is autodetected if
+the filename extension is @code{.mjs} or if the first keyword of the
+source is @code{import}.
 
 @item --script
 Load as ES6 script (default=autodetect).
@@ -202,13 +204,8 @@ QuickJS archive.
 
 @section Test262 (ECMAScript Test Suite)
 
-A test262 runner is included in the QuickJS archive.
-
-For reference, the full test262 tests are provided in the archive
-@file{qjs-tests-yyyy-mm-dd.tar.xz}. You just need to untar it into the
-QuickJS source code directory.
-
-Alternatively, the test262 tests can be installed with:
+A test262 runner is included in the QuickJS archive. The test262 tests
+can be installed in the QuickJS source directory with:
 
 @example
 git clone https://github.com/tc39/test262.git test262
@@ -494,8 +491,13 @@ position @code{position} (wrapper to the libc @code{fread}).
 Return the next line from the file, assuming UTF-8 encoding, excluding
 the trailing line feed.
 
+@item readAsString(max_size = undefined)
+Read @code{max_size} bytes from the file and return them as a string
+assuming UTF-8 encoding. If @code{max_size} is not present, the file
+is read up its end.
+
 @item getByte()
-Return the next byte from the file.
+Return the next byte from the file. Return -1 if the end of file is reached.
 
 @item putByte(c)
 Write one byte to the file.
