@@ -1,3 +1,15 @@
+2019-12-21:
+
+- added nullish coalescing operator (ES2020)
+- added optional chaining (ES2020)
+- removed recursions in garbage collector
+- test stack overflow in the parser
+- improved backtrace logic
+- added JS_SetHostPromiseRejectionTracker()
+- allow exotic constructors
+- improved c++ compatibility
+- misc bug fixes
+
 2019-10-27:
 
 - added example of C class in a module (examples/test_point.js)

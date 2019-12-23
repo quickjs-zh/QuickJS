@@ -1516,10 +1516,6 @@ int run_test_buf(const char *filename, char *harness, namelist_t *ip,
         
     add_helpers(ctx);
 
-    /* add backtrace if the isError property is present in a thrown
-       object */
-    JS_EnableIsErrorProperty(ctx, TRUE);
-
     for (i = 0; i < ip->count; i++) {
         if (eval_file(ctx, harness, ip->array[i],
                       JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_STRIP)) {
@@ -1817,10 +1813,6 @@ int run_test262_harness_test(const char *filename, BOOL is_module)
         
     add_helpers(ctx);
 
-    /* add backtrace if the isError property is present in a thrown
-       object */
-    JS_EnableIsErrorProperty(ctx, TRUE);
-
     buf = load_file(filename, &buf_len);
 
     if (is_module) {
@@ -1913,6 +1905,7 @@ void help(void)
            "-n             use new style harness\n"
            "-N             run test prepared by test262-harness+eshost\n"
            "-s             run tests in strict mode, skip @nostrict tests\n"
+           "-E             only run tests from the error file\n"
            "-u             update error file\n"
            "-v             verbose: output error messages\n"
            "-T duration    display tests taking more than 'duration' ms\n"

@@ -264,8 +264,6 @@ void bf_logic_and(bf_t *r, const bf_t *a, const bf_t *b);
 #define BF_ATOF_UNDERSCORE_SEP (1 << 23)
 /* if a 'n' suffix is present, force integer parsing (XXX: remove) */
 #define BF_ATOF_INT_N_SUFFIX   (1 << 24)
-/* if set return NaN if empty number string (instead of 0) */
-#define BF_ATOF_NAN_IF_EMPTY   (1 << 25)
 /* only accept decimal floating point if radix = 0 */
 #define BF_ATOF_ONLY_DEC_FLOAT (1 << 26)
 

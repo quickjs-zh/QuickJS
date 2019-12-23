@@ -1145,7 +1145,7 @@ import * as os from "os";
                  "\\t         " + sel(show_time) + "toggle timing display\n" +
                   "\\clear      clear the terminal\n");
         if (has_jscalc) {
-            std.puts("\\a         " + sel(algebraicMode) + "algegraic mode\n" +
+            std.puts("\\a         " + sel(algebraicMode) + "algebraic mode\n" +
                      "\\n         " + sel(!algebraicMode) + "numeric mode\n");
         }
         if (has_bignum) {
@@ -1170,7 +1170,7 @@ import * as os from "os";
                 expr = '"use bigint"; void 0;' + expr;
             var now = (new Date).getTime();
             /* eval as a script */
-            result = std.evalScript(expr);
+            result = std.evalScript(expr, { backtrace_barrier: true });
             eval_time = (new Date).getTime() - now;
             std.puts(colors[styles.result]);
             print(result);

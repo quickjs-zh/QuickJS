@@ -271,6 +271,7 @@ void help(void)
 #endif
            "-T  --trace        trace memory allocation\n"
            "-d  --dump         dump the memory usage stats\n"
+           "    --unhandled-rejection dump unhandled promise rejections\n"
            "-q  --quit         just instantiate the interpreter and quit\n");
     exit(1);
 }
@@ -288,6 +289,7 @@ int main(int argc, char **argv)
     int empty_run = 0;
     int module = -1;
     int load_std = 0;
+    int dump_unhandled_promise_rejection = 0;
 #ifdef CONFIG_BIGNUM
     int load_jscalc;
 #endif
@@ -365,6 +367,10 @@ int main(int argc, char **argv)
                 load_std = 1;
                 continue;
             }
+            if (!strcmp(longopt, "unhandled-rejection")) {
+                dump_unhandled_promise_rejection = 1;
+                continue;
+            }
 #ifdef CONFIG_BIGNUM
             if (!strcmp(longopt, "qjscalc")) {
                 load_jscalc = 1;
@@ -402,7 +408,12 @@ int main(int argc, char **argv)
 
     /* loader for ES6 modules */
     JS_SetModuleLoaderFunc(rt, NULL, js_module_loader, NULL);
-                           
+
+    if (dump_unhandled_promise_rejection) {
+        JS_SetHostPromiseRejectionTracker(rt, js_std_promise_rejection_tracker,
+                                          NULL);
+    }
+    
     if (!empty_run) {
 #ifdef CONFIG_BIGNUM
         if (load_jscalc) {

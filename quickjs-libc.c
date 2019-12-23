@@ -555,12 +555,38 @@ static int interrupt_handler(JSRuntime *rt, void *opaque)
     return (os_pending_signals >> SIGINT) & 1;
 }
 
+static int get_bool_option(JSContext *ctx, BOOL *pbool,
+                           JSValueConst obj,
+                           const char *option)
+{
+    JSValue val;
+    val = JS_GetPropertyStr(ctx, obj, option);
+    if (JS_IsException(val))
+        return -1;
+    if (!JS_IsUndefined(val)) {
+        *pbool = JS_ToBool(ctx, val);
+    }
+    JS_FreeValue(ctx, val);
+    return 0;
+}
+
 static JSValue js_evalScript(JSContext *ctx, JSValueConst this_val,
                              int argc, JSValueConst *argv)
 {
     const char *str;
     size_t len;
     JSValue ret;
+    JSValueConst options_obj;
+    BOOL backtrace_barrier = FALSE;
+    int flags;
+    
+    if (argc >= 2) {
+        options_obj = argv[1];
+        if (get_bool_option(ctx, &backtrace_barrier, options_obj,
+                            "backtrace_barrier"))
+            return JS_EXCEPTION;
+    }
+
     str = JS_ToCStringLen(ctx, &len, argv[0]);
     if (!str)
         return JS_EXCEPTION;
@@ -568,7 +594,10 @@ static JSValue js_evalScript(JSContext *ctx, JSValueConst this_val,
         /* install the interrupt handler */
         JS_SetInterruptHandler(JS_GetRuntime(ctx), interrupt_handler, NULL);
     }
-    ret = JS_Eval(ctx, str, len, "<evalScript>", JS_EVAL_TYPE_GLOBAL);
+    flags = JS_EVAL_TYPE_GLOBAL; 
+    if (backtrace_barrier)
+        flags |= JS_EVAL_FLAG_BACKTRACE_BARRIER;
+    ret = JS_Eval(ctx, str, len, "<evalScript>", flags);
     JS_FreeCString(ctx, str);
     if (--eval_script_recurse == 0) {
         /* remove the interrupt handler */
@@ -1065,21 +1094,6 @@ static int http_get_status(const char *buf)
     while (*p == ' ')
         p++;
     return atoi(p);
-}
-
-static int get_bool_option(JSContext *ctx, BOOL *pbool,
-                           JSValueConst obj,
-                           const char *option)
-{
-    JSValue val;
-    val = JS_GetPropertyStr(ctx, obj, option);
-    if (JS_IsException(val))
-        return -1;
-    if (!JS_IsUndefined(val)) {
-        *pbool = JS_ToBool(ctx, val);
-    }
-    JS_FreeValue(ctx, val);
-    return 0;
 }
 
 static JSValue js_std_urlGet(JSContext *ctx, JSValueConst this_val,
@@ -2696,15 +2710,15 @@ void js_std_free_handlers(JSRuntime *rt)
     }
 }
 
-void js_std_dump_error(JSContext *ctx)
+static void js_std_dump_error1(JSContext *ctx, JSValueConst exception_val,
+                               BOOL is_throw)
 {
-    JSValue exception_val, val;
+    JSValue val;
     const char *stack;
     BOOL is_error;
     
-    exception_val = JS_GetException(ctx);
     is_error = JS_IsError(ctx, exception_val);
-    if (!is_error)
+    if (is_throw && !is_error)
         printf("Throw: ");
     js_print(ctx, JS_NULL, 1, (JSValueConst *)&exception_val);
     if (is_error) {
@@ -2716,7 +2730,25 @@ void js_std_dump_error(JSContext *ctx)
         }
         JS_FreeValue(ctx, val);
     }
+}
+
+void js_std_dump_error(JSContext *ctx)
+{
+    JSValue exception_val;
+    
+    exception_val = JS_GetException(ctx);
+    js_std_dump_error1(ctx, exception_val, TRUE);
     JS_FreeValue(ctx, exception_val);
+}
+
+void js_std_promise_rejection_tracker(JSContext *ctx, JSValueConst promise,
+                                      JSValueConst reason,
+                                      BOOL is_handled, void *opaque)
+{
+    if (!is_handled) {
+        printf("Possibly unhandled promise rejection: ");
+        js_std_dump_error1(ctx, reason, FALSE);
+    }
 }
 
 /* main loop which calls the user JS callbacks */

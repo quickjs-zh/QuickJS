@@ -303,6 +303,9 @@ function test_number()
     assert(parseFloat("-Infinity"), -Infinity);
     assert(parseFloat("123.2"), 123.2);
     assert(parseFloat("123.2e3"), 123200);
+    assert(Number.isNaN(Number("+")));
+    assert(Number.isNaN(Number("-")));
+    assert(Number.isNaN(Number("\x00a")));
 
     assert((25).toExponential(0), "3e+1");
     assert((-25).toExponential(0), "-3e+1");

@@ -400,7 +400,7 @@ B (legacy web compatibility) and the Unicode related features.
 <p>The following features are not supported yet:
 </p>
 <ul>
-<li> Realms (althougth the C API supports different runtimes and contexts)
+<li> Realms (although the C API supports different runtimes and contexts)
 
 </li><li> Tail calls<a name="DOCF6" href="#FOOT6"><sup>6</sup></a>
 
@@ -500,9 +500,18 @@ and <samp>stdio.h</samp> and a few other utilities.
 <dd><p>Exit the process.
 </p>
 </dd>
-<dt><code>evalScript(str)</code></dt>
-<dd><p>Evaluate the string <code>str</code> as a script (global eval).
+<dt><code>evalScript(str, options = undefined)</code></dt>
+<dd><p>Evaluate the string <code>str</code> as a script (global
+eval). <code>options</code> is an optional object containing the following
+optional properties:
 </p>
+<dl compact="compact">
+<dt><code>backtrace_barrier</code></dt>
+<dd><p>Boolean (default = false). If true, error backtraces do not list the
+  stack frames below the evalScript.
+  </p></dd>
+</dl>
+
 </dd>
 <dt><code>loadScript(filename)</code></dt>
 <dd><p>Evaluate the file <code>filename</code> as a script (global eval).
@@ -816,14 +825,14 @@ the error code.
 <dd><p>Add a read handler to the file handle <code>fd</code>. <code>func</code> is called
 each time there is data pending for <code>fd</code>. A single read handler
 per file handle is supported. Use <code>func = null</code> to remove the
-hander.
+handler.
 </p>
 </dd>
 <dt><code>setWriteHandler(fd, func)</code></dt>
 <dd><p>Add a write handler to the file handle <code>fd</code>. <code>func</code> is
 called each time data can be written to <code>fd</code>. A single write
 handler per file handle is supported. Use <code>func = null</code> to remove
-the hander.
+the handler.
 </p>
 </dd>
 <dt><code>signal(signal, func)</code></dt>
@@ -853,7 +862,7 @@ object containing optional parameters:
 <dl compact="compact">
 <dt><code>block</code></dt>
 <dd><p>Boolean (default = true). If true, wait until the process is
-  termined. In this case, <code>exec</code> return the exit code if positive
+  terminated. In this case, <code>exec</code> return the exit code if positive
   or the negated signal number if the process was interrupted by a
   signal. If false, do not block and return the process id of the child.
 </p>  
@@ -937,7 +946,7 @@ supported.
 </p>
 <p><code>JSContext</code> represents a Javascript context (or Realm). Each
 JSContext has its own global objects and system objects. There can be
-several JSContexts per JSRuntime and they can share objects, similary
+several JSContexts per JSRuntime and they can share objects, similar
 to frames of the same origin sharing Javascript objects in a
 web browser.
 </p>
@@ -946,7 +955,7 @@ web browser.
 
 <p><code>JSValue</code> represents a Javascript value which can be a primitive
 type or an object. Reference counting is used, so it is important to
-explicitely duplicate (<code>JS_DupValue()</code>, increment the reference
+explicitly duplicate (<code>JS_DupValue()</code>, increment the reference
 count) or free (<code>JS_FreeValue()</code>, decrement the reference count)
 JSValues.
 </p>
@@ -968,9 +977,9 @@ general rule, C functions take constant <code>JSValue</code>s as parameters
 <h4 class="subsection">3.4.4 Exceptions</h4>
 
 <p>Exceptions: most C functions can return a Javascript exception. It
-must be explicitely tested and handled by the C code. The specific
+must be explicitly tested and handled by the C code. The specific
 <code>JSValue</code> <code>JS_EXCEPTION</code> indicates that an exception
-occured. The actual exception object is stored in the
+occurred. The actual exception object is stored in the
 <code>JSContext</code> and can be retrieved with <code>JS_GetException()</code>.
 </p>
 <a name="Script-evaluation"></a>
@@ -1174,16 +1183,16 @@ stack holds the Javascript parameters and local variables.
 <a name="RegExp"></a>
 <h3 class="section">4.4 RegExp</h3>
 
-<p>A specific regular expression engine was developped. It is both small
+<p>A specific regular expression engine was developed. It is both small
 and efficient and supports all the ES2020 features including the
 Unicode properties. As the Javascript compiler, it directly generates
 bytecode without a parse tree.
 </p>
 <p>Backtracking with an explicit stack is used so that there is no
-recursion on the system stack. Simple quantizers are specifically
+recursion on the system stack. Simple quantifiers are specifically
 optimized to avoid recursions.
 </p>
-<p>Infinite recursions coming from quantizers with empty terms are
+<p>Infinite recursions coming from quantifiers with empty terms are
 avoided.
 </p>
 <p>The full regexp library weights about 15 KiB (x86 code), excluding the
@@ -1192,9 +1201,9 @@ Unicode library.
 <a name="Unicode"></a>
 <h3 class="section">4.5 Unicode</h3>
 
-<p>A specific Unicode library was developped so that there is no
+<p>A specific Unicode library was developed so that there is no
 dependency on an external large Unicode library such as ICU. All the
-Unicode tables are compressed while keeping a reasonnable access
+Unicode tables are compressed while keeping a reasonable access
 speed.
 </p>
 <p>The library supports case conversion, Unicode normalization, Unicode

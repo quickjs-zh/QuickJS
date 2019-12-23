@@ -269,7 +269,7 @@ The following features are not supported yet:
 
 @itemize
 
-@item Realms (althougth the C API supports different runtimes and contexts)
+@item Realms (although the C API supports different runtimes and contexts)
 
 @item Tail calls@footnote{We believe the current specification of tails calls is too complicated and presents limited practical interests.}
 
@@ -361,8 +361,16 @@ Available exports:
 @item exit(n)
 Exit the process.
 
-@item evalScript(str)
-Evaluate the string @code{str} as a script (global eval).
+@item evalScript(str, options = undefined)
+Evaluate the string @code{str} as a script (global
+eval). @code{options} is an optional object containing the following
+optional properties:
+
+  @table @code
+  @item backtrace_barrier
+  Boolean (default = false). If true, error backtraces do not list the
+  stack frames below the evalScript.
+  @end table
 
 @item loadScript(filename)
 Evaluate the file @code{filename} as a script (global eval).
@@ -622,13 +630,13 @@ the error code.
 Add a read handler to the file handle @code{fd}. @code{func} is called
 each time there is data pending for @code{fd}. A single read handler
 per file handle is supported. Use @code{func = null} to remove the
-hander.
+handler.
 
 @item setWriteHandler(fd, func)
 Add a write handler to the file handle @code{fd}. @code{func} is
 called each time data can be written to @code{fd}. A single write
 handler per file handle is supported. Use @code{func = null} to remove
-the hander.
+the handler.
 
 @item signal(signal, func)
 Call the function @code{func} when the signal @code{signal}
@@ -654,7 +662,7 @@ object containing optional parameters:
   @table @code
   @item block
   Boolean (default = true). If true, wait until the process is
-  termined. In this case, @code{exec} return the exit code if positive
+  terminated. In this case, @code{exec} return the exit code if positive
   or the negated signal number if the process was interrupted by a
   signal. If false, do not block and return the process id of the child.
   
@@ -721,7 +729,7 @@ supported.
 
 @code{JSContext} represents a Javascript context (or Realm). Each
 JSContext has its own global objects and system objects. There can be
-several JSContexts per JSRuntime and they can share objects, similary
+several JSContexts per JSRuntime and they can share objects, similar
 to frames of the same origin sharing Javascript objects in a
 web browser.
 
@@ -729,7 +737,7 @@ web browser.
 
 @code{JSValue} represents a Javascript value which can be a primitive
 type or an object. Reference counting is used, so it is important to
-explicitely duplicate (@code{JS_DupValue()}, increment the reference
+explicitly duplicate (@code{JS_DupValue()}, increment the reference
 count) or free (@code{JS_FreeValue()}, decrement the reference count)
 JSValues.
 
@@ -749,9 +757,9 @@ general rule, C functions take constant @code{JSValue}s as parameters
 @subsection Exceptions
 
 Exceptions: most C functions can return a Javascript exception. It
-must be explicitely tested and handled by the C code. The specific
+must be explicitly tested and handled by the C code. The specific
 @code{JSValue} @code{JS_EXCEPTION} indicates that an exception
-occured. The actual exception object is stored in the
+occurred. The actual exception object is stored in the
 @code{JSContext} and can be retrieved with @code{JS_GetException()}.
 
 @subsection Script evaluation
@@ -936,16 +944,16 @@ stack holds the Javascript parameters and local variables.
 
 @section RegExp
 
-A specific regular expression engine was developped. It is both small
+A specific regular expression engine was developed. It is both small
 and efficient and supports all the ES2020 features including the
 Unicode properties. As the Javascript compiler, it directly generates
 bytecode without a parse tree.
 
 Backtracking with an explicit stack is used so that there is no
-recursion on the system stack. Simple quantizers are specifically
+recursion on the system stack. Simple quantifiers are specifically
 optimized to avoid recursions.
 
-Infinite recursions coming from quantizers with empty terms are
+Infinite recursions coming from quantifiers with empty terms are
 avoided.
 
 The full regexp library weights about 15 KiB (x86 code), excluding the
@@ -953,9 +961,9 @@ Unicode library.
 
 @section Unicode
 
-A specific Unicode library was developped so that there is no
+A specific Unicode library was developed so that there is no
 dependency on an external large Unicode library such as ICU. All the
-Unicode tables are compressed while keeping a reasonnable access
+Unicode tables are compressed while keeping a reasonable access
 speed.
 
 The library supports case conversion, Unicode normalization, Unicode

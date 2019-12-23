@@ -1,4 +1,6 @@
-- 64-bit atoms in 64-bit mode?
+Misc:
+- make BigInt available by default
+- use custom printf to avoid C library compatibility issues
 - rename CONFIG_ALL_UNICODE, CONFIG_BIGNUM, CONFIG_ATOMICS, CONFIG_CHECK_JSVALUE ?
 - unify coding style and naming conventions
 - use names from the ECMA spec in library implementation
@@ -10,6 +12,7 @@
 - use 2 bytecode DynBufs in JSFunctionDef, one for reading, one for writing
   and use the same wrappers in all phases
 - use more generic method for line numbers in resolve_variables and resolve_labels
+- use custom timezone support to avoid C library compatibility issues
 
 Memory:
 - test border cases for max number of atoms, object properties, string length
@@ -21,6 +24,7 @@ Memory:
 - improve JS_ComputeMemoryUsage() with more info
 
 Optimizations:
+- 64-bit atoms in 64-bit mode ?
 - use auto-init properties for more global objects
 - reuse stack slots for disjoint scopes, if strip
 - optimize `for of` iterator for built-in array objects
@@ -44,7 +48,6 @@ Optimizations:
 - convert slow array to fast array when all properties != length are numeric
 - optimize destructuring assignments for global and local variables
 - implement some form of tail-call-optimization
-- debugger keyword support
 - optimize OP_apply
 - optimize f(...b)
 
@@ -52,19 +55,15 @@ Extensions:
 - support more features in [features] section
 - add built-in preprocessor in compiler, get rid of jscompress
   handle #if, #ifdef, #line, limited support for #define
-- limited support for web assembly 
 - get rid of __loadScript, use more common name
 - BSD sockets
 - Workers
-- use custom printf to avoid C library compatibility issues
-- use custom timezone support to avoid C library compatibility issues
 
 REPL:
-- strip internal functions from stack trace
+- debugger
 - readline: support MS Windows terminal
 - readline: handle dynamic terminal resizing
 - multiline editing
-- debugger
 - runtime object and function inspectors
 - interactive object browser
 - use more generic approach to display evaluation results
@@ -75,6 +74,6 @@ REPL:
 Test262o:   0/11262 errors, 463 excluded
 Test262o commit: 7da91bceb9ce7613f87db47ddd1292a2dda58b42 (es5-tests branch)
 
-Test262:   2/67433 errors, 901 excluded, 1658 skipped
-Test262bn: 2/69536 errors, 834 excluded, 670 skipped
-test262 commit: 21195de94cfc36eadbde00a825ca7efb3d9c3dde
+Test262:   4/67619 errors, 913 excluded, 1660 skipped
+Test262bn: 4/69722 errors, 846 excluded, 672 skipped
+test262 commit: 19fd4bea797646ae9bbfc9d325f14052ca370b54

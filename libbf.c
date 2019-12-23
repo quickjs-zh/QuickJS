@@ -2653,8 +2653,13 @@ int bf_atof2(bf_t *r, slimb_t *pexponent,
        renormalization) */
     memset(a->tab, 0, (pos + 1) * sizeof(limb_t));
 
-    if (p == p_start)
-        goto error;
+    if (p == p_start) {
+        if (!radix_bits)
+            bf_delete(a);
+        ret = 0;
+        bf_set_nan(r);
+        goto done;
+    }
 
     /* parse the exponent, if any */
     expn = 0;
@@ -2747,18 +2752,6 @@ int bf_atof2(bf_t *r, slimb_t *pexponent,
     if (pnext)
         *pnext = p;
     return ret | ret_legacy_octal;
- error:
-    if (!radix_bits)
-        bf_delete(a);
-    ret = 0;
-    if (flags & BF_ATOF_NAN_IF_EMPTY)  {
-        bf_set_nan(r);
-    } else {
-        bf_set_zero(r, 0);
-        if (flags & BF_ATOF_INT_PREC_INF)
-            ret |= BF_ATOF_ST_INTEGER;
-    }
-    goto done;
 }
 
 int bf_atof(bf_t *r, const char *str, const char **pnext, int radix,

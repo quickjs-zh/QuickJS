@@ -28,7 +28,7 @@ language while being 100% backward compatible:
 @itemize
 
 @item Overloading of the standard operators
-to support new types such as complex numbers, fractions or matrixes.
+to support new types such as complex numbers, fractions or matrices.
 
 @item Bigint mode where arbitrarily large integers are available by default (no @code{n} suffix is necessary as in the TC39 BigInt proposal@footnote{@url{https://tc39.github.io/proposal-bigint/}}).
 
@@ -417,7 +417,7 @@ It is a normal object.
 @subsection @code{Number} constructor
 
 The number constructor returns its argument rounded to a Float using
-the global floating point environement. In bigint mode, the Number
+the global floating point environment. In bigint mode, the Number
 constructor returns a Float. In standard mode, it returns a SmallInt
 if the value fits it, otherwise a Float.
 
@@ -723,9 +723,9 @@ Read-only integer. Round to nearest, with ties away from zero rounding mode.
 @item RNDNU
 Read-only integer. Round to nearest, with ties to +Infinity rounding mode.
 
-@item RNDF@footnote{Could be removed in case a deterministic behvior for floating point operations is required.}
+@item RNDF@footnote{Could be removed in case a deterministic behavior for floating point operations is required.}
 Read-only integer. Faithful rounding mode. The result is
-non-deterministicly rounded to -Infinity or +Infinity. This rounding
+non-deterministically rounded to -Infinity or +Infinity. This rounding
 mode usually gives a faster and deterministic running time for the
 floating point operations.
 

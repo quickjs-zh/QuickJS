@@ -411,7 +411,7 @@ doc/%.html: doc/%.html.pre
 # tests
 
 ifndef CONFIG_DARWIN
-test: tests/bjson.so
+test: tests/bjson.so examples/point.so
 endif
 
 test: qjs qjsbn
@@ -481,11 +481,11 @@ test2-check: run-test262
 	time ./run-test262 -m -c test262.conf -E -a
 
 # Test262 + BigInt tests
-test2bn-default: run-test262-bn
-	time ./run-test262-bn -m -c test262bn.conf
-
 test2bn: run-test262-bn
 	time ./run-test262-bn -m -c test262bn.conf -a
+
+test2bn-update: run-test262-bn
+	time ./run-test262-bn -u -c test262bn.conf -a
 
 test2bn-32: run-test262-bn32
 	time ./run-test262-bn32 -m -c test262bn.conf -a
@@ -496,7 +496,7 @@ testall-32: all test-32 microbench-32 test2o-32 test2-32 test2bn-32
 
 testall-complete: testall testall-32
 
-bench-v8: qjs qjs32
+bench-v8: qjs
 	make -C tests/bench-v8
 	./qjs -d tests/bench-v8/combined.js
 

@@ -120,7 +120,7 @@ language while being 100% backward compatible:
 </p>
 <ul>
 <li> Overloading of the standard operators
-to support new types such as complex numbers, fractions or matrixes.
+to support new types such as complex numbers, fractions or matrices.
 
 </li><li> Bigint mode where arbitrarily large integers are available by default (no <code>n</code> suffix is necessary as in the TC39 BigInt proposal<a name="DOCF1" href="#FOOT1"><sup>1</sup></a>).
 
@@ -551,7 +551,7 @@ raised if <em>a &lt; 0</em>.
 <h4 class="subsection">3.5.3 <code>Number</code> constructor</h4>
 
 <p>The number constructor returns its argument rounded to a Float using
-the global floating point environement. In bigint mode, the Number
+the global floating point environment. In bigint mode, the Number
 constructor returns a Float. In standard mode, it returns a SmallInt
 if the value fits it, otherwise a Float.
 </p>
@@ -889,7 +889,7 @@ bits. Must be at least 11.
 </dd>
 <dt><code>RNDF<a name="DOCF8" href="#FOOT8"><sup>8</sup></a></code></dt>
 <dd><p>Read-only integer. Faithful rounding mode. The result is
-non-deterministicly rounded to -Infinity or +Infinity. This rounding
+non-deterministically rounded to -Infinity or +Infinity. This rounding
 mode usually gives a faster and deterministic running time for the
 floating point operations.
 </p>
@@ -1027,7 +1027,7 @@ exactly represented as base 2 floating point number. In order to
 ensure that the literal is represented accurately with the current
 precision, it must be evaluated at runtime.</p>
 <h3><a name="FOOT8" href="#DOCF8">(8)</a></h3>
-<p>Could be removed in case a deterministic behvior for floating point operations is required.</p>
+<p>Could be removed in case a deterministic behavior for floating point operations is required.</p>
 </div>
 <hr>
 

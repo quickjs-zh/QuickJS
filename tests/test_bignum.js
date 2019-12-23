@@ -18,6 +18,19 @@ function assert(actual, expected, message) {
                 (message ? " (" + message + ")" : ""));
 }
 
+function assertThrows(err, func)
+{
+    var ex;
+    ex = false;
+    try {
+        func();
+    } catch(e) {
+        ex = true;
+        assert(e instanceof err);
+    }
+    assert(ex, true, "exception expected");
+}
+
 // load more elaborate version of assert if available
 try { __loadScript("test_assert.js"); } catch(e) {}
 
@@ -53,6 +66,18 @@ function test_integer()
     
     r = (1 << 31) < 0;
     assert(r, false, "(1 << 31) < 0 === false");
+}
+
+function test_bigint()
+{
+    assert(BigInt(""), 0n);
+    assert(BigInt("  123"), 123n);
+    assert(BigInt("  123   "), 123n);
+
+    assertThrows(SyntaxError, () => { BigInt("+") } );
+    assertThrows(SyntaxError, () => { BigInt("-") } );
+    assertThrows(SyntaxError, () => { BigInt("\x00a") } );
+    assertThrows(SyntaxError, () => { BigInt("  123  r") } );
 }
 
 function test_divrem(div1, a, b, q)
@@ -256,6 +281,7 @@ function test_trig()
 }
 
 test_integer();
+test_bigint();
 test_idiv();
 test_float();
 
