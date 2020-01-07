@@ -1,8 +1,8 @@
 /*
  * QuickJS stand alone interpreter
  * 
- * Copyright (c) 2017-2018 Fabrice Bellard
- * Copyright (c) 2017-2018 Charlie Gordon
+ * Copyright (c) 2017-2020 Fabrice Bellard
+ * Copyright (c) 2017-2020 Charlie Gordon
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,9 @@
 
 #include "cutils.h"
 #include "quickjs-libc.h"
+
+/* enable bignums */
+#define CONFIG_BIGNUM
 
 extern const uint8_t qjsc_repl[];
 extern const uint32_t qjsc_repl_size;
@@ -250,11 +253,7 @@ static const JSMallocFunctions trace_mf = {
 #endif
 };
 
-#ifdef CONFIG_BIGNUM
-#define PROG_NAME "qjsbn"
-#else
 #define PROG_NAME "qjs"
-#endif
 
 void help(void)
 {
@@ -267,11 +266,13 @@ void help(void)
            "    --script       load as ES6 script (default=autodetect)\n"
            "    --std          make 'std' and 'os' available to the loaded script\n"
 #ifdef CONFIG_BIGNUM
+           "    --bignum       enable the bignum extensions (BigFloat, BigDecimal)\n"
            "    --qjscalc      load the QJSCalc runtime (default if invoked as qjscalc)\n"
 #endif
            "-T  --trace        trace memory allocation\n"
            "-d  --dump         dump the memory usage stats\n"
-           "    --unhandled-rejection dump unhandled promise rejections\n"
+           "    --memory-limit n       limit the memory usage to 'n' bytes\n"
+           "    --unhandled-rejection  dump unhandled promise rejections\n"
            "-q  --quit         just instantiate the interpreter and quit\n");
     exit(1);
 }
@@ -290,8 +291,9 @@ int main(int argc, char **argv)
     int module = -1;
     int load_std = 0;
     int dump_unhandled_promise_rejection = 0;
+    size_t memory_limit = 0;
 #ifdef CONFIG_BIGNUM
-    int load_jscalc;
+    int load_jscalc, bignum_ext = 0;
 #endif
 
 #ifdef CONFIG_BIGNUM
@@ -372,6 +374,10 @@ int main(int argc, char **argv)
                 continue;
             }
 #ifdef CONFIG_BIGNUM
+            if (!strcmp(longopt, "bignum")) {
+                bignum_ext = 1;
+                continue;
+            }
             if (!strcmp(longopt, "qjscalc")) {
                 load_jscalc = 1;
                 continue;
@@ -379,6 +385,14 @@ int main(int argc, char **argv)
 #endif
             if (opt == 'q' || !strcmp(longopt, "quit")) {
                 empty_run++;
+                continue;
+            }
+            if (!strcmp(longopt, "memory-limit")) {
+                if (optind >= argc) {
+                    fprintf(stderr, "expecting memory limit");
+                    exit(1);
+                }
+                memory_limit = (size_t)strtod(argv[optind++], NULL);
                 continue;
             }
             if (opt) {
@@ -400,12 +414,22 @@ int main(int argc, char **argv)
         fprintf(stderr, "qjs: cannot allocate JS runtime\n");
         exit(2);
     }
+    if (memory_limit != 0)
+        JS_SetMemoryLimit(rt, memory_limit);
     ctx = JS_NewContext(rt);
     if (!ctx) {
         fprintf(stderr, "qjs: cannot allocate JS context\n");
         exit(2);
     }
 
+#ifdef CONFIG_BIGNUM
+    if (bignum_ext || load_jscalc) {
+        JS_AddIntrinsicBigFloat(ctx);
+        JS_AddIntrinsicBigDecimal(ctx);
+        JS_EnableBignumExt(ctx, TRUE);
+    }
+#endif
+    
     /* loader for ES6 modules */
     JS_SetModuleLoaderFunc(rt, NULL, js_module_loader, NULL);
 

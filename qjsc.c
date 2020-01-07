@@ -1,7 +1,7 @@
 /*
  * QuickJS command line compiler
  * 
- * Copyright (c) 2018-2019 Fabrice Bellard
+ * Copyright (c) 2018-2020 Fabrice Bellard
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,9 @@
 
 #include "cutils.h"
 #include "quickjs-libc.h"
+
+/* enable bignums */
+#define CONFIG_BIGNUM
 
 typedef struct {
     char *name;
@@ -76,6 +79,7 @@ static const FeatureEntry feature_list[] = {
     { "promise", "Promise" },
 #define FE_MODULE_LOADER 9
     { "module-loader", NULL },
+    { "bigint", "BigInt" },
 };
 
 void namelist_add(namelist_t *lp, const char *name, const char *short_name,
@@ -332,11 +336,7 @@ static const char main_c_template2[] =
     "  return 0;\n"
     "}\n";
 
-#ifdef CONFIG_BIGNUM
-#define PROG_NAME "qjscbn"
-#else
 #define PROG_NAME "qjsc"
-#endif
 
 void help(void)
 {
@@ -357,6 +357,7 @@ void help(void)
     {
         int i;
         printf("-flto       use link time optimization\n");
+        printf("-fbignum    enable bignum extensions\n");
         printf("-fno-[");
         for(i = 0; i < countof(feature_list); i++) {
             if (i != 0)
@@ -420,11 +421,7 @@ static int output_executable(const char *out_filename, const char *cfilename,
     }
     
     lto_suffix = "";
-#ifdef CONFIG_BIGNUM
-    bn_suffix = ".bn";
-#else
     bn_suffix = "";
-#endif
     
     arg = argv;
     *arg++ = CONFIG_CC;
@@ -488,7 +485,7 @@ int main(int argc, char **argv)
     FILE *fo;
     JSRuntime *rt;
     JSContext *ctx;
-    BOOL use_lto;
+    BOOL use_lto, bignum_ext;
     int module;
     OutputTypeEnum output_type;
     
@@ -500,7 +497,8 @@ int main(int argc, char **argv)
     byte_swap = FALSE;
     verbose = 0;
     use_lto = FALSE;
-
+    bignum_ext = FALSE;
+    
     /* add system modules */
     namelist_add(&cmodule_list, "std", "std", 0);
     namelist_add(&cmodule_list, "os", "os", 0);
@@ -540,6 +538,8 @@ int main(int argc, char **argv)
                     }
                     if (i == countof(feature_list))
                         goto bad_feature;
+                } else if (!strcmp(optarg, "bignum")) {
+                    bignum_ext = TRUE;
                 } else {
                 bad_feature:
                     fprintf(stderr, "unsupported feature: %s\n", optarg);
@@ -610,9 +610,14 @@ int main(int argc, char **argv)
     outfile = fo;
     
     rt = JS_NewRuntime();
-    ctx = JS_NewContextRaw(rt);
-    JS_AddIntrinsicEval(ctx);
-    JS_AddIntrinsicRegExpCompiler(ctx);
+    ctx = JS_NewContext(rt);
+#ifdef CONFIG_BIGNUM
+    if (bignum_ext) {
+        JS_AddIntrinsicBigFloat(ctx);
+        JS_AddIntrinsicBigDecimal(ctx);
+        JS_EnableBignumExt(ctx, TRUE);
+    }
+#endif
     
     /* loader for ES6 modules */
     JS_SetModuleLoaderFunc(rt, NULL, jsc_module_loader, NULL);
@@ -656,7 +661,13 @@ int main(int argc, char **argv)
                         feature_list[i].init_name);
             }
         }
-
+        if (bignum_ext) {
+            fprintf(fo,
+                    "  JS_AddIntrinsicBigFloat(ctx);\n"
+                    "  JS_AddIntrinsicBigDecimal(ctx);\n"
+                    "  JS_EnableBignumExt(ctx, 1);\n");
+        }
+        
         fprintf(fo, "  js_std_add_helpers(ctx, argc, argv);\n");
 
         for(i = 0; i < init_module_list.count; i++) {

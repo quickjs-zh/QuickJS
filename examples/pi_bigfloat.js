@@ -1,29 +1,29 @@
 /*
- * PI computation in Javascript using the QuickJS bignum extensions
+ * PI computation in Javascript using the QuickJS bigfloat type
+ * (binary floating point)
  */
 "use strict";
-"use bigint";
 
 /* compute PI with a precision of 'prec' bits */
-function calc_pi(prec) {
-    const CHUD_A = 13591409;
-    const CHUD_B = 545140134;
-    const CHUD_C = 640320;
-    const CHUD_C3 = 10939058860032000; /* C^3/24 */
+function calc_pi() {
+    const CHUD_A = 13591409n;
+    const CHUD_B = 545140134n;
+    const CHUD_C = 640320n;
+    const CHUD_C3 = 10939058860032000n; /* C^3/24 */
     const CHUD_BITS_PER_TERM = 47.11041313821584202247; /* log2(C/12)*3 */
     
     /* return [P, Q, G] */
     function chud_bs(a, b, need_G) {
         var c, P, Q, G, P1, Q1, G1, P2, Q2, G2;
-        if (a == (b - 1)) {
-            G = (2 * b - 1) * (6 * b - 1) * (6 * b - 5);
+        if (a == (b - 1n)) {
+            G = (2n * b - 1n) * (6n * b - 1n) * (6n * b - 5n);
             P = BigFloat(G * (CHUD_B * b + CHUD_A));
-            if (b & 1)
+            if (b & 1n)
                 P = -P;
             G = BigFloat(G);
             Q = BigFloat(b * b * b * CHUD_C3);
         } else {
-            c = (a + b) >> 1;
+            c = (a + b) >> 1n;
             [P1, Q1, G1] = chud_bs(a, c, true);
             [P2, Q2, G2] = chud_bs(c, b, need_G);
             P = P1 * Q2 + P2 * G1;
@@ -31,17 +31,17 @@ function calc_pi(prec) {
             if (need_G)
                 G = G1 * G2;
             else
-                G = 0;
+                G = 0l;
         }
         return [P, Q, G];
     }
 
     var n, P, Q, G;
     /* number of serie terms */
-    n = Math.ceil(BigFloatEnv.prec / CHUD_BITS_PER_TERM) + 10;
-    [P, Q, G] = chud_bs(0, n, false);
-    Q = Q / (P + Q * CHUD_A);
-    G = (CHUD_C / 12) * BigFloat.sqrt(CHUD_C);
+    n = BigInt(Math.ceil(BigFloatEnv.prec / CHUD_BITS_PER_TERM)) + 10n;
+    [P, Q, G] = chud_bs(0n, n, false);
+    Q = Q / (P + Q * BigFloat(CHUD_A));
+    G = BigFloat((CHUD_C / 12n)) * BigFloat.sqrt(BigFloat(CHUD_C));
     return Q * G;
 }
 

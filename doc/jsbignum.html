@@ -1,8 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<!-- Created by GNU Texinfo 6.5, http://www.gnu.org/software/texinfo/ -->
+<!-- Created by GNU Texinfo 6.1, http://www.gnu.org/software/texinfo/ -->
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Javascript Bignum Extensions</title>
 
 <meta name="description" content="Javascript Bignum Extensions">
@@ -10,6 +9,7 @@
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link href="#SEC_Contents" rel="contents" title="Table of Contents">
 <style type="text/css">
 <!--
@@ -637,8 +637,9 @@ strictly smaller than the maximum allowed number of exponent bits
 flag is set to <code>true</code>. Otherwise it is set to <code>false</code>;
 </p>
 <p>For example, <code>prec = 53</code> and <code> expBits = 11</code> give exactly
-the same precision as the IEEE 754 64 bit floating point type. It is
-the default floating point precision.
+the same precision as the IEEE 754 64 bit floating point. The
+default precision is <code>prec = 113</code> and <code> expBits = 15</code> (IEEE
+754 128 bit floating point).
 </p>
 <p>The global floating point environment can only be modified temporarily
 when calling a function (see <code>BigFloatEnv.setPrec</code>). Hence a
@@ -713,6 +714,14 @@ result is rounded according to the floating point environment <code>e</code>
 or the global environment if <code>e</code> is undefined.
 </p>
 </dd>
+<dt><code>isFinite(a)</code></dt>
+<dd><p>Return true if <code>a</code> is a finite bigfloat.
+</p>
+</dd>
+<dt><code>isNaN(a)</code></dt>
+<dd><p>Return true if <code>a</code> is a NaN bigfloat.
+</p>
+</dd>
 <dt><code>add(a, b[, e])</code></dt>
 <dt><code>sub(a, b[, e])</code></dt>
 <dt><code>mul(a, b[, e])</code></dt>
@@ -723,12 +732,11 @@ point number <code>a</code> according to the floating point environment
 <code>e</code> is specified, the floating point status flags are updated.
 </p>
 </dd>
-<dt><code>floor(x[, e])</code></dt>
-<dt><code>ceil(x[, e])</code></dt>
-<dt><code>round(x[, e])</code></dt>
-<dt><code>trunc(x[, e])</code></dt>
-<dd><p>Round to integer. A rounded <code>BigFloat</code> is returned. <code>e</code> is an
-optional floating point environment.
+<dt><code>floor(x)</code></dt>
+<dt><code>ceil(x)</code></dt>
+<dt><code>round(x)</code></dt>
+<dt><code>trunc(x)</code></dt>
+<dd><p>Round to an integer. No additional rounding is performed.
 </p>
 </dd>
 <dt><code>fmod(x, y[, e])</code></dt>

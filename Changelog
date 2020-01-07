@@ -1,3 +1,10 @@
+2020-01-05:
+
+- always compile the bignum code. Added '--bignum' option to qjs.
+- added BigDecimal
+- added String.prototype.replaceAll
+- misc bug fixes
+
 2019-12-21:
 
 - added nullish coalescing operator (ES2020)

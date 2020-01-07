@@ -876,7 +876,43 @@ import * as os from "os";
         var s;
         if (!isFinite(a)) {
             /* NaN, Infinite */
-            if (typeof a === "bigfloat" && eval_mode !== "math") {
+            return a.toString();
+        } else {
+            if (a == 0) {
+                if (1 / a < 0)
+                    s = "-0";
+                else
+                    s = "0";
+            } else {
+                if (radix == 16 && a === Math.floor(a)) {
+                    var s;
+                    if (a < 0) {
+                        a = -a;
+                        s = "-";
+                    } else {
+                        s = "";
+                    }
+                    s += "0x" + a.toString(16);
+                } else {
+                    s = a.toString();
+                }
+            }
+            if (eval_mode !== "std" && s.indexOf(".") < 0 &&
+                ((radix == 16 && s.indexOf("p") < 0) ||
+                 (radix == 10 && s.indexOf("e") < 0))) {
+                /* add a decimal point so that the floating point type
+                   is visible */
+                s += ".0";
+            }
+            return s;
+        }
+    }
+
+    function bigfloat_to_string(a, radix) {
+        var s;
+        if (!BigFloat.isFinite(a)) {
+            /* NaN, Infinite */
+            if (eval_mode !== "math") {
                 return "BigFloat(" + a.toString() + ")";
             } else {
                 return a.toString();
@@ -994,10 +1030,14 @@ import * as os from "os";
                 if (s.length > 79)
                     s = s.substring(0, 75) + "...\"";
                 std.puts(s);
-            } else if (type === "number" || type === "bigfloat") {
+            } else if (type === "number") {
                 std.puts(number_to_string(a, hex_mode ? 16 : 10));
             } else if (type === "bigint") {
                 std.puts(bigint_to_string(a, hex_mode ? 16 : 10));
+            } else if (type === "bigfloat") {
+                std.puts(bigfloat_to_string(a, hex_mode ? 16 : 10));
+            } else if (type === "bigdecimal") {
+                std.puts(a.toString() + "d");
             } else if (type === "symbol") {
                 std.puts(String(a));
             } else if (type === "function") {
@@ -1202,15 +1242,12 @@ import * as os from "os";
         }
         if (has_bignum) {
             log2_10 = Math.log(10) / Math.log(2);
+            prec = 113;
+            expBits = 15;
             if (has_jscalc) {
-                prec = 113;
-                expBits = 15;
                 eval_mode = "math";
                 /* XXX: numeric mode should always be the default ? */
                 g.algebraicMode = config_numcalc;
-            } else {
-                prec = 53;
-                expBits = 11;
             }
         }
 

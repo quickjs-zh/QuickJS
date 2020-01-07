@@ -22,8 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-"use strict";
+import * as std from "std";
 
 function pad(str, n) {
     str += "";
@@ -98,13 +97,16 @@ var clocks_per_sec = 1000000;
 var max_iterations = 100;
 var clock_threshold = 2000;  /* favoring short measuring spans */
 var min_n_argument = 1;
-var __date_clock;
+var get_clock;
 
-if (typeof __date_clock != "function") {
+if (typeof globalThis.__date_clock != "function") {
     console.log("using fallback millisecond clock");
     clocks_per_sec = 1000;
     max_iterations = 10;
     clock_threshold = 100;
+    get_clock = Date.now;
+} else {
+    get_clock = globalThis.__date_clock;
 }
 
 function log_one(text, n, ti) {
@@ -136,21 +138,18 @@ function bench(f, text)
     if (f.bench) {
         ti_n = f(text);
     } else {
-        var clock = __date_clock;
-        if (typeof clock != "function")
-            clock = Date.now;
         ti_n = 1000000000;
         min_ti = clock_threshold / 10;
         for(i = 0; i < 30; i++) {
             ti = 1000000000;
             for (j = 0; j < max_iterations; j++) {
-                t = clock();
-                while ((t1 = clock()) == t)
+                t = get_clock();
+                while ((t1 = get_clock()) == t)
                     continue;
                 nb_its = f(n);
                 if (nb_its < 0)
                     return; // test failure
-                t1 = clock() - t1;
+                t1 = get_clock() - t1;
                 if (ti > t1)
                     ti = t1;
             }
@@ -827,9 +826,9 @@ function sort_bench(text) {
         for (j = 0; j < 100; j++) {
             arr = new array_type(n);
             f(arr, n, def);
-            var t1 = __date_clock();
+            var t1 = get_clock();
             arr.sort();
-            t1 = __date_clock() - t1;
+            t1 = get_clock() - t1;
             tx += t1;
             if (!ti || ti > t1)
                 ti = t1;
@@ -866,6 +865,52 @@ function sort_bench(text) {
 }
 sort_bench.bench = true;
 sort_bench.verbose = false;
+
+function int_to_string(n)
+{
+    var s, r, j;
+    r = 0;
+    for(j = 0; j < n; j++) {
+        s = (j + 1).toString();
+    }
+    return n;
+}
+
+function float_to_string(n)
+{
+    var s, r, j;
+    r = 0;
+    for(j = 0; j < n; j++) {
+        s = (j + 0.1).toString();
+    }
+    return n;
+}
+
+function string_to_int(n)
+{
+    var s, r, j;
+    r = 0;
+    s = "12345";
+    r = 0;
+    for(j = 0; j < n; j++) {
+        r += (s | 0);
+    }
+    global_res = r;
+    return n;
+}
+
+function string_to_float(n)
+{
+    var s, r, j;
+    r = 0;
+    s = "12345.6";
+    r = 0;
+    for(j = 0; j < n; j++) {
+        r -= s;
+    }
+    global_res = r;
+    return n;
+}
 
 function load_result(filename)
 {
@@ -931,6 +976,10 @@ function main(argc, argv, g)
         //string_build3,
         //string_build4,
         sort_bench,
+        int_to_string,
+        float_to_string,
+        string_to_int,
+        string_to_float,
     ];
     var tests = [];
     var i, j, n, f, name;

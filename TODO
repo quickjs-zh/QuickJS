@@ -1,5 +1,4 @@
 Misc:
-- make BigInt available by default
 - use custom printf to avoid C library compatibility issues
 - rename CONFIG_ALL_UNICODE, CONFIG_BIGNUM, CONFIG_ATOMICS, CONFIG_CHECK_JSVALUE ?
 - unify coding style and naming conventions

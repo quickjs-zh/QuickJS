@@ -496,8 +496,9 @@ strictly smaller than the maximum allowed number of exponent bits
 flag is set to @code{true}. Otherwise it is set to @code{false};
 
 For example, @code{prec = 53} and @code{ expBits = 11} give exactly
-the same precision as the IEEE 754 64 bit floating point type. It is
-the default floating point precision.
+the same precision as the IEEE 754 64 bit floating point. The
+default precision is @code{prec = 113} and @code{ expBits = 15} (IEEE
+754 128 bit floating point).
 
 The global floating point environment can only be modified temporarily
 when calling a function (see @code{BigFloatEnv.setPrec}). Hence a
@@ -568,6 +569,12 @@ means radix 10 unless there is a hexadecimal or binary prefix. The
 result is rounded according to the floating point environment @code{e}
 or the global environment if @code{e} is undefined.
 
+@item isFinite(a)
+Return true if @code{a} is a finite bigfloat.
+
+@item isNaN(a)
+Return true if @code{a} is a NaN bigfloat.
+
 @item add(a, b[, e])
 @item sub(a, b[, e])
 @item mul(a, b[, e])
@@ -577,12 +584,11 @@ point number @code{a} according to the floating point environment
 @code{e} or the global environment if @code{e} is undefined. If
 @code{e} is specified, the floating point status flags are updated.
 
-@item floor(x[, e])
-@item ceil(x[, e])
-@item round(x[, e])
-@item trunc(x[, e])
-Round to integer. A rounded @code{BigFloat} is returned. @code{e} is an
-optional floating point environment.
+@item floor(x)
+@item ceil(x)
+@item round(x)
+@item trunc(x)
+Round to an integer. No additional rounding is performed.
 
 @item fmod(x, y[, e])
 @item remainder(x, y[, e])

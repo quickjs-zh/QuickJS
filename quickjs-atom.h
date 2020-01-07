@@ -170,6 +170,10 @@ DEF(globalThis, "globalThis")
 #ifdef CONFIG_BIGNUM
 DEF(bigint, "bigint")
 DEF(bigfloat, "bigfloat")
+DEF(bigdecimal, "bigdecimal")
+DEF(roundingMode, "roundingMode")
+DEF(maximumSignificantDigits, "maximumSignificantDigits")
+DEF(maximumFractionDigits, "maximumFractionDigits")
 #endif
 #ifdef CONFIG_ATOMICS
 DEF(not_equal, "not-equal")
@@ -214,6 +218,7 @@ DEF(DataView, "DataView")
 DEF(BigInt, "BigInt")
 DEF(BigFloat, "BigFloat")
 DEF(BigFloatEnv, "BigFloatEnv")
+DEF(BigDecimal, "BigDecimal")
 #endif
 DEF(Map, "Map")
 DEF(Set, "Set") /* Map + 1 */
