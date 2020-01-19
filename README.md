@@ -778,6 +778,6 @@ QuickJS 在MIT协议下发布。
 
 - [go-quickjs](https://github.com/wspl/go-quickjs) Go的QuickJS库
 
-- [qjsuv](https://github.com/saghul/qjsuv) QuickJS ❤️ libuv
+- [txiki.js](https://github.com/saghul/txiki.js) The tiny JavaScript runtime built with QuickJS, libuv and ❤️
 
 - [QuickJS-Pascal](https://github.com/Coldzer0/QuickJS-Pascal) Quickjs FreePascal / Delphi Bindings
