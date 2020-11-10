@@ -53,7 +53,11 @@ CONFIG_BIGNUM=y
 OBJDIR=.obj
 
 ifdef CONFIG_WIN32
-  CROSS_PREFIX=i686-w64-mingw32-
+  ifdef CONFIG_M32
+    CROSS_PREFIX=i686-w64-mingw32-
+  else
+    CROSS_PREFIX=x86_64-w64-mingw32-
+  endif
   EXE=.exe
 else
   CROSS_PREFIX=
@@ -281,15 +285,12 @@ $(OBJDIR)/%.check.o: %.c | $(OBJDIR)
 regexp_test: libregexp.c libunicode.c cutils.c
 	$(CC) $(LDFLAGS) $(CFLAGS) -DTEST -o $@ libregexp.c libunicode.c cutils.c $(LIBS)
 
-jscompress: jscompress.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ jscompress.c
-
 unicode_gen: $(OBJDIR)/unicode_gen.host.o $(OBJDIR)/cutils.host.o libunicode.c unicode_gen_def.h
 	$(HOST_CC) $(LDFLAGS) $(CFLAGS) -o $@ $(OBJDIR)/unicode_gen.host.o $(OBJDIR)/cutils.host.o
 
 clean:
 	rm -f repl.c qjscalc.c out.c
-	rm -f *.a *.o *.d *~ jscompress unicode_gen regexp_test $(PROGS)
+	rm -f *.a *.o *.d *~ unicode_gen regexp_test $(PROGS)
 	rm -f hello.c test_fib.c
 	rm -f examples/*.so tests/*.so
 	rm -rf $(OBJDIR)/ *.dSYM/ qjs-debug
