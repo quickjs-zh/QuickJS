@@ -19904,9 +19904,9 @@ typedef struct JSFunctionDef {
     int func_var_idx; /* variable containing the current function (-1
                          if none, only used if is_func_expr is true) */
     int eval_ret_idx; /* variable containing the return value of the eval, -1 if none */
-    int this_var_idx; /* variable containg the 'this' value, -1 if none */
-    int new_target_var_idx; /* variable containg the 'new.target' value, -1 if none */
-    int this_active_func_var_idx; /* variable containg the 'this.active_func' value, -1 if none */
+    int this_var_idx; /* variable containing the 'this' value, -1 if none */
+    int new_target_var_idx; /* variable containing the 'new.target' value, -1 if none */
+    int this_active_func_var_idx; /* variable containing the 'this.active_func' value, -1 if none */
     int home_object_var_idx;
     BOOL need_home_object;
     
