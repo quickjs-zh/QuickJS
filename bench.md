@@ -30,7 +30,7 @@ bench-v8源代码在QuickJS测试档案（`tests/bench-v8`目录）中提供。
 
 在Fedora 21上使用gcc 4.9.2编译所有程序。它们在3.2 GHz的Core i5 4570 CPU上运行。
 
-**可执行文件尺寸**是指由运行引擎所需的所有资源(除了系统C库)的大小。
+**可执行文件尺寸**是指运行引擎所需的所有资源(除了系统C库)的大小。
 
 *   [QuickJS](https://bellard.org/quickjs): version 2019-07-09, qjs executable, x86, 64 bits, compiled with -O2.
 *   [DukTape](https://duktape.org/): version 2.3.0, duk executable, x86, 64 bits, compiled with -O2.
