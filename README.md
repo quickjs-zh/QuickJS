@@ -772,6 +772,8 @@ QuickJS 在MIT协议下发布。
 
 - [QuickJS-iOS](https://github.com/siuying/QuickJS-iOS) iOS下的QuickJS库
 
+- [QuickJS-Android](https://github.com/HarlonWang/quickjs-android-wrapper) Android下的QuickJS库
+
 - [quickjs-rs](https://github.com/quickjs-zh/quickjs-rs) Rust的QuickJS库
 
 - [quickjspp](https://github.com/quickjs-zh/quickjspp) C++的QuickJS库
