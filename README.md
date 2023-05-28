@@ -4,58 +4,65 @@ QuickJS Javascript引擎
 目录
 -----------------
 
-*   [1 简介](#1-简介)
-    *   [1.1 主要功能](#11-主要功能)
-    *   [1.2 基准测试](#12-基准测试)
-*   [2 用法](#2-用法)
-    *   [2.1 安装](#21-安装)
-    *   [2.2 快速入门](#22-快速入门)
-    *   [2.3 命令行选项](#23-命令行选项)
-        *   [2.3.1 `qjs` 解释器](#231-qjs-解释器)
-        *   [2.3.2 `qjsc` 编译器](#232-qjsc-编译器)
-    *   [2.4 `qjscalc` 应用程序](#24-qjscalc-应用程序)
-    *   [2.5 内置测试](#25-内置测试)
-    *   [2.6 Test262 (ECMAScript测试套件)](#26-test262-ecmascript-测试套件)
-*   [3 技术规范](#3-技术规范)
-    *   [3.1 语言支持](#31-语言支持)
-        *   [3.1.1 ES2019支持](#311-es2019支持)
-        *   [3.1.2 JSON](#312-json)
-        *   [3.1.3 ECMA402](#313-ecma402)
-        *   [3.1.4 扩展](#314-扩展)
-        *   [3.1.5 数学扩展](#315-数学扩展)
-    *   [3.2 模块](#32-模块)
-    *   [3.3 标准库](#33-标准库)
-        *   [3.3.1 全局对象](#331-全局对象)
-        *   [3.3.2 `std` 模块](#332-std-模块)
-        *   [3.3.3 `os` 模块](#333-os-模块)
-    *   [3.4 QuickJS C API](#34-quickjs-c-api)
-        *   [3.4.1 运行时和上下文](#341-运行时和上下文)
-        *   [3.4.2 JSValue](#342-jsvalue)
-        *   [3.4.3 C函数](#343-c函数)
-        *   [3.4.4 错误异常](#344-错误异常)
-        *   [3.4.5 Script代码执行](#345-script代码执行)
-        *   [3.4.6 JS类](#346-js类)
-        *   [3.4.7 C模块](#347-c模块)
-        *   [3.4.8 内存处理](#348-内存处理)
-        *   [3.4.9 执行超时和中断](#349-执行超时和中断)
-*   [4 内部实现](#4-内部实现)
-    *   [4.1 Bytecode](#41-bytecode)
-    *   [4.2 Executable generation](#42-executable-generation)
-        *   [4.2.1 `qjsc` 编译器](#421-qjsc-编译器)
-        *   [4.2.2 二进制 JSON](#422-二进制-json)
-    *   [4.3 运行时](#43-运行时)
-        *   [4.3.1 Strings](#431-strings)
-        *   [4.3.2 Objects](#432-objects)
-        *   [4.3.3 Atoms](#433-atoms)
-        *   [4.3.4 Numbers](#434-numbers)
-        *   [4.3.5 垃圾回收](#435-垃圾回收)
-        *   [4.3.6 JSValue](#436-jsvalue)
-        *   [4.3.7 函数调用](#437-函数调用)
-    *   [4.4 RegExp](#44-regexp)
-    *   [4.5 Unicode](#45-unicode)
-    *   [4.6 BigInt and BigFloat](#46-bigint-and-bigfloat)
-*   [5 许可协议](#5-许可协议)
-*   [6 相关项目](#6-相关项目)
+- [QuickJS Javascript引擎](#quickjs-javascript引擎)
+  - [目录](#目录)
+  - [1 简介](#1-简介)
+    - [1.1 主要功能](#11-主要功能)
+    - [1.2 基准测试](#12-基准测试)
+  - [2 用法](#2-用法)
+    - [2.1 安装](#21-安装)
+    - [2.2 快速入门](#22-快速入门)
+    - [2.3 命令行选项](#23-命令行选项)
+      - [2.3.1 `qjs` 解释器](#231-qjs-解释器)
+      - [2.3.2 `qjsc` 编译器](#232-qjsc-编译器)
+    - [2.4 `qjscalc` 应用程序](#24-qjscalc-应用程序)
+    - [2.5 内置测试](#25-内置测试)
+    - [2.6 Test262 (ECMAScript 测试套件))](#26-test262-ecmascript-测试套件)
+  - [3 技术规范](#3-技术规范)
+    - [3.1 语言支持](#31-语言支持)
+      - [3.1.1 ES2019支持](#311-es2019支持)
+      - [3.1.2 JSON](#312-json)
+      - [3.1.3 ECMA402](#313-ecma402)
+      - [3.1.4 扩展](#314-扩展)
+      - [3.1.5 数学扩展](#315-数学扩展)
+    - [3.2 模块](#32-模块)
+    - [3.3 标准库](#33-标准库)
+      - [3.3.1 全局对象](#331-全局对象)
+      - [3.3.2 `std` 模块](#332-std-模块)
+      - [3.3.3 `os` 模块](#333-os-模块)
+    - [3.4 QuickJS C API](#34-quickjs-c-api)
+      - [3.4.1 运行时和上下文](#341-运行时和上下文)
+      - [3.4.2 JSValue](#342-jsvalue)
+      - [3.4.3 C函数](#343-c函数)
+      - [3.4.4 错误异常](#344-错误异常)
+      - [3.4.5 Script代码执行](#345-script代码执行)
+      - [3.4.6 JS类](#346-js类)
+      - [3.4.7 C模块](#347-c模块)
+      - [3.4.8 内存处理](#348-内存处理)
+      - [3.4.9 执行超时和中断](#349-执行超时和中断)
+  - [4 内部实现](#4-内部实现)
+    - [4.1 Bytecode](#41-bytecode)
+    - [4.2 Executable generation](#42-executable-generation)
+      - [4.2.1 `qjsc` 编译器](#421-qjsc-编译器)
+      - [4.2.2 二进制 JSON](#422-二进制-json)
+    - [4.3 运行时](#43-运行时)
+      - [4.3.1 Strings](#431-strings)
+      - [4.3.2 Objects](#432-objects)
+      - [4.3.3 Atoms](#433-atoms)
+      - [4.3.4 Numbers](#434-numbers)
+      - [4.3.5 垃圾回收](#435-垃圾回收)
+      - [4.3.6 JSValue](#436-jsvalue)
+      - [4.3.7 函数调用](#437-函数调用)
+    - [4.4 RegExp](#44-regexp)
+    - [4.5 Unicode](#45-unicode)
+    - [4.6 BigInt 和 BigFloat](#46-bigint-和-bigfloat)
+  - [5 许可协议](#5-许可协议)
+      - [脚注](#脚注)
+    - [(1)](#1)
+    - [(2)](#2)
+    - [(3)](#3)
+    - [(4)](#4)
+  - [6 相关项目](#6-相关项目)
 
 1 简介
 --------------
@@ -452,11 +459,11 @@ FILE 原型：
 
 `read(buffer, position, length)`
 
-Read `length` bytes from the file to the ArrayBuffer `buffer` at byte position `position` （libc的包装器`fread`）。
+从文件中以字节位置`position`，读取`length`字节到ArrayBuffer`buffer`（libc的包装器`fread`）。
 
 `write(buffer, position, length)`
 
-Write `length` bytes to the file from the ArrayBuffer `buffer` at byte position `position` (wrapper to the libc `fread`).
+将ArrayBuffer`buffer`中以字节位置`position`开始的`length`字节写入文件 (libc的包装器`fread`).
 
 `getline()`
 
@@ -517,11 +524,11 @@ POSIX打开标志。
 
 `read(fd, buffer, offset, length)`
 
-Read `length` bytes from the file handle `fd` to the ArrayBuffer `buffer` at byte position `offset`. Return the number of read bytes or < 0 if error.
+从文件句柄`fd`中以字节位置`offset`开始，读取`length`字节到ArrayBuffer`buffer`。返回读取的字节数，若出现错误则返回小于0的值。
 
 `write(fd, buffer, offset, length)`
 
-Write `length` bytes to the file handle `fd` from the ArrayBuffer `buffer` at byte position `offset`. Return the number of written bytes or < 0 if error.
+将ArrayBuffer`buffer`中以字节位置`offset`开始的`length`字节写入文件句柄`fd`。返回写入的字节数，若出现错误则返回小于0的值。
 
 `isatty(fd)`
 
@@ -587,41 +594,41 @@ C API的设计简单而有效。C API在`quickjs.h`标头中定义。
 
 #### 3.4.1 运行时和上下文
 
-`JSRuntime` represents a Javascript runtime corresponding to an object heap. Several runtimes can exist at the same time but they cannot exchange objects. Inside a given runtime, no multi-threading is supported.
+`JSRuntime`表示与对象堆对应的JavaScript运行时。可以同时存在多个运行时，但它们不能交换对象。在给定的运行时内，不支持多线程。
 
-`JSContext` represents a Javascript context (or Realm). Each JSContext has its own global objects and system objects. There can be several JSContexts per JSRuntime and they can share objects, similary to frames of the same origin sharing Javascript objects in a web browser.
+`JSContext`表示JavaScript上下文（或领域）。每个JSContext都有自己的全局对象和系统对象。在JSRuntime中可以有多个JSContext，并且它们可以共享对象，类似于同一源的框架在Web浏览器中共享JavaScript对象。
 
 #### 3.4.2 JSValue
 
-`JSValue` represents a Javascript value which can be a primitive type or an object. Reference counting is used, so it is important to explicitely duplicate (`JS_DupValue()`, increment the reference count) or free (`JS_FreeValue()`, decrement the reference count) JSValues.
+`JSValue`表示一个JavaScript值，可以是原始类型或对象。使用引用计数，因此重要的是明确复制（`JS_DupValue()`，增加引用计数）或释放（`JS_FreeValue()`，减少引用计数）JSValues。
 
 #### 3.4.3 C函数
 
-C functions can be created with `JS_NewCFunction()`. `JS_SetPropertyFunctionList()` is a shortcut to easily add functions, setters and getters properties to a given object.
+使用`JS_NewCFunction()`可以创建C函数。`JS_SetPropertyFunctionList()`是一种简便的方法，可将函数、设置器和获取器属性轻松添加到给定对象中。
 
-Unlike other embedded Javascript engines, there is no implicit stack, so C functions get their parameters as normal C parameters. As a general rule, C functions take constant `JSValue`s as parameters (so they don’t need to free them) and return a newly allocated (=live) `JSValue`.
+与其他嵌入式JavaScript引擎不同，QuickJS没有隐式堆栈，因此C函数将其参数作为普通的C参数传递。一般规则是，C函数将`JSValue`作为参数（因此它们不需要释放），并返回一个新分配的（活动的）`JSValue`。
 
 #### 3.4.4 错误异常
 
-Exceptions: most C functions can return a Javascript exception. It must be explicitely tested and handled by the C code. The specific `JSValue` `JS_EXCEPTION` indicates that an exception occured. The actual exception object is stored in the `JSContext` and can be retrieved with `JS_GetException()`.
+异常：大多数C函数可以返回一个Javascript异常。必须通过C代码明确测试和处理它。特定的`JSValue`，即`JS_EXCEPTION`，表示发生了异常。实际的异常对象存储在`JSContext`中，可以使用`JS_GetException()`检索到。
 
 #### 3.4.5 Script代码执行
 
-Use `JS_Eval()` to evaluate a script or module source.
+使用`JS_Eval()`来评估脚本或模块源代码。
 
-If the script or module was compiled to bytecode with `qjsc`, `JS_EvalBinary()` achieves the same result. The advantage is that no compilation is needed so it is faster and smaller because the compiler can be removed from the executable if no `eval` is required.
+如果脚本或模块已经使用`qjsc`编译成字节码，那么使用`JS_EvalBinary()`可以实现相同的结果。优点是不需要编译，因此速度更快、体积更小，因为如果不需要`eval`，编译器可以从可执行文件中删除。
 
-Note: the bytecode format is linked to a given QuickJS version. Moreover, no security check is done before its execution. Hence the bytecode should not be loaded from untrusted sources. That’s why there is no option to output the bytecode to a binary file in `qjsc`.
+注意：字节码格式与特定的QuickJS版本相关联。此外，在执行之前没有进行安全检查。因此，字节码不应从不受信任的来源加载。这就是为什么`qjsc`中没有将字节码输出到二进制文件的选项。
 
 #### 3.4.6 JS类
 
-C opaque data can be attached to a Javascript object. The type of the C opaque data is determined with the class ID (`JSClassID`) of the object. Hence the first step is to register a new class ID and JS class (`JS_NewClassID()`, `JS_NewClass()`). Then you can create objects of this class with `JS_NewObjectClass()` and get or set the C opaque point with `JS_GetOpaque()`/`JS_SetOpaque()`.
+可以将C的不透明数据附加到JavaScript对象上。C不透明数据的类型由对象的类ID（`JSClassID`）确定。因此，第一步是注册一个新的类ID和JS类（`JS_NewClassID()`、`JS_NewClass()`）。然后，可以使用`JS_NewObjectClass()`创建该类的对象，并使用`JS_GetOpaque()`/`JS_SetOpaque()`获取或设置C的不透明指针。
 
-When defining a new JS class, it is possible to declare a finalizer which is called when the object is destroyed. A `gc_mark` method can be provided so that the cycle removal algorithm can find the other objects referenced by this object. Other methods are available to define exotic object behaviors.
+在定义新的JS类时，可以声明一个析构函数，在对象销毁时调用该函数。可以提供一个`gc_mark`方法，以便循环移除算法可以找到被该对象引用的其他对象。还有其他方法可用于定义异类对象行为。
 
-The Class ID are globally allocated (i.e. for all runtimes). The JSClass are allocated per `JSRuntime`. `JS_SetClassProto()` is used to define a prototype for a given class in a given JSContext. `JS_NewObjectClass()` sets this prototype in the created object.
+类ID在全局范围内分配（即适用于所有运行时）。JSClass在每个`JSRuntime`中分配。`JS_SetClassProto()`用于在给定`JSContext`中为给定类定义原型。`JS_NewObjectClass()`在创建的对象中设置此原型。
 
-Examples are available in js\_libc.c.
+在js_libc.c中提供了示例。
 
 #### 3.4.7 C模块
 
@@ -637,7 +644,7 @@ Examples are available in js\_libc.c.
 
 #### 3.4.9 执行超时和中断
 
-Use `JS_SetInterruptHandler()` to set a callback which is regularly called by the engine when it is executing code. This callback can be used to implement an execution timeout.
+使用`JS_SetInterruptHandler()`来设置一个回调函数，当引擎执行代码时，它会定期调用该回调函数。该回调函数可以用于实现执行超时。
 
 命令行解释器使用它来实现 `Ctrl-C` 处理程序。
 
@@ -646,35 +653,35 @@ Use `JS_SetInterruptHandler()` to set a callback which is regularly called by th
 
 ### 4.1 Bytecode
 
-The compiler generates bytecode directly with no intermediate representation such as a parse tree, hence it is very fast. Several optimizations passes are done over the generated bytecode.
+编译器直接生成字节码，没有中间表示（如解析树），因此非常快速。在生成的字节码上进行了多个优化步骤。
 
-A stack-based bytecode was chosen because it is simple and generates compact code.
+选择了基于堆栈的字节码，因为它简单且生成的代码紧凑。
 
-For each function, the maximum stack size is computed at compile time so that no runtime stack overflow tests are needed.
+对于每个函数，编译时计算最大堆栈大小，因此不需要运行时堆栈溢出测试。
 
-A separate compressed line number table is maintained for the debug information.
+为调试信息维护了一个单独的压缩行号表。
 
-Access to closure variables is optimized and is almost as fast as local variables.
+对闭包变量的访问进行了优化，并且几乎与局部变量一样快。
 
-Direct `eval` in strict mode is optimized.
+对严格模式下的直接`eval`进行了优化。
 
 ### 4.2 Executable generation
 
 #### 4.2.1 `qjsc` 编译器
 
-The `qjsc` compiler generates C sources from Javascript files. By default the C sources are compiled with the system compiler (`gcc` or `clang`).
+`qjsc`编译器从Javascript文件生成C源代码。默认情况下，C源代码使用系统编译器（`gcc`或`clang`）进行编译。
 
-The generated C source contains the bytecode of the compiled functions or modules. If a full complete executable is needed, it also contains a `main()` function with the necessary C code to initialize the Javascript engine and to load and execute the compiled functions and modules.
+生成的C源代码包含已编译函数或模块的字节码。如果需要完整的可执行文件，它还包含一个`main()`函数，其中包含必要的C代码来初始化Javascript引擎，并加载和执行已编译的函数和模块。
 
-Javascript code can be mixed with C modules.
+可以将Javascript代码与C模块混合使用。
 
-In order to have smaller executables, specific Javascript features can be disabled, in particular `eval` or the regular expressions. The code removal relies on the Link Time Optimization of the system compiler.
+为了生成更小的可执行文件，可以禁用特定的Javascript功能，特别是`eval`或正则表达式。代码删除依赖于系统编译器的链接时优化。
 
 #### 4.2.2 二进制 JSON
 
-`qjsc` works by compiling scripts or modules and then serializing them to a binary format. A subset of this format (without functions or modules) can be used as binary JSON. The example test\_bjson.js shows how to use it.
+`qjsc`通过编译脚本或模块，然后将它们序列化为二进制格式来工作。该格式的一个子集（不包括函数或模块）可以用作二进制JSON。示例`test_bjson.js`展示了如何使用它。
 
-Warning: the binary JSON format may change without notice, so it should not be used to store persistent data. The test\_bjson.js example is only used to test the binary object format functions.
+警告：二进制JSON格式可能会在不经通知的情况下更改，因此不应将其用于存储持久数据。`test_bjson.js`示例仅用于测试二进制对象格式的函数。
 
 ### 4.3 运行时
 
@@ -686,31 +693,31 @@ C API提供将Javascript字符串转换为C UTF-8编码字符串的函数。最�
 
 #### 4.3.2 Objects
 
-The object shapes (object prototype, property names and flags) are shared between objects to save memory.
+对象形状（对象原型、属性名称和标志）在对象之间共享，以节省内存。
 
-Arrays with no holes (except at the end of the array) are optimized.
+优化了没有洞（除了数组末尾）的数组。
 
 TypedArray访问已优化。
 
 #### 4.3.3 Atoms
 
-Object property names and some strings are stored as Atoms (unique strings) to save memory and allow fast comparison. Atoms are represented as a 32 bit integer. Half of the atom range is reserved for immediate integer literals from _0_ to _2^{31}-1_.
+对象属性名称和一些字符串被存储为原子（唯一字符串），以节省内存并允许快速比较。原子表示为32位整数。原子范围的一半保留给从 0 到 2^{31}-1 的立即整数字面值。
 
 #### 4.3.4 Numbers
 
-Numbers are represented either as 32-bit signed integers or 64-bit IEEE-754 floating point values. Most operations have fast paths for the 32-bit integer case.
+数字可以表示为32位有符号整数或64位IEEE-754浮点数值。大多数操作都针对32位整数情况有快速路径。
 
 #### 4.3.5 垃圾回收
 
-引用计数用于自动和准确地释放对象。A separate cycle removal pass is done when the allocated memory becomes too large. The cycle removal algorithm only uses the reference counts and the object content, so no explicit garbage collection roots need to be manipulated in the C code.
+引用计数用于自动和准确地释放对象。当分配的内存变得过大时，会进行单独的循环移除操作。循环移除算法仅使用引用计数和对象内容，因此在C代码中不需要显式操作垃圾收集根。
 
 #### 4.3.6 JSValue
 
-It is a Javascript value which can be a primitive type (such as Number, String, ...) or an Object. NaN boxing is used in the 32-bit version to store 64-bit floating point numbers. The representation is optimized so that 32-bit integers and reference counted values can be efficiently tested.
+JSValue是一个Javascript值，可以是原始类型（例如Number、String等）或对象。在32位版本中，使用NaN装箱来存储64位浮点数。表示形式经过优化，可以高效地测试32位整数和引用计数值。
 
-In 64-bit code, JSValue are 128-bit large and no NaN boxing is used. The rationale is that in 64-bit code memory usage is less critical.
+在64位代码中，JSValue的大小为128位，并且不使用NaN装箱。原因是在64位代码中，内存使用不那么关键。
 
-In both cases (32 or 64 bits), JSValue exactly fits two CPU registers, so it can be efficiently returned by C functions.
+在两种情况下（32位或64位），JSValue恰好适应两个CPU寄存器，因此可以通过C函数高效地返回。
 
 #### 4.3.7 函数调用
 
