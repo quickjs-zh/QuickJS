@@ -77,7 +77,7 @@ QuickJS是一个小型并且可嵌入的Javascript引擎，它支持ES2020规范
 
 中文站点：https://github.com/quickjs-zh/
 
-QuickJS QQ群1：598609506（已满） QQ群2：**534512341**。
+QuickJS QQ群1：**598609506**。
 
 中文Wiki：https://github.com/quickjs-zh/QuickJS/wiki
 
