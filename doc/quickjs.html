@@ -125,7 +125,7 @@ ul.no-bullet {list-style: none}
 <a name="Introduction"></a>
 <h2 class="chapter">1 Introduction</h2>
 
-<p>QuickJS (version 2025-04-26) is a small and embeddable Javascript
+<p>QuickJS (version 2025-09-13) is a small and embeddable Javascript
 engine. It supports most of the ES2023 specification
 <a name="DOCF1" href="#FOOT1"><sup>1</sup></a> including modules,
 asynchronous generators, proxies and BigInt.
@@ -606,17 +606,20 @@ optional properties:
 </dd>
 <dt><code>parseExtJSON(str)</code></dt>
 <dd>
-<p>Parse <code>str</code> using a superset of <code>JSON.parse</code>. The
-  following extensions are accepted:
+<p>Parse <code>str</code> using a superset of <code>JSON.parse</code>. The superset
+  is very close to the JSON5 specification. The following extensions
+  are accepted:
 </p>
 <ul>
 <li> Single line and multiline comments
   </li><li> unquoted properties (ASCII-only Javascript identifiers)
   </li><li> trailing comma in array and object definitions
   </li><li> single quoted strings
+  </li><li> <code>\v</code> escape and multi-line strings with trailing <code>\</code>
   </li><li> <code>\f</code> and <code>\v</code> are accepted as space characters
-  </li><li> leading plus in numbers
-  </li><li> octal (<code>0o</code> prefix) and hexadecimal (<code>0x</code> prefix) numbers
+  </li><li> leading plus or decimal point in numbers
+  </li><li> hexadecimal (<code>0x</code> prefix), octal (<code>0o</code> prefix) and binary (<code>0b</code> prefix) integers
+  </li><li> <code>NaN</code> and <code>Infinity</code> are accepted as numbers
   </li></ul>
 </dd>
 </dl>

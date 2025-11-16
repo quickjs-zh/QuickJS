@@ -8,12 +8,12 @@ version=`cat VERSION`
 if [ "$1" = "-h" ] ; then
     echo "release.sh [release_list]"
     echo ""
-    echo "release_list: extras binary win_binary quickjs"
+    echo "release_list: extras binary win_binary cosmo_binary quickjs"
 
     exit 1
 fi
 
-release_list="extras binary win_binary quickjs"
+release_list="extras binary win_binary cosmo_binary quickjs"
 
 if [ "$1" != "" ] ; then
     release_list="$1"
@@ -124,6 +124,28 @@ cp qjs run-test262 $outdir
 fi
 
 #################################################"
+# Cosmopolitan binary release
+
+if echo $release_list | grep -w -q cosmo_binary ; then
+
+export PATH=$PATH:$HOME/cosmocc/bin
+
+d="quickjs-cosmo-${version}"
+outdir="/tmp/${d}"
+
+rm -rf $outdir
+mkdir -p $outdir
+
+make clean
+make CONFIG_COSMO=y -j4 qjs run-test262
+cp qjs run-test262 $outdir
+cp readme-cosmo.txt $outdir/readme.txt
+
+( cd /tmp/$d && rm -f ../${d}.zip && zip -r ../${d}.zip . )
+
+fi
+
+#################################################"
 # quickjs
 
 if echo $release_list | grep -w -q quickjs ; then
@@ -152,7 +174,7 @@ cp Makefile VERSION TODO Changelog readme.txt LICENSE \
 
 cp tests/*.js tests/*.patch tests/bjson.c $outdir/tests
 
-cp examples/*.js examples/*.c $outdir/examples
+cp examples/*.js examples/*.c examples/*.json $outdir/examples
 
 cp doc/quickjs.texi doc/quickjs.pdf doc/quickjs.html \
    $outdir/doc

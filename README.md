@@ -1,67 +1,58 @@
-QuickJS Javascript引擎
+QuickJS JavaScript 引擎
 =========================
 
 目录
 -----------------
 
-- [QuickJS Javascript引擎](#quickjs-javascript引擎)
+- [QuickJS JavaScript 引擎](#quickjs-javascript-引擎)
   - [目录](#目录)
   - [1 简介](#1-简介)
     - [1.1 主要功能](#11-主要功能)
-    - [1.2 基准测试](#12-基准测试)
   - [2 用法](#2-用法)
     - [2.1 安装](#21-安装)
     - [2.2 快速入门](#22-快速入门)
     - [2.3 命令行选项](#23-命令行选项)
       - [2.3.1 `qjs` 解释器](#231-qjs-解释器)
       - [2.3.2 `qjsc` 编译器](#232-qjsc-编译器)
-    - [2.4 `qjscalc` 应用程序](#24-qjscalc-应用程序)
-    - [2.5 内置测试](#25-内置测试)
-    - [2.6 Test262 (ECMAScript 测试套件))](#26-test262-ecmascript-测试套件)
+    - [2.4 内置测试](#24-内置测试)
+    - [2.5 Test262 (ECMAScript 测试套件)](#25-test262-ecmascript-测试套件)
   - [3 技术规范](#3-技术规范)
     - [3.1 语言支持](#31-语言支持)
-      - [3.1.1 ES2019支持](#311-es2019支持)
-      - [3.1.2 JSON](#312-json)
-      - [3.1.3 ECMA402](#313-ecma402)
-      - [3.1.4 扩展](#314-扩展)
-      - [3.1.5 数学扩展](#315-数学扩展)
+      - [3.1.1 ES2023 支持](#311-es2023-支持)
+      - [3.1.2 ECMA402](#312-ecma402)
     - [3.2 模块](#32-模块)
     - [3.3 标准库](#33-标准库)
       - [3.3.1 全局对象](#331-全局对象)
       - [3.3.2 `std` 模块](#332-std-模块)
       - [3.3.3 `os` 模块](#333-os-模块)
     - [3.4 QuickJS C API](#34-quickjs-c-api)
-      - [3.4.1 运行时和上下文](#341-运行时和上下文)
+      - [3.4.1 运行时与上下文](#341-运行时与上下文)
       - [3.4.2 JSValue](#342-jsvalue)
-      - [3.4.3 C函数](#343-c函数)
-      - [3.4.4 错误异常](#344-错误异常)
-      - [3.4.5 Script代码执行](#345-script代码执行)
-      - [3.4.6 JS类](#346-js类)
-      - [3.4.7 C模块](#347-c模块)
+      - [3.4.3 C 函数](#343-c-函数)
+      - [3.4.4 异常](#344-异常)
+      - [3.4.5 脚本评估](#345-脚本评估)
+      - [3.4.6 JS 类](#346-js-类)
+      - [3.4.7 C 模块](#347-c-模块)
       - [3.4.8 内存处理](#348-内存处理)
-      - [3.4.9 执行超时和中断](#349-执行超时和中断)
+      - [3.4.9 执行超时与中断](#349-执行超时与中断)
   - [4 内部实现](#4-内部实现)
-    - [4.1 Bytecode](#41-bytecode)
-    - [4.2 Executable generation](#42-executable-generation)
+    - [4.1 字节码](#41-字节码)
+    - [4.2 可执行文件生成](#42-可执行文件生成)
       - [4.2.1 `qjsc` 编译器](#421-qjsc-编译器)
       - [4.2.2 二进制 JSON](#422-二进制-json)
     - [4.3 运行时](#43-运行时)
-      - [4.3.1 Strings](#431-strings)
-      - [4.3.2 Objects](#432-objects)
-      - [4.3.3 Atoms](#433-atoms)
-      - [4.3.4 Numbers](#434-numbers)
+      - [4.3.1 字符串](#431-字符串)
+      - [4.3.2 对象](#432-对象)
+      - [4.3.3 原子](#433-原子)
+      - [4.3.4 数值](#434-数值)
       - [4.3.5 垃圾回收](#435-垃圾回收)
       - [4.3.6 JSValue](#436-jsvalue)
       - [4.3.7 函数调用](#437-函数调用)
-    - [4.4 RegExp](#44-regexp)
+    - [4.4 正则表达式](#44-正则表达式)
     - [4.5 Unicode](#45-unicode)
-    - [4.6 BigInt 和 BigFloat](#46-bigint-和-bigfloat)
-  - [5 许可协议](#5-许可协议)
-      - [脚注](#脚注)
-    - [(1)](#1)
-    - [(2)](#2)
-    - [(3)](#3)
-    - [(4)](#4)
+    - [4.6 BigInt](#46-bigint)
+  - [5 许可](#5-许可)
+  - [脚注](#脚注)
   - [6 相关项目](#6-相关项目)
 
 1 简介
@@ -83,233 +74,208 @@ QuickJS QQ群1：**598609506**。
 
 ### 1.1 主要功能
 
-*   轻量而且易于嵌入：只需几个C文件，没有外部依赖，一个x86下的简单的“hello world”程序只要180 KiB。
-*   具有极低启动时间的快速解释器： 在一台单核的台式PC上，大约在100秒内运行ECMAScript 测试套件[1](#FOOT1) 56000次。运行时实例的完整生命周期在不到300微秒的时间内完成。
-*   几乎完整实现[ES2019](https://www.ecma-international.org/ecma-262/10.0)支持，包括： 模块，异步生成器和和完整Annex B支持 (传统的Web兼容性)。许多[ES2020](https://tc39.github.io/ecma262/)中带来的特性也依然会被支持。
-*   通过100％的ECMAScript Test Suite测试。
-*   可以将Javascript源编译为没有外部依赖的可执行文件。
-*   使用引用计数（以减少内存使用并具有确定性行为）的垃圾收集与循环删除。
-*   数学扩展：BigInt, BigFloat, 运算符重载, bigint模式, math模式.
-*   在Javascript中实现的具有上下文着色和完成的命令行解释器。
-*   采用C包装库构建的内置标准库。
-
-### 1.2 基准测试
-
-点击查看[QuickJS基准测试](bench.md)具体内容
+* 小巧且易于嵌入：仅需少量 C 文件，无外部依赖；在 x86 上，一个简易 “hello world” 程序约 210 KiB。
+* 启动极快的解释器：在台式机的单核上，运行 ECMAScript 测试套件[2] 的 77000 个测试用例用时不到 2 分钟。运行时实例的完整生命周期在不到 300 微秒内完成。
+* 几乎完整的 ES2023 支持，包括模块、异步生成器以及完整的 Annex B（传统 Web 兼容性）。部分 ES2024[3] 的特性也已支持。
+* 在选择 ES2023 特性时，几乎通过 100% 的 ECMAScript 测试套件用例。
+* 可将 JavaScript 源代码编译为无外部依赖的可执行文件。
+* 采用引用计数并结合循环删除的垃圾回收（降低内存占用并具备确定性行为）。
+* 以 JavaScript 实现的带上下文着色与补全的命令行解释器。
+* 内置体积小的标准库，提供 C 标准库封装。
 
 2 用法
 -------
 
 ### 2.1 安装
 
-提供Makefile可以在Linux或者MacOS/X上编译。通过使用MinGW工具在Linux主机上进行交叉编译，可以获得初步的Windows支持。
+提供 `Makefile`，可在 Linux 或 MacOS/X 上编译。通过在 Linux 主机上使用 MingGW 工具进行交叉编译，可获得初步的 Windows 支持。
 
-如果要选择特定选项，请编辑`Makefile`顶部，然后运行`make`。
+如需选择特定编译选项，请编辑 `Makefile` 顶部，然后运行 `make`。
 
-使用root身份执行 `make install` 可以将编译的二进制文件和支持文件安装到 `/usr/local` (这不是使用QuickJS所必需的).
+若希望将二进制和支持文件安装到 `/usr/local`（使用 QuickJS 并非必需），可使用 `root` 身份执行：
 
-**注**：可以参考QuickJS中文关于[Windows下编译安装](https://github.com/quickjs-zh/QuickJS/wiki/%E5%9C%A8Windows%E4%B8%8B%E7%BC%96%E8%AF%91QuickJS)及[Linux下编译安装](https://github.com/quickjs-zh/QuickJS/wiki/%E5%9C%A8Linux%E4%B8%8B%E7%BC%96%E8%AF%91QuickJS)相关文档。
+```
+make install
+```
+
+注意：在某些操作系统上，原子操作不可用或需要特定库。如果遇到相关错误，可以在 `Makefile` 的 `LIBS` 变量中添加 `-latomics`，或在 `quickjs.c` 中禁用 `CONFIG_ATOMICS`。
 
 ### 2.2 快速入门
 
-`qjs` 是命令行解析器 (Read-Eval-Print Loop). 您可以将Javascript文件和/或表达式作为参数传递以执行它们：
+`qjs` 是命令行解释器（REPL）。可以将 JavaScript 文件和/或表达式作为参数传入以执行：
 
 ```
 ./qjs examples/hello.js
 ```
 
-`qjsc` 是命令行编译器:
+`qjsc` 是命令行编译器：
 
 ```
 ./qjsc -o hello examples/hello.js
 ./hello
 ```
 
-生成一个没有外部依赖的 `hello` 可执行文件。
-
-`qjsbn` 和 `qjscbn` 是具有数学扩展的相应解释器和编译器：
-
-```
-./qjsbn examples/pi.js 1000
-```
-
-显示PI的1000位数字
-
-```
-./qjsbnc -o pi examples/pi.js
-./pi 1000
-```
-
-编译并执行PI程序。
+生成一个不依赖外部库的 `hello` 可执行文件。
 
 ### 2.3 命令行选项
 
 #### 2.3.1 `qjs` 解释器
 
-用法: qjs \[options\] \[files\]
+```
+usage: qjs [options] [file [args]]
+```
 
-选项:
+选项：
 
-`-h`
+`-h`, `--help`
 
-`--help`
+列出选项。
 
-选项列表。
+``-e `EXPR` ``, ``--eval `EXPR` ``
 
-``-e `EXPR` ``
+执行表达式 EXPR。
 
-``--eval `EXPR` ``
+`-i`, `--interactive`
 
-执行EXPR.
+进入交互模式（当命令行上提供了文件时，默认不为交互模式）。
 
-`-i`
+`-m`, `--module`
 
-`--interactive`
+作为 ES6 模块加载（默认=自动检测）。当文件扩展名为 `.mjs` 或源码的第一个关键词为 `import` 时自动检测为模块。
 
-转到交互模式 (在命令行上提供文件时，它不是默认模式).
+`--script`
 
-`-m`
+作为 ES6 脚本加载（默认=自动检测）。
 
-`--module`
+`-I file`, `--include file`
 
-加载为ES6模块（默认为.mjs文件扩展名）。
+包含一个额外的文件。
 
-高级选项包括：
+高级选项：
 
-`-d`
+`--std`
 
-`--dump`
+即使加载的不是模块，也让 `std` 与 `os` 模块可用。
 
-转存内存使用情况统计信息。
+`-d`, `--dump`
 
-`-q`
+转储内存使用统计信息。
 
-`--quit`
+`-q`, `--quit`
 
-只是实例化解释器并退出。
+仅实例化解释器后立即退出。
 
 #### 2.3.2 `qjsc` 编译器
 
-用法: qjsc \[options\] \[files\]
+```
+usage: qjsc [options] [files]
+```
 
-选项:
+选项：
 
 `-c`
 
-仅输出C文件中的字节码，默认是输出可执行文件。
+仅将字节码输出到 C 文件。默认输出为可执行文件。
 
 `-e`
 
- `main()` C文件中的输出和字节码，默认是输出可执行文件。
+在 C 文件中输出 `main()` 和字节码。默认输出为可执行文件。
 
 `-o output`
 
-设置输出文件名（默认= out.c或a.out）。
+设置输出文件名（默认=`out.c` 或 `a.out`）。
 
 `-N cname`
 
-设置生成数据的C名称。
+设置生成数据的 C 名称。
 
 `-m`
 
-编译为Javascript模块（默认为.mjs扩展名）。
+编译为 JavaScript 模块（默认=自动检测）。
+
+`-D module_name`
+
+编译一个动态加载的模块及其依赖。当代码使用 `import` 关键字或构造 `os.Worker` 时需要该选项，因为编译器无法静态发现动态加载模块的名称。
 
 `-M module_name[,cname]`
 
-添加外部C模块的初始化代码。查看`c_module`示例。
+为外部 C 模块添加初始化代码。参见 `c_module` 示例。
 
 `-x`
 
-字节交换输出（仅用于交叉编译）。
+字节序交换输出（仅用于交叉编译）。
 
 `-flto`
 
-使用链接时间优化。编译速度较慢，但可执行文件更小更快。使用选项时会自动设置此选项`-fno-x`。
+使用链接时优化（LTO）。编译更慢，但可执行文件更小更快。当使用 `-fno-x` 类选项时自动启用。
 
-`-fno-[eval|string-normalize|regexp|json|proxy|map|typedarray|promise]`
+`-fno-[eval|string-normalize|regexp|json|proxy|map|typedarray|promise|bigint]`
 
-禁用所选语言功能以生成较小的可执行文件。
+禁用所选语言特性，以生成更小的可执行文件。
 
-### 2.4 `qjscalc` 应用程序
+### 2.4 内置测试
 
-该`qjscalc`应用程序是`qjsbn`命令行解释器的超集，它实现了一个具有任意大整数和浮点数，分数，复数，多项式和矩阵的Javascript计算器。源代码在qjscalc.js中。[http://numcalc.com](http://numcalc.com/)上提供了更多文档和Web版本。
+运行 `make test` 以执行 QuickJS 存档中包含的少量内置测试。
 
-### 2.5 内置测试
+### 2.5 Test262 (ECMAScript 测试套件)
 
-运行`make test`以运行QuickJS存档中包含的一些内置测试。
-
-### 2.6 Test262 (ECMAScript 测试套件))
-
-QuickJS存档中包含test262运行程序。
-
-作为参考，完整的test262测试在档案qjs-tests-yyyy-mm-dd.tar.xz中提供。您只需将其解压缩到QuickJS源代码目录中即可。
-
-或者，test262测试可以安装：
+QuickJS 存档中包含 test262 运行器。可以将 test262 测试安装到 QuickJS 源码目录：
 
 ```
 git clone https://github.com/tc39/test262.git test262
 cd test262
-git checkout 94b1e80ab3440413df916cd56d29c5a2fa2ac451
 patch -p1 < ../tests/test262.patch
 cd ..
 ```
 
-补丁添加了特定于实现的`harness`函数，并优化了低效的RegExp字符类和Unicode属性转义测试（测试本身不会被修改，只有慢速字符串初始化函数被优化）。
+该补丁添加了特定实现的 `harness` 函数，并优化了低效的正则字符类和 Unicode 属性转义测试（测试本身未修改，仅优化了一个慢速字符串初始化函数）。
 
-测试可以运行
+运行测试：
 
 ```
 make test2
 ```
 
-有关更多信息，请运行`./run-test262`以查看test262 runner的选项。配置文件`test262.conf`并`test262bn.conf`包含运行各种测试的选项。
+配置文件 `test262.conf`（旧 ES5.1 测试使用 `test262o.conf`[4]）包含运行各种测试的选项。可根据特性或文件名排除测试。
+
+文件 `test262_errors.txt` 包含当前错误列表。运行器在出现新错误或纠正/修改现有错误时显示消息。使用 `-u` 选项更新当前错误列表（或执行 `make test2-update`）。
+
+文件 `test262_report.txt` 包含所有测试的日志，便于更清晰地分析特定错误。在发生崩溃时，最后一行对应失败的测试。
+
+使用语法 `./run-test262 -c test262.conf -f filename.js` 运行单个测试；使用 `./run-test262 -c test262.conf N` 从第 `N` 个测试开始执行。
+
+更多信息可运行 `./run-test262` 查看 test262 运行器的命令行选项。
+
+通过 `eshost` 从 `test262-harness`[5] 调用时，`run-test262` 接受 `-N` 选项。除非需要在相同条件下比较 QuickJS 与其它引擎，否则不建议使用这种方式运行测试，速度会慢很多（通常半小时，而直接方式约 100 秒）。
 
 3 技术规范
 ----------------
 
 ### 3.1 语言支持
 
-#### 3.1.1 ES2019支持
+#### 3.1.1 ES2023 支持
 
-包含Annex B (遗留Web兼容)和Unicode相关功能的ES2019规范 [2](#FOOT2) 已经基本支持。 目前尚未支持以下功能:
+几乎完整支持 ES2023 规范，包括 Annex B（遗留 Web 兼容性）及与 Unicode 相关的特性。
 
-*   Realms (尽管C API支持不同的运行时和上下文)
-*   Tail calls[3](#FOOT3)
+目前尚未支持的特性：
 
-#### 3.1.2 JSON
+* 尾调用[6]
 
-JSON解析器目前比规范支持范围更宽.
+#### 3.1.2 ECMA402
 
-#### 3.1.3 ECMA402
-
-ECMA402 (国际化API)尚未支持.
-
-#### 3.1.4 扩展
-
-*   指令 `"use strip"` 不保留调试信息 (包括函数源代码) 以节省内存。 `"use strict"`指令可以应用全局脚本，或者特定函数。
-*   脚本开头第一行 `#!` 会被忽略。
-
-#### 3.1.5 数学扩展
-
-数学扩展在`qjsbn` 版本中可用，并且完全向后兼容标准Javascript. 查看`jsbignum.pdf`获取更多信息。
-
-*   `BigInt` (大整数) TC39已经支持。
-*   `BigFloat` 支持: 基数2中任意大浮点数。
-*   运算符重载。
-*   指令`"use bigint"`启用bigint模式， `BigInt`默认情况下为整数。
-*   指令`"use math"`启用数学模式，其中整数上的除法和幂运算符产生分数。BigFloat默认情况下，浮点文字是默认值，整数是BigInt默认值。
+ECMA402（国际化 API）未支持。
 
 ### 3.2 模块
 
-ES6模块完全支持。默认名称解析规则如下：
+完全支持 ES6 模块。默认名称解析规则如下：
 
-*   模块名称带有前导`.`或 `..`是相对于当前模块的路径。
-*   模块名称没有前导`.`或`..`是系统模块，例如`std`或`os`。
-*   模块名称以`.so`结尾，是使用QuickJS C API的原生模块。
+* 以 `.` 或 `..` 开头的模块名相对当前模块路径。
+* 不以 `.` 或 `..` 开头的模块名为系统模块，例如 `std` 或 `os`。
+* 以 `.so` 结尾的模块为使用 QuickJS C API 的原生模块。
 
 ### 3.3 标准库
 
-默认情况下，标准库包含在命令行解释器中。 它包含两个模块`std`和`os`以及一些全局对象.
+标准库默认包含在命令行解释器中。它包含两个模块 `std` 与 `os`，以及少量全局对象。
 
 #### 3.3.1 全局对象
 
@@ -319,458 +285,386 @@ ES6模块完全支持。默认名称解析规则如下：
 
 `print(...args)`
 
-打印由空格和尾随换行符分隔的参数。
+打印参数，参数之间以空格分隔，并在末尾追加换行。
 
 `console.log(...args)`
 
-与print()相同。
+与 `print()` 相同。
 
 #### 3.3.2 `std` 模块
 
-该`std`模块为libc提供包装器stdlib.h和stdio.h和其他一些实用程序。
+`std` 模块为 libc 的 `stdlib.h`、`stdio.h` 提供封装，并包含一些其它实用功能。
 
-可用出口：
+可用导出：
 
-`exit(n)`
+`exit(n)`：退出进程。
 
-退出进程。
+`evalScript(str, options = undefined)`：将字符串 `str` 作为脚本（全局 eval）执行。`options` 为可选对象，支持：
 
-`evalScript(str)`
+- `backtrace_barrier`（布尔，默认 false）：为 true 时，错误回溯不展示 `evalScript` 之下的堆栈帧。
+- `async`（布尔，默认 false）：为 true 时，脚本可使用 `await`，并返回一个 Promise；该 Promise 解析为一个包含 `value` 字段的对象，`value` 为脚本返回的值。
 
-将字符串`str`以脚本方式运行（全局eval）。
+`loadScript(filename)`：将文件 `filename` 作为脚本（全局 eval）执行。
 
-`loadScript(filename)`
+`loadFile(filename)`：按 UTF-8 编码读取文件 `filename` 并以字符串返回；I/O 错误返回 `null`。
 
-将文件`filename`以脚本方式运行（全局eval）。
+`open(filename, flags, errorObj = undefined)`：打开文件（libc `fopen()` 的封装）。返回 FILE 对象，或在 I/O 错误时返回 `null`。若提供 `errorObj`，其 `errno` 属性会设置为错误码（或为 0 表示无错）。
 
-`Error(errno)`
+`popen(command, flags, errorObj = undefined)`：通过创建管道打开进程（libc `popen()` 封装）。返回 FILE 对象或 `null`；`errorObj.errno` 同上。
 
-`std.Error` 构造函数。 错误实例包含字段`errno`（错误代码）和`message`（`std.Error.strerror(errno)`的结果）。
+`fdopen(fd, flags, errorObj = undefined)`：从文件句柄打开文件（libc `fdopen()` 封装）。返回 FILE 对象或 `null`；`errorObj.errno` 同上。
 
-构造函数包含以下字段：
+`tmpfile(errorObj = undefined)`：打开临时文件。返回 FILE 对象或 `null`；`errorObj.errno` 同上。
 
-`EINVAL`
+`puts(str)`：等价于 `std.out.puts(str)`。
 
-`EIO`
+`printf(fmt, ...args)`：等价于 `std.out.printf(fmt, ...args)`。
 
-`EACCES`
+`sprintf(fmt, ...args)`：等价于 libc 的 `sprintf()`。
 
-`EEXIST`
+`in`、`out`、`err`：libc 文件 `stdin`、`stdout`、`stderr` 的封装。
 
-`ENOSPC`
+`SEEK_SET`、`SEEK_CUR`、`SEEK_END`：`seek()` 的常量。
 
-`ENOSYS`
+`Error`：枚举对象，包含常见错误的整数值（可定义附加错误码）：`EINVAL`、`EIO`、`EACCES`、`EEXIST`、`ENOSPC`、`ENOSYS`、`EBUSY`、`ENOENT`、`EPERM`、`EPIPE`。
 
-`EBUSY`
+`strerror(errno)`：返回描述错误码 `errno` 的字符串。
 
-`ENOENT`
+`gc()`：手动触发循环删除算法。循环删除在需要时自动启动；该函数在特定内存限制或测试时有用。
 
-`EPERM`
+`getenv(name)`：返回环境变量 `name` 的值；未定义返回 `undefined`。
 
-`EPIPE`
+`setenv(name, value)`：将环境变量 `name` 设置为字符串 `value`。
 
-常见错误的整数值 （可以定义附加错误代码）。
+`unsetenv(name)`：删除环境变量 `name`。
 
-`strerror(errno)`
+`getenviron()`：以键值对对象形式返回所有环境变量。
 
-返回描述错误的字符串`errno`.
+`urlGet(url, options = undefined)`：使用命令行工具 `curl` 下载 `url`。`options` 可包含：
 
-`open(filename, flags)`
+- `binary`（布尔，默认 false）：为 true 时响应为 `ArrayBuffer`；否则为字符串（假定 UTF-8）。
+- `full`（布尔，默认 false）：为 true 时返回对象，包含 `response`（响应内容）、`responseHeaders`（以 CRLF 分隔的响应头）、`status`（状态码）。当发生协议或网络错误时 `response` 为 `null`。若 `full` 为 false，且状态码范围为 200–299，直接返回响应；否则返回 `null`。
 
-打开一个文件（libc的包装器`fopen()`）。在I/O错误时抛出 `std.Error` 
-
-`tmpfile()`
-
-打开一个临时文件。在I/O错误时抛出`std.Error` 。
-
-`puts(str)`
-
-相当于`std.out.puts(str)`.
-
-`printf(fmt, ...args)`
-
-相当于`std.out.printf(fmt, ...args)`
-
-`sprintf(fmt, ...args)`
-
-相当于libc的sprintf().
-
-`in`
-
-`out`
-
-`err`
-
-包装libc文件的`stdin`, `stdout`, `stderr`.
-
-`SEEK_SET`
-
-`SEEK_CUR`
-
-`SEEK_END`
-
-seek()的常量
-
-`global`
-
-引用全局对象。
-
-`gc()`
-
-手动调用循环删除算法。循环移除算法在需要时自动启动，因此该功能在特定内存限制或测试时非常有用。
-
-`getenv(name)`
-
-返回环境变量的值 `name` ，或未定义时返回 `undefined` .
+`parseExtJSON(str)`：以 `JSON.parse` 的超集解析 `str`，与 JSON5 非常接近。支持：单行/多行注释、未加引号的属性（ASCII 仅标识符）、数组/对象末尾多余逗号、单引号字符串、`\v` 转义与以反斜杠续行的多行字符串、将 `\f`/`\v` 视为空白字符、数字前导加号或仅小数点、十六进制（`0x`）、八进制（`0o`）、二进制（`0b`）整数、接受 `NaN` 与 `Infinity` 为数字。
 
 FILE 原型：
 
-`close()`
+`close()`：关闭文件；成功返回 0，I/O 错误返回 `-errno`。
 
-关闭文件。
+`puts(str)`：按 UTF-8 输出字符串。
 
-`puts(str)`
+`printf(fmt, ...args)`：格式化输出。支持与标准 C `printf` 相同的格式。整数类型（如 `%d`）会将 Number 或 BigInt 截断为 32 位；使用 `l` 修饰符（如 `%ld`）截断为 64 位。
 
-使用UTF-8编码输出字符串。
+`flush()`：刷新缓冲文件。
 
-`printf(fmt, ...args)`
+`seek(offset, whence)`：定位到指定文件位置（`whence` 使用 `std.SEEK_*`）。`offset` 可为 Number 或 BigInt；成功返回 0，I/O 错误返回 `-errno`。
 
-格式化printf，与libc printf格式相同。
+`tell()`：返回当前文件位置。
 
-`flush()`
+`tello()`：以 BigInt 返回当前文件位置。
 
-刷新缓冲的文件。
+`eof()`：到达文件末尾返回 true。
 
-`seek(offset, whence)`
+`fileno()`：返回关联的 OS 句柄。
 
-寻找特定文件位置 (从哪里`std.SEEK_*`)。在I/O错误时抛出 `std.Error`。
+`error()`：如发生错误返回 true。
 
-`tell()`
+`clearerr()`：清除错误标志。
 
-返回当前文件位置。
+`read(buffer, position, length)`：将文件中从字节位置 `position` 开始的 `length` 字节读入 `ArrayBuffer buffer`（libc `fread` 封装）。
 
-`eof()`
+`write(buffer, position, length)`：将 `ArrayBuffer buffer` 中从字节位置 `position` 开始的 `length` 字节写入文件（libc `fwrite` 封装）。
 
-如果文件结束，则返回true。
+`getline()`：返回文件的下一行（假定 UTF-8 编码），不包含尾随换行符。
 
-`fileno()`
+`readAsString(max_size = undefined)`：读取 `max_size` 字节并按 UTF-8 返回字符串；未指定时读取至文件结束。
 
-返回关联的OS句柄。
+`getByte()`：返回文件的下一个字节；到达末尾返回 -1。
 
-`read(buffer, position, length)`
-
-从文件中以字节位置`position`，读取`length`字节到ArrayBuffer`buffer`（libc的包装器`fread`）。
-
-`write(buffer, position, length)`
-
-将ArrayBuffer`buffer`中以字节位置`position`开始的`length`字节写入文件 (libc的包装器`fread`).
-
-`getline()`
-
-返回文件中的下一行，假设为UTF-8编码，不包括尾随换行符。
-
-`getByte()`
-
-返回文件中的下一个字节。
-
-`putByte(c)`
-
-将一个字节写入文件。
+`putByte(c)`：写入一个字节。
 
 #### 3.3.3 `os` 模块
 
- `os` 模块提供操作系统特定功能：
+`os` 模块提供操作系统相关功能：底层文件访问、信号、计时器、异步 I/O、工作线程（线程）。
 
-*   底层文件访问
-*   信号
-*   计时器
-*   异步 I/O
+OS 函数通常在成功时返回 0，或返回 OS 特定的负错误码。
 
-如果是OK，OS函数通常返回0，或者OS返回特定的错误代码。
+可用导出（节选）：
 
-可用导出函数：
+`open(filename, flags, mode = 0o666)`：打开文件。返回句柄，或错误时返回小于 0 的值。
 
-`open(filename, flags, mode = 0o666)`
+`O_RDONLY`、`O_WRONLY`、`O_RDWR`、`O_APPEND`、`O_CREAT`、`O_EXCL`、`O_TRUNC`：POSIX 打开标志。
 
-打开一个文件。如果错误，返回句柄或<0。
+`O_TEXT`（Windows 特有）：以文本模式打开文件；默认为二进制模式。
 
-`O_RDONLY`
+`close(fd)`：关闭文件句柄 `fd`。
 
-`O_WRONLY`
+`seek(fd, offset, whence)`：在文件中定位。`whence` 使用 `std.SEEK_*`；`offset` 可为 Number 或 BigInt；若为 BigInt，返回值也为 BigInt。
 
-`O_RDWR`
+`read(fd, buffer, offset, length)`：从句柄 `fd` 的字节位置 `offset` 开始，读取 `length` 字节到 `ArrayBuffer buffer`。返回读取字节数，错误时返回小于 0。
 
-`O_APPEND`
+`write(fd, buffer, offset, length)`：将 `ArrayBuffer buffer` 的 `length` 字节从字节位置 `offset` 写入句柄 `fd`。返回写入字节数，错误时返回小于 0。
 
-`O_CREAT`
+`isatty(fd)`：若 `fd` 是 TTY（终端）句柄返回 `true`。
 
-`O_EXCL`
+`ttyGetWinSize(fd)`：返回 TTY 大小 `[width, height]` 或不可用时返回 `null`。
 
-`O_TRUNC`
+`ttySetRaw(fd)`：将 TTY 设置为原始模式。
 
-POSIX打开标志。
+`remove(filename)`：删除文件。成功返回 0，或返回 `-errno`。
 
-`O_TEXT`
+`rename(oldname, newname)`：重命名文件。成功返回 0，或返回 `-errno`。
 
-(Windows特定)。以文本模式打开文件。默认为二进制模式。
+`realpath(path)`：返回 `[str, err]`，其中 `str` 为 `path` 的规范化绝对路径，`err` 为错误码。
 
-`close(fd)`
+`getcwd()`：返回 `[str, err]`，其中 `str` 为当前工作目录，`err` 为错误码。
 
-关闭文件句柄`fd`.
+`chdir(path)`：切换当前目录。成功返回 0，或返回 `-errno`。
 
-`seek(fd, offset, whence)`
+`mkdir(path, mode = 0o777)`：在 `path` 创建目录。成功返回 0，或返回 `-errno`。
 
-寻找文件。使用 `std.SEEK_*` 或 `whence`.
+`stat(path)` / `lstat(path)`：返回 `[obj, err]`，`obj` 为文件状态对象（字段：`dev, ino, mode, nlink, uid, gid, rdev, size, blocks, atime, mtime, ctime`，时间以毫秒为单位）；`lstat()` 与 `stat()` 相同，但返回链接本身的信息。
 
-`read(fd, buffer, offset, length)`
+`S_IFMT`、`S_IFIFO`、`S_IFCHR`、`S_IFDIR`、`S_IFBLK`、`S_IFREG`、`S_IFSOCK`、`S_IFLNK`、`S_ISGID`、`S_ISUID`：用于解释 `stat()` 返回的 `mode` 属性的常量，取值与 C 系统头文件 `sys/stat.h` 相同。
 
-从文件句柄`fd`中以字节位置`offset`开始，读取`length`字节到ArrayBuffer`buffer`。返回读取的字节数，若出现错误则返回小于0的值。
+`utimes(path, atime, mtime)`：修改文件 `path` 的访问/修改时间（毫秒为单位）。成功返回 0，或返回 `-errno`。
 
-`write(fd, buffer, offset, length)`
+`symlink(target, linkpath)`：在 `linkpath` 创建指向字符串 `target` 的链接。成功返回 0，或返回 `-errno`。
 
-将ArrayBuffer`buffer`中以字节位置`offset`开始的`length`字节写入文件句柄`fd`。返回写入的字节数，若出现错误则返回小于0的值。
+`readlink(path)`：返回 `[str, err]`，其中 `str` 为链接目标，`err` 为错误码。
 
-`isatty(fd)`
+`readdir(path)`：返回 `[array, err]`，其中 `array` 为目录 `path` 下的文件名数组，`err` 为错误码。
 
-`fd` 是一个TTY (终端)句柄返回 `true` 。
+`setReadHandler(fd, func)`：为文件句柄 `fd` 添加读处理器；每次 `fd` 有待处理数据时调用。每个句柄只支持一个读处理器；传 `func = null` 删除处理器。
 
-`ttyGetWinSize(fd)`
+`setWriteHandler(fd, func)`：为文件句柄 `fd` 添加写处理器；每次 `fd` 可写时调用。每个句柄只支持一个写处理器；传 `func = null` 删除处理器。
 
-返回TTY大小 `[width, height]` 或者如果不可用返回 `null` 。
+`signal(signal, func)`：在信号 `signal` 发生时调用函数 `func`。每个信号编号只支持一个处理器；传 `null` 设置默认处理器，传 `undefined` 忽略信号。信号处理器仅可在主线程定义。
 
-`ttySetRaw(fd)`
+`SIGINT`、`SIGABRT`、`SIGFPE`、`SIGILL`、`SIGSEGV`、`SIGTERM`：POSIX 信号编号。
 
-在原始模式下设置TTY。
+`kill(pid, sig)`：向进程 `pid` 发送信号 `sig`。
 
-`remove(filename)`
+`exec(args[, options])`：以参数 `args` 执行子进程。`options` 为可选对象，支持：
 
-删除文件。如果正常则返回0，如果错误则返回<0
+- `block`（布尔，默认 true）：为 true 时阻塞等待进程结束；返回正数退出码，或若被信号中断则返回负的信号编号。为 false 时不阻塞，返回子进程 pid。
+- `usePath`（布尔，默认 true）：为 true 时在 `PATH` 环境变量中搜索执行文件。
+- `file`（字符串，默认 `args[0]`）：设置要执行的文件。
+- `cwd`（字符串）：设置子进程工作目录。
+- `stdin` / `stdout` / `stderr`：设置子进程的标准流句柄。
+- `env`（对象）：以键值对设置子进程环境；未提供时沿用当前进程环境。
+- `uid`（整数）：若提供则使用 `setuid` 设置子进程 uid。
+- `gid`（整数）：若提供则使用 `setgid` 设置子进程 gid。
 
-`rename(oldname, newname)`
+`getpid()`：返回当前进程 ID。
 
-重命名文件。如果正常则返回0，如果错误则返回<0
+`waitpid(pid, options)`：Unix 系统调用 `waitpid`。返回 `[ret, status]`；错误时 `ret` 为 `-errno`。
 
-`setReadHandler(fd, func)`
+`WNOHANG`：`waitpid` 的 `options` 参数常量。
 
-将读处理程序添加到文件句柄`fd`。 `fd`每次有数据待增加处理时调用`func` 。支持每个文件句柄的单个读处理程序。使用 `func = null` 来删除句柄。
+`dup(fd)`、`dup2(oldfd, newfd)`：Unix 系统调用。
 
-`setWriteHandler(fd, func)`
+`pipe()`：Unix 系统调用。成功返回两个句柄 `[read_fd, write_fd]`，错误时返回 `null`。
 
-将写处理程序添加到文件句柄`fd`。  `fd`每次有数据待写入处理时调用`func` . 支持每个文件句柄一个写处理程序。使用 `func = null来删除句柄。
+`sleep(delay_ms)`：睡眠 `delay_ms` 毫秒。
 
-`signal(signal, func)`
+`sleepAsync(delay_ms)`：异步睡眠 `delay_ms` 毫秒，返回 Promise。例如：
 
-当信号 `signal` 发生时调用 `func` 。 每个信号编号只支持一个处理程序。使用 `null` 设定的默认处理或 `undefined` 忽略的信号。
+```
+await os.sleepAsync(500);
+```
 
-`SIGINT`
+`now()`：返回以毫秒为单位的时间戳，精度高于 `Date.now()`；起始时间未定义，通常不受系统时钟调整影响。
 
-`SIGABRT`
+`setTimeout(func, delay)`：在 `delay` 毫秒后调用函数 `func`；返回计时器句柄。
 
-`SIGFPE`
+`clearTimeout(handle)`：取消计时器。
 
-`SIGILL`
+`platform`：返回表示平台的字符串：`"linux"`、`"darwin"`、`"win32"` 或 `"js"`。
 
-`SIGSEGV`
+`Worker(module_filename)`：构造函数，用于创建新线程（worker），API 接近 `WebWorkers`。`module_filename` 为在线程中执行的模块文件名；与动态导入模块一样，路径相对当前脚本或模块。线程默认不共享数据，通过消息通信。不支持嵌套 worker。示例见 `tests/test_worker.js`。
 
-`SIGTERM`
+Worker 类的静态属性：
 
-POSIX 信号编号。
+`parent`：在创建的 worker 中，`Worker.parent` 表示父 worker，用于发送/接收消息。
 
-`setTimeout(func, delay)`
+Worker 实例的属性：
 
-在 `delay` 毫秒之后调用函数 `func` 。返回计时器的句柄。
+`postMessage(msg)`：向对应 worker 发送消息。`msg` 使用与 `HTML` 结构化克隆算法相似的方式在目标 worker 中克隆；`SharedArrayBuffer` 在 worker 间共享。当前限制：暂不支持 `Map` 与 `Set`。
 
-`clearTimer(handle)`
-
-取消计时器。
-
-`platform`
-
-返回表示该平台的字符串： `"linux"`, `"darwin"`, `"win32"` or `"js"`.
+`onmessage`（getter/setter）：设置在接收消息时调用的函数。该函数接收一个参数，为包含 `data` 属性的对象，`data` 即收到的消息。只要存在至少一个非 `null` 的 `onmessage` 处理器，线程不会被终止。
 
 ### 3.4 QuickJS C API
 
-C API的设计简单而有效。C API在`quickjs.h`标头中定义。
+C API 设计简洁高效。C API 定义在头文件 `quickjs.h` 中。
 
-#### 3.4.1 运行时和上下文
+#### 3.4.1 运行时与上下文
 
-`JSRuntime`表示与对象堆对应的JavaScript运行时。可以同时存在多个运行时，但它们不能交换对象。在给定的运行时内，不支持多线程。
+`JSRuntime` 表示与对象堆对应的 JavaScript 运行时。可同时存在多个运行时，但它们不能交换对象；在同一运行时内不支持多线程。
 
-`JSContext`表示JavaScript上下文（或领域）。每个JSContext都有自己的全局对象和系统对象。在JSRuntime中可以有多个JSContext，并且它们可以共享对象，类似于同一源的框架在Web浏览器中共享JavaScript对象。
+`JSContext` 表示 JavaScript 上下文（或 Realm）。每个 JSContext 都有自己的全局对象和系统对象。每个 JSRuntime 中可存在多个 JSContext，并且它们可以共享对象，类似于浏览器中同源的多个框架共享 JavaScript 对象。
 
 #### 3.4.2 JSValue
 
-`JSValue`表示一个JavaScript值，可以是原始类型或对象。使用引用计数，因此重要的是明确复制（`JS_DupValue()`，增加引用计数）或释放（`JS_FreeValue()`，减少引用计数）JSValues。
+`JSValue` 表示一个 JavaScript 值，可为原始类型或对象。采用引用计数，因此需要显式复制（`JS_DupValue()`，增加引用计数）或释放（`JS_FreeValue()`，减少引用计数）JSValue。
 
-#### 3.4.3 C函数
+#### 3.4.3 C 函数
 
-使用`JS_NewCFunction()`可以创建C函数。`JS_SetPropertyFunctionList()`是一种简便的方法，可将函数、设置器和获取器属性轻松添加到给定对象中。
+可使用 `JS_NewCFunction()` 创建 C 函数。`JS_SetPropertyFunctionList()` 可便捷地将函数、setter 与 getter 属性添加到给定对象。
 
-与其他嵌入式JavaScript引擎不同，QuickJS没有隐式堆栈，因此C函数将其参数作为普通的C参数传递。一般规则是，C函数将`JSValue`作为参数（因此它们不需要释放），并返回一个新分配的（活动的）`JSValue`。
+与其他嵌入式 JavaScript 引擎不同，QuickJS 没有隐式栈，因此 C 函数以普通的 C 参数接收其入参。一般规则是：C 函数以常量 `JSValue` 作为参数（无需释放），并返回一个新分配（活跃）的 `JSValue`。
 
-#### 3.4.4 错误异常
+#### 3.4.4 异常
 
-异常：大多数C函数可以返回一个Javascript异常。必须通过C代码明确测试和处理它。特定的`JSValue`，即`JS_EXCEPTION`，表示发生了异常。实际的异常对象存储在`JSContext`中，可以使用`JS_GetException()`检索到。
+异常：多数 C 函数可能返回 JavaScript 异常。必须由 C 代码显式测试并处理它。特定 `JSValue` 值 `JS_EXCEPTION` 表示发生了异常。实际的异常对象存储在 `JSContext` 中，可通过 `JS_GetException()` 获取。
 
-#### 3.4.5 Script代码执行
+#### 3.4.5 脚本评估
 
-使用`JS_Eval()`来评估脚本或模块源代码。
+使用 `JS_Eval()` 评估脚本或模块源码。
 
-如果脚本或模块已经使用`qjsc`编译成字节码，那么使用`JS_EvalBinary()`可以实现相同的结果。优点是不需要编译，因此速度更快、体积更小，因为如果不需要`eval`，编译器可以从可执行文件中删除。
+若脚本或模块已由 `qjsc` 编译为字节码，则可通过调用 `js_std_eval_binary()` 进行评估。优势是无需编译，因而更快且更小；如果不需要 `eval`，可将编译器从可执行文件中移除。
 
-注意：字节码格式与特定的QuickJS版本相关联。此外，在执行之前没有进行安全检查。因此，字节码不应从不受信任的来源加载。这就是为什么`qjsc`中没有将字节码输出到二进制文件的选项。
+注意：字节码格式与具体的 QuickJS 版本绑定，且在执行前不会进行安全检查。因此不应从不受信任的来源加载字节码。这也是 `qjsc` 中没有将字节码输出到二进制文件的选项的原因。
 
-#### 3.4.6 JS类
+#### 3.4.6 JS 类
 
-可以将C的不透明数据附加到JavaScript对象上。C不透明数据的类型由对象的类ID（`JSClassID`）确定。因此，第一步是注册一个新的类ID和JS类（`JS_NewClassID()`、`JS_NewClass()`）。然后，可以使用`JS_NewObjectClass()`创建该类的对象，并使用`JS_GetOpaque()`/`JS_SetOpaque()`获取或设置C的不透明指针。
+可以将 C 的不透明数据附加到 JavaScript 对象上。不透明数据的类型由对象的类 ID（`JSClassID`）确定。因此，第一步是注册新的类 ID 与 JS 类（`JS_NewClassID()`、`JS_NewClass()`）。然后可使用 `JS_NewObjectClass()` 创建该类的对象，并通过 `JS_GetOpaque()` / `JS_SetOpaque()` 获取或设置不透明指针。
 
-在定义新的JS类时，可以声明一个析构函数，在对象销毁时调用该函数。可以提供一个`gc_mark`方法，以便循环移除算法可以找到被该对象引用的其他对象。还有其他方法可用于定义异类对象行为。
+在定义新的 JS 类时，可以声明析构函数，在对象销毁时调用；它应用于释放 C 资源，但不应在其中执行 JS 代码。可提供 `gc_mark` 方法，以便循环删除算法找出被该对象引用的其它对象。还可提供其它方法来定义异类对象行为。
 
-类ID在全局范围内分配（即适用于所有运行时）。JSClass在每个`JSRuntime`中分配。`JS_SetClassProto()`用于在给定`JSContext`中为给定类定义原型。`JS_NewObjectClass()`在创建的对象中设置此原型。
+类 ID 在全局范围分配（适用于所有运行时）。JSClass 在每个 `JSRuntime` 中分配。使用 `JS_SetClassProto()` 可在给定 `JSContext` 中为特定类定义原型；`JS_NewObjectClass()` 在创建的对象中设置该原型。
 
-在js_libc.c中提供了示例。
+示例见 `quickjs-libc.c`。
 
-#### 3.4.7 C模块
+#### 3.4.7 C 模块
 
-支持动态或者静态链接的原生ES6模块。查看test\_bjson和bjson.so示例。标准库js\_libc.c也是原生模块很好的一个例子。
+支持动态或静态链接的原生 ES6 模块。参见示例 `test_bjson` 与 `bjson.so`。标准库 `quickjs-libc.c` 也是原生模块的良好示例。
 
 #### 3.4.8 内存处理
 
-使用 `JS_SetMemoryLimit()` 为给定的JSRuntime设置全局内存分配限制。
+使用 `JS_SetMemoryLimit()` 为给定的 JSRuntime 设置全局内存分配限制。
 
-`JS_NewRuntime2()`可以提供自定义内存分配功能。
+可通过 `JS_NewRuntime2()` 提供自定义内存分配函数。
 
-`JS_SetMaxStackSize()`可以使用设置最大系统堆栈大小
+可通过 `JS_SetMaxStackSize()` 设置最大系统栈大小。
 
-#### 3.4.9 执行超时和中断
+#### 3.4.9 执行超时与中断
 
-使用`JS_SetInterruptHandler()`来设置一个回调函数，当引擎执行代码时，它会定期调用该回调函数。该回调函数可以用于实现执行超时。
+使用 `JS_SetInterruptHandler()` 设置一个回调，该回调在引擎执行代码时被定期调用。可用它来实现执行超时。
 
-命令行解释器使用它来实现 `Ctrl-C` 处理程序。
+命令行解释器使用它来实现 `Ctrl-C` 处理器。
 
 4 内部实现
 -----------
 
-### 4.1 Bytecode
+### 4.1 字节码
 
-编译器直接生成字节码，没有中间表示（如解析树），因此非常快速。在生成的字节码上进行了多个优化步骤。
+编译器直接生成字节码而不使用解析树等中间表示，因此非常快速。生成的字节码上会执行多轮优化。
 
-选择了基于堆栈的字节码，因为它简单且生成的代码紧凑。
+选择基于栈的字节码，因为它简单且能生成紧凑代码。
 
-对于每个函数，编译时计算最大堆栈大小，因此不需要运行时堆栈溢出测试。
+对每个函数，最大栈大小在编译期计算，因此无需在运行时执行栈溢出检查。
 
-为调试信息维护了一个单独的压缩行号表。
+调试信息维护了单独的压缩行号表。
 
-对闭包变量的访问进行了优化，并且几乎与局部变量一样快。
+对闭包变量的访问进行了优化，几乎与局部变量一样快。
 
-对严格模式下的直接`eval`进行了优化。
+严格模式下的直接 `eval` 得到优化。
 
-### 4.2 Executable generation
+### 4.2 可执行文件生成
 
 #### 4.2.1 `qjsc` 编译器
 
-`qjsc`编译器从Javascript文件生成C源代码。默认情况下，C源代码使用系统编译器（`gcc`或`clang`）进行编译。
+`qjsc` 编译器从 JavaScript 文件生成 C 源代码。默认情况下，C 源代码由系统编译器（`gcc` 或 `clang`）编译。
 
-生成的C源代码包含已编译函数或模块的字节码。如果需要完整的可执行文件，它还包含一个`main()`函数，其中包含必要的C代码来初始化Javascript引擎，并加载和执行已编译的函数和模块。
+生成的 C 源包含已编译函数或模块的字节码。若需要完整的可执行文件，它还包含一个 `main()` 函数，其中含有必要的 C 代码来初始化 JavaScript 引擎，并加载与执行已编译的函数和模块。
 
-可以将Javascript代码与C模块混合使用。
+JavaScript 代码可与 C 模块混合使用。
 
-为了生成更小的可执行文件，可以禁用特定的Javascript功能，特别是`eval`或正则表达式。代码删除依赖于系统编译器的链接时优化。
+为生成更小的可执行文件，可禁用特定的 JavaScript 特性，尤其是 `eval` 或正则表达式。代码移除依赖系统编译器的链接时优化（LTO）。
 
 #### 4.2.2 二进制 JSON
 
-`qjsc`通过编译脚本或模块，然后将它们序列化为二进制格式来工作。该格式的一个子集（不包括函数或模块）可以用作二进制JSON。示例`test_bjson.js`展示了如何使用它。
+`qjsc` 通过编译脚本或模块，然后序列化为二进制格式工作。该格式的一个子集（不包含函数或模块）可用作二进制 JSON。示例 `test_bjson.js` 展示了其用法。
 
-警告：二进制JSON格式可能会在不经通知的情况下更改，因此不应将其用于存储持久数据。`test_bjson.js`示例仅用于测试二进制对象格式的函数。
+警告：二进制 JSON 格式可能在不通知的情况下更改，因此不应用于存储持久数据。`test_bjson.js` 示例仅用于测试二进制对象格式的函数。
 
 ### 4.3 运行时
 
-#### 4.3.1 Strings
+#### 4.3.1 字符串
 
-字符串存储为8位或16位字符数组。因此，随机访问字符总是很快。
+字符串存储为 8 位或 16 位字符数组。因此，随机访问字符始终很快。
 
-C API提供将Javascript字符串转换为C UTF-8编码字符串的函数。最常见情况是 Javascript字符串仅包含ASCII 字符串不涉及复制。
+C API 提供将 JavaScript 字符串转换为 C UTF-8 字符串的函数。最常见的情况是 JavaScript 字符串仅包含 ASCII 字符，此时不涉及复制。
 
-#### 4.3.2 Objects
+#### 4.3.2 对象
 
-对象形状（对象原型、属性名称和标志）在对象之间共享，以节省内存。
+对象形状（对象原型、属性名与标志）在对象间共享以节省内存。
 
-优化了没有洞（除了数组末尾）的数组。
+无洞（除数组结尾外）的数组得到优化。
 
-TypedArray访问已优化。
+`TypedArray` 访问得到优化。
 
-#### 4.3.3 Atoms
+#### 4.3.3 原子
 
-对象属性名称和一些字符串被存储为原子（唯一字符串），以节省内存并允许快速比较。原子表示为32位整数。原子范围的一半保留给从 0 到 2^{31}-1 的立即整数字面值。
+对象属性名和部分字符串作为原子（唯一字符串）存储，以节省内存并便于快速比较。原子以 32 位整数表示；原子范围的一半保留用于从 `0` 到 `2^{31}-1` 的立即整数文本。
 
-#### 4.3.4 Numbers
+#### 4.3.4 数值
 
-数字可以表示为32位有符号整数或64位IEEE-754浮点数值。大多数操作都针对32位整数情况有快速路径。
+数值以 32 位有符号整数或 64 位 IEEE-754 浮点表示。多数运算在 32 位整数情况下有快速路径。
 
 #### 4.3.5 垃圾回收
 
-引用计数用于自动和准确地释放对象。当分配的内存变得过大时，会进行单独的循环移除操作。循环移除算法仅使用引用计数和对象内容，因此在C代码中不需要显式操作垃圾收集根。
+使用引用计数自动且确定性地释放对象；当已分配内存过大时执行单独的循环删除过程。循环删除仅依赖引用计数与对象内容，因此无需在 C 代码中操作显式垃圾回收根。
 
 #### 4.3.6 JSValue
 
-JSValue是一个Javascript值，可以是原始类型（例如Number、String等）或对象。在32位版本中，使用NaN装箱来存储64位浮点数。表示形式经过优化，可以高效地测试32位整数和引用计数值。
+JSValue 是可表示原始类型（如 Number、String 等）或对象的 JavaScript 值。32 位版本使用 NaN boxing 存储 64 位浮点数；表示方式经过优化，以便高效测试 32 位整数和引用计数值。
 
-在64位代码中，JSValue的大小为128位，并且不使用NaN装箱。原因是在64位代码中，内存使用不那么关键。
+在 64 位代码中，JSValue 为 128 位宽，不使用 NaN boxing；其理由是 64 位环境下内存占用不那么关键。
 
-在两种情况下（32位或64位），JSValue恰好适应两个CPU寄存器，因此可以通过C函数高效地返回。
+两种情况下（32 位或 64 位），JSValue 恰好占用两个 CPU 寄存器，因此可被 C 函数高效返回。
 
 #### 4.3.7 函数调用
 
-引擎已经过优化，因此函数调用很快。系统堆栈包含Javascript参数和局部变量。
+引擎对函数调用进行了优化以保证速度。系统栈持有 JavaScript 的参数与局部变量。
 
-### 4.4 RegExp
+### 4.4 正则表达式
 
-开发了一个特定的正则表达式引擎。它既小又高效，并支持所有ES2019功能，包括Unicode属性。作为Javascript编译器，它直接生成没有解析树的字节码。
+实现了一个专用正则表达式引擎：体积小、效率高，支持所有 ES2023 特性，包括 Unicode 属性。与 JavaScript 编译器类似，直接生成字节码而不使用解析树。
 
-使用显式堆栈的回溯使得系统堆栈上没有递归。简单的量化器经过专门优化，以避免递归。
+使用具有显式栈的回溯实现，避免系统栈上的递归。对简单量词做了专门优化以避免递归。
 
-来自具有空项的量化器的无限递归被避免。
-
-完整的正则表达式文件库的权重约为15 KiB（x86代码），不包括Unicode库。
+完整的正则库（不含 Unicode 库）在 x86 上约 15 KiB。
 
 ### 4.5 Unicode
 
-开发了一个特定的Unicode库，因此不依赖于外部大型Unicode库，例如ICU。压缩所有Unicode表，同时保持合理的访问速度。
+实现了一个专用 Unicode 库，以避免依赖 ICU 等大型外部库。所有 Unicode 表在保持合理访问速度的同时采用压缩存储。
 
-该库支持大小写转换，Unicode规范化，Unicode脚本查询，Unicode常规类别查询和所有Unicode二进制属性。
+该库支持大小写转换、Unicode 规范化、Unicode 脚本查询、Unicode 通用类别查询以及所有 Unicode 二值属性。
 
-完整的Unicode库大约重量为45 KiB（x86代码）。
+完整的 Unicode 库在 x86 上约 45 KiB。
 
-### 4.6 BigInt 和 BigFloat
+### 4.6 BigInt
 
-BigInt 和 BigFloat 是用`libbf` 库 `libbf` 库实现的[4](#FOOT4)。 它大概有60 KiB (x86 代码) 并提供任意精度的IEEE 754 浮点运算和具有精确舍入的超越函数。
+BigInt 采用二进制补码表示。额外使用一个短 BigInt 值以优化小 BigInt 的性能。
 
-5 许可协议
----------
+5 许可
+-------
 
-QuickJS 在MIT协议下发布。
+QuickJS 以 MIT 许可证发布。
 
-除非另有说明，否则QuickJS来源的版权归Fabrice Bellard和Charlie Gordon所有。
+除非另有说明，QuickJS 源码版权归 Fabrice Bellard 和 Charlie Gordon 所有。
 
-* * *
+脚注
+----
 
-#### 脚注
-
-### [(1)](#DOCF1)
-
-[https://github.com/tc39/test262](https://github.com/tc39/test262)
-
-### [(2)](#DOCF2)
-
-[https://tc39.github.io/ecma262/](https://tc39.github.io/ecma262/)
-
-### [(3)](#DOCF3)
-
-我们认为目前的尾部调用规范过于复杂，并且实际利益有限。
-
-### [(4)](#DOCF4)
-
-[https://bellard.org/libbf](https://bellard.org/libbf)
+1. https://tc39.es/ecma262/2023
+2. https://github.com/tc39/test262
+3. https://tc39.es/ecma262/
+4. 旧 ES5.1 测试可通过 `git clone --single-branch --branch es5-tests https://github.com/tc39/test262.git test262o` 获取
+5. https://github.com/bterlson/test262-harness
+目录
 
 * * *
 
